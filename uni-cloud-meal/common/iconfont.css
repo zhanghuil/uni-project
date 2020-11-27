@@ -1,0 +1,56 @@
+@font-face {
+  font-family: 'iconfont';  /* project id 2228798 */
+  src: url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.eot');
+  src: url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.woff') format('woff'),
+  url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_2228798_aq0dghwx9y6.svg#iconfont') format('svg');
+}
+
+.iconfont {
+	font-family: "iconfont" !important;
+	font-size: 32rpx;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+	font-family: "iconfont" !important;
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-selectdefault2:before {
+  content: "\e632";
+}
+
+.icon-xuanze:before {
+  content: "\e627";
+}
+
+.icon-jia:before {
+  content: "\e60f";
+}
+
+.icon-jianshao:before {
+  content: "\e6dd";
+}
+
+.icon-yinhao:before {
+  content: "\e60b";
+}
+
+.icon-quote-right:before {
+  content: "\e605";
+}

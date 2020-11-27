@@ -1,0 +1,67 @@
+{
+	"pages": [{
+		"path": "pages/home/home",
+		"style": {
+			"navigationBarTitleText": "在线订餐"
+		}
+	}, {
+		"path": "pages/index/index",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	}, {
+		"path": "pages/my/my",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	}, {
+		"path": "pages/order/order",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+	}, {
+		"path": "pages/my/perfectInfo",
+		"style": {
+			"navigationBarTitleText": "信息采集"
+		}
+	}, {
+		"path": "pages/my/lookInfo",
+		"style": {
+			"navigationBarTitleText": "信息采集"
+		}
+
+	}],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "云订餐",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#FFFFFF",
+		"navigationStyle": "default"
+	},
+	"tabBar": {
+		"color": "#4A4A4A",
+		"selectedColor": "#4EC09B",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"text": "首页",
+				"pagePath": "pages/index/index",
+				"iconPath": "static/image/home.png",
+				"selectedIconPath": "static/image/home-active.png"
+			},
+			{
+				"text": "订单",
+				"pagePath": "pages/order/order",
+				"iconPath": "static/image/order.png",
+				"selectedIconPath": "static/image/order-active.png"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/my/my",
+				"iconPath": "static/image/my.png",
+				"selectedIconPath": "static/image/my-active.png"
+			}
+		]
+	}
+
+}
