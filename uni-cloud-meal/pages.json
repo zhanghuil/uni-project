@@ -30,6 +30,12 @@
 			"navigationBarTitleText": "信息采集"
 		}
 
+	}, {
+		"path": "pages/home/food",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+
 	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

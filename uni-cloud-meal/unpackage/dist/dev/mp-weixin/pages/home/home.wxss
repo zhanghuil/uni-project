@@ -26,6 +26,9 @@
 /* 文章场景相关 */
 page {
   background: #FFFFFF;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 .response {
   -webkit-filter: blur(4px);
@@ -115,6 +118,9 @@ page {
   background: #4EC09B;
   color: #FFFFFF;
 }
+.mealTimes {
+  padding-bottom: 32rpx;
+}
 .mealTimes .cu-item {
   height: 62rpx;
   line-height: 62rpx;
@@ -139,5 +145,282 @@ page {
   background: #4EC09B;
   -webkit-border-radius: 3rpx;
           border-radius: 3rpx;
+}
+.verticalBox {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  height: calc(100vh - 160rpx - 96rpx - 120rpx - 62rpx - 32rpx - 108rpx);
+}
+.verticalBox .VerticalNav.nav {
+  width: 180rpx;
+  height: calc(100vh - 578rpx);
+  white-space: initial;
+}
+.verticalBox .VerticalNav.nav .cu-item {
+  width: 100%;
+  text-align: center;
+  background-color: #FAFAFA;
+  margin: 0;
+  border: none;
+  height: 96rpx;
+  line-height: 96rpx;
+  position: relative;
+  font-size: 28rpx;
+  color: #6A6A6A;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  word-break: break-all;
+}
+.verticalBox .VerticalNav.nav .cu-item.cur {
+  background-color: #FFFFFF;
+  color: #2A2A2A;
+}
+.verticalBox .VerticalNav.nav .cu-item.cur::after {
+  content: "";
+  width: 10rpx;
+  height: 32rpx;
+  -webkit-border-radius: 0;
+          border-radius: 0;
+  position: absolute;
+  background: #4EC09B;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  margin: auto;
+}
+.verticalBox .VerticalMain {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  height: calc(100vh - 578rpx);
+}
+.verticalBox .VerticalMain .title {
+  font-size: 30rpx;
+  color: #4A4A4A;
+  padding: 26rpx 0;
+}
+.verticalBox .VerticalMain .menuList .item {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  margin: 0 0 36rpx;
+  position: relative;
+}
+.verticalBox .VerticalMain .menuList .item .panel_left {
+  position: relative;
+}
+.verticalBox .VerticalMain .menuList .item .panel_left image {
+  width: 160rpx;
+  height: 160rpx;
+  -webkit-border-radius: 8rpx;
+          border-radius: 8rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_left .tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: -webkit-gradient(linear, left top, right top, from(#FFD444), to(#FFB023));
+  background: -webkit-linear-gradient(left, #FFD444, #FFB023);
+  background: linear-gradient(to right, #FFD444, #FFB023);
+  font-size: 20rpx;
+  color: #FFFFFF;
+  padding: 2rpx 10rpx;
+  border: 2rpx solid #FFFFFF;
+  -webkit-border-radius: 8rpx 0 16rpx 0;
+          border-radius: 8rpx 0 16rpx 0;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  position: relative;
+  padding-left: 24rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealName {
+  font-size: 32rpx;
+  color: #2A2A2A;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .desc {
+  font-size: 20rpx;
+  color: #6A6A6A;
+  padding-top: 4rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .desc .tipImg {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 4rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding-left: 28rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .price {
+  font-size: 24rpx;
+  color: #FF4D23;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .price .f18 {
+  font-size: 36rpx;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .iconfont {
+  font-size: 48rpx;
+  color: #4EC09B;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .soldOut {
+  display: none;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .soldOut .iconfont {
+  color: #D6D6D6;
+}
+.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .cart-count {
+  font-size: 32rpx;
+  color: #4A4A4A;
+  padding: 4rpx 16rpx 0;
+}
+.shopcart {
+  height: 108rpx;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #FFFFFF;
+  padding: 0 28rpx;
+  border-top: 2rpx solid #F2F2F2;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+}
+.shopcart .carCon {
+  position: relative;
+}
+.shopcart .carCon .carImg {
+  width: 60rpx;
+  height: 56rpx;
+}
+.shopcart .carCon .cu-tag.badge:not([class*="bg-"]) {
+  background: #FF4D23;
+  font-size: 26rpx;
+  padding: 10rpx 8rpx;
+}
+.shopcart .carCon .cu-tag.badge {
+  top: -2rpx;
+  right: -14rpx;
+}
+.shopcart .price {
+  font-size: 52rpx;
+  color: #FF4D23;
+  margin-left: 48rpx;
+}
+.shopcart .cu-btn {
+  font-size: 32rpx;
+  height: 80rpx;
+  padding: 0 56rpx;
+  margin-top: -6rpx;
+}
+.shopcart .bg-gray {
+  background: #C0C0C0;
+  color: #FFFFFF;
+}
+.blankContent {
+  text-align: center;
+  font-size: 28rpx;
+  color: #6A6A6A;
+  line-height: 42rpx;
+}
+.blankContent .img {
+  width: 320rpx;
+  height: 320rpx;
+}
+.cu-modal.bottom-modal .cu-dialog {
+  background-color: #FFFFFF;
+  -webkit-border-radius: 24rpx 24rpx 0 0;
+          border-radius: 24rpx 24rpx 0 0;
+}
+.shopNoticeDialog {
+  padding: 40rpx 28rpx;
+}
+.shopNoticeDialog .top {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.shopNoticeDialog .top .txt {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  font-size: 36rpx;
+  color: #2A2A2A;
+}
+.shopNoticeDialog .top .cuIcon-close {
+  color: #C0C0C0;
+  font-size: 40rpx;
+  width: 36rpx;
+  margin-left: 42rpx;
+}
+.shopNoticeDialog .content {
+  text-align: left;
+  padding: 50rpx 0 10rpx;
+  font-size: 28rpx;
+  color: #2A2A2A;
+}
+.shopNoticeDialog .content .nImg {
+  width: 44rpx;
+  height: 44rpx;
+  margin-right: 12rpx;
+}
+.shopNoticeDialog .content .txt {
+  height: 400rpx;
+  padding: 30rpx 0 0;
+  font-size: 26rpx;
+  color: #4A4A4A;
+  line-height: 40rpx;
+}
+/* 菜肴详情 */
+.foodDescDiv {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 48px;
+  z-index: 51;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  -webkit-transform: translate3d(100%, 0, 0);
+          transform: translate3d(100%, 0, 0);
+  -webkit-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+}
+.foodDescScroll {
+  height: 100%;
+}
+.foodDescScroll .name {
+  font-size: 40rpx;
+}
+.foodEnter {
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
 }
 
