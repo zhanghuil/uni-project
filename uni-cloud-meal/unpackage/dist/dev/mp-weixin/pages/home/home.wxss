@@ -400,27 +400,124 @@ page {
 }
 /* 菜肴详情 */
 .foodDescDiv {
-  position: fixed;
-  left: 0;
   top: 0;
-  bottom: 48px;
-  z-index: 51;
+  height: 100vh;
+}
+.foodDescDiv .foodDescScroll {
+  height: 100%;
+}
+.foodDescDiv .headImg {
+  position: relative;
+  height: 750rpx;
+}
+.foodDescDiv .headImg .foodImg {
   width: 100%;
-  height: 100%;
-  background: #fff;
-  -webkit-transform: translate3d(100%, 0, 0);
-          transform: translate3d(100%, 0, 0);
-  -webkit-transition: all 0.2s linear;
-  transition: all 0.2s linear;
+  height: 750rpx;
 }
-.foodDescScroll {
-  height: 100%;
+.foodDescDiv .headImg .closeImg {
+  position: absolute;
+  right: 50rpx;
+  top: 50rpx;
+  width: 70rpx;
+  height: 70rpx;
 }
-.foodDescScroll .name {
-  font-size: 40rpx;
+.foodDescDiv .foodDesWrap {
+  text-align: left;
+  padding: 40rpx 28rpx;
 }
-.foodEnter {
-  -webkit-transform: translate3d(0, 0, 0);
-          transform: translate3d(0, 0, 0);
+.foodDescDiv .foodDesWrap .name {
+  font-size: 36rpx;
+  color: #2A2A2A;
+}
+.foodDescDiv .foodDesWrap .hd {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  padding: 24rpx 0;
+}
+.foodDescDiv .foodDesWrap .hd .L {
+  font-size: 28rpx;
+  color: #FF4D23;
+}
+.foodDescDiv .foodDesWrap .hd .L .num {
+  font-size: 24rpx;
+  color: #6A6A6A;
+  padding-right: 32rpx;
+}
+.foodDescDiv .foodDesWrap .hd .L .price {
+  font-size: 44rpx;
+}
+.foodDescDiv .foodDesWrap .hd .L .tag {
+  margin-left: 32rpx;
+  background: -webkit-gradient(linear, left top, right top, from(#FFD444), to(#FFB023));
+  background: -webkit-linear-gradient(left, #FFD444, #FFB023);
+  background: linear-gradient(to right, #FFD444, #FFB023);
+  font-size: 20rpx;
+  color: #FFFFFF;
+  padding: 2rpx 10rpx;
+  border: 2rpx solid #FFFFFF;
+  -webkit-border-radius: 0 16rpx 16rpx 16rpx;
+          border-radius: 0 16rpx 16rpx 16rpx;
+}
+.foodDescDiv .foodDesWrap .hd .cart-count {
+  font-size: 32rpx;
+  color: #4A4A4A;
+  padding: 4rpx 16rpx 0;
+}
+.foodDescDiv .foodDesWrap .hd .iconfont {
+  font-size: 48rpx;
+  color: #4EC09B;
+}
+.foodDescDiv .foodDesWrap .hd .icon-jianshao {
+  color: #D6D6D6;
+}
+.foodDescDiv .foodDesWrap .desc {
+  font-size: 26rpx;
+  color: #4A4A4A;
+}
+.foodDescDiv .foodDesWrap .nutritionList.cu-list.menu > .cu-item {
+  padding: 0 0 32rpx;
+  font-size: 28rpx;
+  color: #2A2A2A;
+  min-height: auto;
+}
+.foodDescDiv .foodDesWrap .nutritionList.cu-list.menu > .cu-item .content > image {
+  margin-right: 24rpx;
+}
+.foodDescDiv .foodDesWrap .nutritionList.cu-list.menu-avatar > .cu-item:after,
+.foodDescDiv .foodDesWrap .nutritionList.cu-list.menu > .cu-item:after {
+  border: none;
+}
+.foodDescDiv .foodDesWrap .nutritionList .content {
+  font-size: 28rpx;
+  color: #4A4A4A;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}
+.foodDescDiv .foodDesWrap .nutritionList .nutritionImg {
+  width: 48rpx;
+  height: 48rpx;
+}
+.foodDescDiv .foodDesWrap .cu-btn {
+  font-size: 24rpx;
+  color: #6A6A6A;
+  background: #F4F4F4;
+  padding: 0 40rpx;
+  margin-top: 8rpx;
+}
+.cu-modal.drawer-modal .cu-dialog {
+  min-width: 100%;
+  width: 100%;
+  background-color: #FFFFFF;
 }
 

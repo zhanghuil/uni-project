@@ -128,20 +128,96 @@
 			</view>
 		</view>
 		<!-- 菜肴详情 -->
-		<view class="foodDescDiv" :class="foodClass" v-show="food_detail_mask">
-			<scroll-view scroll-y="true" class="foodDescScroll">
-				我是菜肴详情
-			</scroll-view>
-		</view>
 		<view class="cu-modal drawer-modal justify-end" :class="modalName=='DrawerModalR'?'show':''" @tap="hideModal">
-			<view class="cu-dialog basis-lg" @tap.stop="" :style="[{top:CustomBar+'px',height:'calc(100vh - ' + CustomBar + 'px)'}]">
-				<view class="cu-list menu text-left">
-					<view class="cu-item arrow" v-for="(item,index) in 5" :key="index">
-						<view class="content">
-							<view>Item {{index +1}}</view>
-						</view>
+			<view class="cu-dialog basis-lg foodDescDiv">
+				<scroll-view scroll-y="true" class="foodDescScroll">
+					<view class="headImg">
+						<image class="foodImg" src="../../static/image/meal/default.png" mode="scaleToFill"></image>
+						<image @tap.stop="hideModal" class="closeImg" src="../../static/image/meal/close.png"></image>
 					</view>
-				</view>
+					<view class="foodDesWrap">
+						<view class="name text-bold">西红柿炒土鸡蛋在菜品详情中将菜品名称全部显示</view>
+						<view class="hd">
+							<view class="L flex align-center">
+								<view class="num">还剩10份</view>
+								<view>¥<text class="price">19</text></view>
+								<view class="tag">建议少食</view>
+							</view>
+							<view class="flex align-center">
+								<view class="cart-decrease">
+									<text class="iconfont icon-jianshao"></text>
+								</view>
+								<view class="cart-count">1</view>
+								<view class="cart-add" @click.stop="addCart">
+									<text class="iconfont icon-jia"></text>
+								</view>
+							</view>
+						</view>
+						<view class="desc">西红柿炒土鸡蛋商品详情介绍西红柿炒土鸡蛋商品详情介绍西红柿炒土鸡蛋商品详情介绍</view>
+						<!-- 营养成分 -->
+						<view>
+							<view class="f18 c-2a pb20 pt32 text-bold">营养成分</view>
+							<view class="cu-list menu nutritionList">
+								<view class="cu-item">
+									<view class="content">
+										<image class="nutritionImg" src="../../static/image/meal/nutrition1.png"></image>
+										<text>能量</text>
+									</view>
+									<view class="action">
+										<text>1000 kcl</text>
+									</view>
+								</view>
+								<view class="cu-item">
+									<view class="content">
+										<image class="nutritionImg" src="../../static/image/meal/nutrition2.png"></image>
+										<text>蛋白质</text>
+									</view>
+									<view class="action">
+										<text>90 kcl</text>
+									</view>
+								</view>
+								<view class="cu-item">
+									<view class="content">
+										<image class="nutritionImg" src="../../static/image/meal/nutrition3.png"></image>
+										<text>脂肪</text>
+									</view>
+									<view class="action">
+										<text>100 kcl</text>
+									</view>
+								</view>
+								<view class="cu-item">
+									<view class="content">
+										<image class="nutritionImg" src="../../static/image/meal/nutrition4.png"></image>
+										<text>碳水化合物</text>
+									</view>
+									<view class="action">
+										<text>90 kcl</text>
+									</view>
+								</view>
+								<view class="cu-item">
+									<view class="content">
+										<image class="nutritionImg" src="../../static/image/meal/nutrition5.png"></image>
+										<text>钙</text>
+									</view>
+									<view class="action">
+										<text>1000 kcl</text>
+									</view>
+								</view>
+							</view>
+							<view class="text-center">
+								<button class="cu-btn round">查看更多</button>
+							</view>
+						</view>
+						<!-- 配料组成 -->
+						<view>
+							<view class="f18 c-2a pb20 pt32 text-bold">配料组成</view>
+							<view class="f14 c-4a pb15">西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿</view>
+							<view class="f14 c-4a pb15">鸡蛋</view>
+							<view class="f14 c-4a pb15">绿绿的小葱</view>
+						</view>
+						<!-- end -->
+					</view>
+				</scroll-view>
 			</view>
 		</view>
 		<!-- end -->
@@ -821,27 +897,134 @@
 
 	/* 菜肴详情 */
 	.foodDescDiv {
-		position: fixed;
-		left: 0;
 		top: 0;
-		bottom: 48px;
-		z-index: 51;
+		height: 100vh;
+
+		.foodDescScroll {
+			height: 100%;
+		}
+
+		.headImg {
+			position: relative;
+			height: 750rpx;
+
+			.foodImg {
+				width: 100%;
+				height: 750rpx;
+			}
+
+			.closeImg {
+				position: absolute;
+				right: 50rpx;
+				top: 50rpx;
+				width: 70rpx;
+				height: 70rpx;
+			}
+		}
+
+		.foodDesWrap {
+			text-align: left;
+			padding: 40rpx 28rpx;
+
+			.name {
+				font-size: 36rpx;
+				color: #2A2A2A;
+			}
+
+			.hd {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 24rpx 0;
+
+				.L {
+					font-size: 28rpx;
+					color: #FF4D23;
+
+					.num {
+						font-size: 24rpx;
+						color: #6A6A6A;
+						padding-right: 32rpx;
+					}
+
+					.price {
+						font-size: 44rpx;
+					}
+
+					.tag {
+						margin-left: 32rpx;
+						background: linear-gradient(to right, #FFD444, #FFB023);
+						font-size: 20rpx;
+						color: #FFFFFF;
+						padding: 2rpx 10rpx;
+						border: 2rpx solid #FFFFFF;
+						border-radius: 0 16rpx 16rpx 16rpx;
+					}
+				}
+
+				.cart-count {
+					font-size: 32rpx;
+					color: #4A4A4A;
+					padding: 4rpx 16rpx 0;
+				}
+
+				.iconfont {
+					font-size: 48rpx;
+					color: #4EC09B;
+				}
+				.icon-jianshao{
+					color: #D6D6D6;
+				}
+			}
+
+			.desc {
+				font-size: 26rpx;
+				color: #4A4A4A;
+			}
+
+			.nutritionList {
+				&.cu-list.menu>.cu-item {
+					padding: 0 0 32rpx;
+					font-size: 28rpx;
+					color: #2A2A2A;
+					min-height: auto;
+				}
+
+				&.cu-list.menu>.cu-item .content>image {
+					margin-right: 24rpx;
+				}
+
+				&.cu-list.menu-avatar>.cu-item:after,
+				&.cu-list.menu>.cu-item:after {
+					border: none;
+				}
+
+				.content {
+					font-size: 28rpx;
+					color: #4A4A4A;
+					display: flex;
+					align-items: center;
+				}
+
+				.nutritionImg {
+					width: 48rpx;
+					height: 48rpx;
+				}
+			}
+
+			.cu-btn {
+				font-size: 24rpx;
+				color: #6A6A6A;
+				background: #F4F4F4;
+				padding: 0 40rpx;
+				margin-top: 8rpx;
+			}
+		}
+	}
+
+	.cu-modal.drawer-modal .cu-dialog {
+		min-width: 100%;
 		width: 100%;
-		height: 100%;
-		background: #fff;
-		transform: translate3d(100%, 0, 0);
-		transition: all 0.2s linear;
-	}
-
-	.foodDescScroll {
-		height: 100%;
-	}
-
-	.foodDescScroll .name {
-		font-size: 40rpx;
-	}
-
-	.foodEnter {
-		transform: translate3d(0, 0, 0);
+		background-color: #FFFFFF;
 	}
 </style>

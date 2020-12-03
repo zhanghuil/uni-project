@@ -32,6 +32,22 @@
 		margin-top: 40rpx;
 	}
 
+	.pt32 {
+		padding-top: 64rpx;
+	}
+
+	.pr10 {
+		padding-right: 20rpx;
+	}
+
+	.pb15 {
+		padding-bottom: 30rpx;
+	}
+
+	.pb20 {
+		padding-bottom: 40rpx;
+	}
+
 	.white_space_line_2 {
 		text-overflow: -o-ellipsis-lastline;
 		overflow: hidden;
@@ -46,5 +62,21 @@
 	.placeholder {
 		font-size: 26rpx;
 		color: #C0C0C0;
+	}
+
+	.f14 {
+		font-size: 28rpx;
+	}
+
+	.f18 {
+		font-size: 36rpx;
+	}
+
+	.c-4a {
+		color: #4A4A4A;
+	}
+
+	.c-2a {
+		color: #2A2A2A;
 	}
 </style>

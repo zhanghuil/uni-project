@@ -1,18 +1,18 @@
 {
 	"pages": [{
-		"path": "pages/home/home",
-		"style": {
-			"navigationBarTitleText": "在线订餐"
-		}
-	}, {
 		"path": "pages/index/index",
 		"style": {
 			"navigationBarTitleText": ""
 		}
 	}, {
+		"path": "pages/home/home",
+		"style": {
+			"navigationBarTitleText": "在线订餐"
+		}
+	}, {
 		"path": "pages/my/my",
 		"style": {
-			"navigationBarTitleText": ""
+			"navigationBarTitleText": "个人中心"
 		}
 	}, {
 		"path": "pages/order/order",
@@ -34,6 +34,18 @@
 		"path": "pages/home/food",
 		"style": {
 			"navigationBarTitleText": ""
+		}
+
+	}, {
+		"path": "pages/my/recharge",
+		"style": {
+			"navigationBarTitleText": "职工卡"
+		}
+
+	}, {
+		"path": "pages/my/rechargeRecord",
+		"style": {
+			"navigationBarTitleText": "在线充值记录"
 		}
 
 	}],

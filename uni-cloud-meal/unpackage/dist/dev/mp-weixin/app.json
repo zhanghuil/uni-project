@@ -1,12 +1,14 @@
 {
   "pages": [
-    "pages/home/home",
     "pages/index/index",
+    "pages/home/home",
     "pages/my/my",
     "pages/order/order",
     "pages/my/perfectInfo",
     "pages/my/lookInfo",
-    "pages/home/food"
+    "pages/home/food",
+    "pages/my/recharge",
+    "pages/my/rechargeRecord"
   ],
   "subPackages": [],
   "window": {
