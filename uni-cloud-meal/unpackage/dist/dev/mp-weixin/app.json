@@ -4,6 +4,7 @@
     "pages/home/home",
     "pages/my/my",
     "pages/order/order",
+    "pages/order/orderDetail",
     "pages/my/perfectInfo",
     "pages/my/lookInfo",
     "pages/home/food",

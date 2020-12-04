@@ -39,11 +39,14 @@
 		<!-- 患者 -->
 		<view class="header">
 			<view class="imgBox">
+				<open-data style="border-radius:50%;overflow:hidden;display:block;height:140rpx;" type="userAvatarUrl"></open-data>
+				<!--  #ifdef MP-ALIPAY -->
 				<image class="img" src="../../static/image/sex0.png"></image>
+				<!--  #endif -->
 			</view>
 			<view class="desc">
 				<view class="flex align-center justify-between">
-					<view class="name">张丹</view>
+					<view class="name"><open-data type="userNickName"></open-data></view>
 					<view class="edit">退出登录</view>
 				</view>
 				<view class="hos">手机：{{getPhone}}</view>

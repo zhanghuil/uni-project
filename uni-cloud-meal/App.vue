@@ -40,6 +40,10 @@
 		padding-right: 20rpx;
 	}
 
+	.pb8 {
+		padding-bottom: 16rpx;
+	}
+
 	.pb15 {
 		padding-bottom: 30rpx;
 	}
@@ -68,6 +72,10 @@
 		font-size: 28rpx;
 	}
 
+	.f15 {
+		font-size: 30rpx;
+	}
+
 	.f18 {
 		font-size: 36rpx;
 	}
@@ -76,7 +84,31 @@
 		color: #4A4A4A;
 	}
 
+	.c-6a {
+		color: #6A6A6A;
+	}
+
 	.c-2a {
 		color: #2A2A2A;
+	}
+
+	.c-ff4 {
+		color: #FF4D23;
+	}
+
+	.flex1 {
+		flex: 1;
+	}
+
+	.ovh {
+		overflow: hidden;
+	}
+
+	.dn {
+		display: none;
+	}
+
+	.lh24 {
+		line-height: 48rpx;
 	}
 </style>

@@ -31,7 +31,7 @@
 					<view>
 						<image class="item_img" src="../../static/image/default_store.png" mode=""></image>
 					</view>
-					<view class="content">
+					<view class="content ovh">
 						<view class="text-cut">尔美餐厅</view>
 						<view class="text-loca flex">
 							<image class="icon_img" src="../../static/image/icon0.png"></image>浦东院区<image class="icon_img icon_img1" src="../../static/image/icon1.png"></image>月售&nbsp;51

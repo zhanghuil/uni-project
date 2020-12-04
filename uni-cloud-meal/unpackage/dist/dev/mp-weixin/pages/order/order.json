@@ -1,4 +1,6 @@
 {
-  "navigationBarTitleText": "",
-  "usingComponents": {}
+  "navigationBarTitleText": "订单",
+  "usingComponents": {
+    "payment-list": "/components/paymentList"
+  }
 }
