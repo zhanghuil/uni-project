@@ -25,7 +25,6 @@
 /* 透明度 */
 /* 文章场景相关 */
 page {
-  background: #FFFFFF;
   padding-bottom: 72rpx;
 }
 .infoH1 {

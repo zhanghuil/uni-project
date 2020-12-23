@@ -35,10 +35,6 @@
 </script>
 
 <style lang="scss">
-	page {
-		background: #FFFFFF;
-	}
-
 	.list {
 		padding: 0 28rpx;
 

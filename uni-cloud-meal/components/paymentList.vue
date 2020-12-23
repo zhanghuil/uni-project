@@ -11,10 +11,10 @@
 						<view class="cu-item" v-for="(item,index) in payList" :key="index">
 							<label class="flex justify-between align-center flex-sub">
 								<view class="flex-sub">
-									<image class="img" :src="'../static/image/meal/'+item.paymentId+'.png'"></image>{{item.paymentName}}
+									<image class="img" :src="'../static/image/meal/'+item.payType+'.png'"></image>{{item.payName}}
 								</view>
-								<radio class="round" :class="selectId==item.paymentId?'checked':''" :checked="selectId==item.paymentId?true:false"
-								 :value="item.paymentId"></radio>
+								<radio class="round" :class="selectId==item.payType?'checked':''" :checked="selectId==item.payType?true:false"
+								 :value="item.payType"></radio>
 							</label>
 						</view>
 					</view>
@@ -47,17 +47,17 @@
 		},
 		data() {
 			return {
-				paymentId: null || this.selectId
+				payType: null || this.selectId
 			}
 		},
 		methods: {
 			submit() {
-				this.$emit("reselectId", this.paymentId)
+				this.$emit("reselectId", this.payType)
 				this.hideModal()
 			},
 			RadioChange(e) {
 				let val = e.detail.value
-				this.paymentId = val
+				this.payType = val
 				console.log(`选择的支付方式：${val}`)
 			},
 			hideModal(e) {

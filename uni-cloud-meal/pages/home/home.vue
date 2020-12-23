@@ -1,16 +1,22 @@
 <template>
 	<view>
 		<image src="../../static/image/meal/timg.jpg" mode="center" class="response"></image>
+		<cu-custom bgColor="bg-hyaline" :isBack="true">
+			<block slot="backText"></block>
+			<block slot="content">在线订餐</block>
+		</cu-custom>
+
+		<!-- <view class="response"></view> -->
 		<view class="topWrapper">
 			<view class="homeTop">
 				<view class="flex align-center">
 					<view class="logoImg">
-						<image class="img"></image>
+						<image class="img" :src="storeInfo.logo"></image>
 					</view>
 					<view class="R">
 						<view class="flex justify-between">
-							<view class="text-cut">Noodle’s Truth面有道</view>
-							<view class="phoneCon flex align-center">
+							<view class="text-cut">{{storeInfo.name}}</view>
+							<view class="phoneCon flex align-center" @tap="makePhoneCall">
 								<image class="pimg" mode="scaleToFill" src="../../static/image/meal/phone.png"></image>
 							</view>
 						</view>
@@ -18,7 +24,7 @@
 							<view>
 								<image class="nimg" mode="scaleToFill" src="../../static/image/meal/notice.png"></image>
 							</view>
-							<text>早餐 00:00～7:00，午餐10:30～12:00，晚餐17:00～20:00</text>
+							<text class="white_space_line_2">{{storeInfo.notice}}</text>
 						</view>
 					</view>
 				</view>
@@ -26,61 +32,50 @@
 		</view>
 		<!-- 切换日期 -->
 		<scroll-view scroll-x class="nav dateCard" scroll-with-animation :scroll-left="scrollLeft">
-			<view class="cu-item" :class="index==TabCur?'cur':''" v-for="(item,index) in dateList" :key="index" @tap="tabSelect"
-			 :data-id="index">
-				{{item.orderDate}}<text class="week">周一</text>
+			<view class="cu-item" :class="index==TabCur?'cur':''" v-for="(item,index) in newOrderDate" :key="index" @tap="tabSelect"
+			 :data-date="item.date" :data-id="index">
+				{{item.dateStr}}<text class="week">{{item.week}}</text>
 			</view>
 		</scroll-view>
 		<!-- 餐次 -->
 		<scroll-view scroll-x class="nav mealTimes" scroll-with-animation :scroll-left="scrollMLeft">
-			<view class="cu-item" :class="index==mealTimesCur?'cur':''" v-for="(item,index) in mealTimesList" :key="index" @tap="mealTimeSelect"
-			 :data-id="index">
-				{{item.name}}
+			<view class="cu-item" :class="item.typeId==mealRepastCur?'cur':''" v-for="(item,index) in currentMenuList" :key="index"
+			 @tap="mealTimeSelect" :data-id="item.typeId">
+				{{item.type}}
 			</view>
 		</scroll-view>
-		<!-- 菜谱列表  start-->
-		<view class="verticalBox" v-if="menuDate.length > 0">
+		<!-- 菜谱列表start-->
+		<view class="verticalBox" v-for="(itemRepast,indexRepast) in currentMenuList" :key="indexRepast" v-if="mealRepastCur == itemRepast.typeId">
 			<!-- 左侧列表 -->
-			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="verticalNavTop">
-				<view class="cu-item" :class="index==currentLeft?'cur':''" v-for="(item,index) in leftText" :key="index" @tap="leftTap"
-				 :data-index='index'>
-					{{item.title}}
+			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="verticalNavTop" style="height:calc(100vh - 658upx)">
+				<view class="cu-item" :class="index==currentLeft?'cur':''" v-for="(item,index) in itemRepast.categoryList" :key="index"
+				 @tap="leftTap" :data-index='index'>
+					{{item.categoryValue}}
 				</view>
 			</scroll-view>
 			<!-- 右侧列表 -->
 			<scroll-view class="VerticalMain" scroll-y scroll-with-animation :scroll-into-view="'main-'+mainCur" @scroll="verticalMain"
-			 :scroll-top="scrollTop">
-				<view class="padding-lr mainMeal" v-for="(item,index) in rightData" :key="index" :id="'main-'+index">
-					<view class="title">{{item.title}}</view>
+			 style="height:calc(100vh - 658upx)" :scroll-top="scrollTop">
+				<view class="padding-lr mainMeal" v-for="(item,index) in itemRepast.categoryList" :key="index" :id="'main-'+index">
+					<view class="title">{{item.categoryValue}}</view>
 					<view class="menuList">
-						<view class="item" v-for="(meal,idx) in item.content" :key="idx" @click="showModal" data-target="DrawerModalR">
+						<view class="item" v-for="(food,idx) in item.productList" :key="idx" @tap="productDetail(food)">
 							<view class="panel_left">
-								<image src="../../static/image/meal/default.png" lazy-load="true"></image>
-								<text class="tag">建议少食</text>
+								<image :src="food.img ? food.img : '../../static/image/meal/default.png'" lazy-load="true"></image>
+								<!-- <text class="tag">建议少食</text> -->
 							</view>
 							<view class="panel_right">
-								<view class="mealName white_space_line_2">{{meal.title}}</view>
+								<view class="mealName white_space_line_2">{{food.name}}</view>
 								<view class="desc">
-									<!-- <view class="flex align-center"><image class="tipImg" src="../../static/image/meal/tip.png"></image>已售罄</view> -->
-									<view>还剩10份</view>
+									<view v-if="food.surplus==0" class="flex align-center">
+										<image class="tipImg" src="../../static/image/meal/tip.png"></image>已售罄
+									</view>
+									<view v-else>还剩{{food.surplus}}份</view>
 								</view>
 								<view class="mealCon">
 									<view class="flex justify-between align-center">
-										<view class="price">¥<text class="f18">19</text></view>
-										<view class="cartcontrol-wrapper">
-											<!-- 已售罄 -->
-											<view class="cart-add soldOut">
-												<text class="iconfont icon-jia"></text>
-											</view>
-											<!-- 在售 -->
-											<view class="cart-decrease">
-												<text class="iconfont icon-jianshao"></text>
-											</view>
-											<view class="cart-count">1</view>
-											<view class="cart-add" @click.stop="addCart">
-												<text class="iconfont icon-jia"></text>
-											</view>
-										</view>
+										<view class="price">¥<text class="f18">{{food.price}}</text></view>
+										<cartcontrol @add="addFood" @decrease="decreaseFood" :foodInfo="food"></cartcontrol>
 									</view>
 								</view>
 							</view>
@@ -91,19 +86,6 @@
 			<!-- end -->
 		</view>
 		<!-- 菜谱列表 end -->
-		<!-- 购物车 -->
-		<view class="shopcart justify-between" v-if="menuDate.length > 0">
-			<view class="flex align-center">
-				<view class="carCon">
-					<image src="../../static/image/meal/car.png" mode="" class="carImg"></image>
-					<view class="cu-tag badge">3</view>
-				</view>
-				<view class="price">¥54</view>
-			</view>
-			<view>
-				<button class="cu-btn bg-gray bg-cyan round">去结算</button>
-			</view>
-		</view>
 		<!-- 今日歇业 -->
 		<view class="blankContent" v-if="menuDate.length == 0">
 			<image class="img" src="../../static/image/meal/blank.png"></image>
@@ -111,10 +93,10 @@
 				暂不对外营业</view>
 		</view>
 		<!-- 店铺公告 -->
-		<view class="cu-modal bottom-modal" :class="modalName=='shopNoticeModal'?'show':''">
+		<view class="cu-modal bottom-modal" style="z-index: 1112;" :class="modalName=='shopNoticeModal'?'show':''">
 			<view class="cu-dialog shopNoticeDialog">
 				<view class="top" @tap="hideModal">
-					<view class="txt text-cut">水秀餐厅（长逸路15号院区B区西边B区西</view>
+					<view class="txt text-cut text-left">{{storeInfo.name}}</view>
 					<view class="cuIcon-close"></view>
 				</view>
 				<view class="content">
@@ -122,39 +104,31 @@
 						<image class="nImg" src="../../static/image/meal/notice.png"></image>店铺公告
 					</view>
 					<scroll-view scroll-y="true" class="txt">
-						公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容。公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公容
+						{{storeInfo.notice}}
 					</scroll-view>
 				</view>
 			</view>
 		</view>
 		<!-- 菜肴详情 -->
-		<view class="cu-modal drawer-modal justify-end" :class="modalName=='DrawerModalR'?'show':''" @tap="hideModal">
+		<view class="cu-modal drawer-modal justify-end" style="z-index: 1112;" :class="modalName=='DrawerModalR'?'show':''">
 			<view class="cu-dialog basis-lg foodDescDiv">
 				<scroll-view scroll-y="true" class="foodDescScroll">
 					<view class="headImg">
-						<image class="foodImg" src="../../static/image/meal/default.png" mode="scaleToFill"></image>
+						<image class="foodImg" src="../../static/image/meal/default.png" lazy-load="true" mode="scaleToFill"></image>
 						<image @tap.stop="hideModal" class="closeImg" src="../../static/image/meal/close.png"></image>
 					</view>
 					<view class="foodDesWrap">
-						<view class="name text-bold">西红柿炒土鸡蛋在菜品详情中将菜品名称全部显示</view>
+						<view class="name text-bold">{{proDetailInfo.name}}</view>
 						<view class="hd">
 							<view class="L flex align-center">
-								<view class="num">还剩10份</view>
-								<view>¥<text class="price">19</text></view>
-								<view class="tag">建议少食</view>
+								<view class="num">还剩{{detailFood.surplus}}份</view>
+								<view>¥<text class="price">{{proDetailInfo.price}}</text></view>
+
 							</view>
-							<view class="flex align-center">
-								<view class="cart-decrease">
-									<text class="iconfont icon-jianshao"></text>
-								</view>
-								<view class="cart-count">1</view>
-								<view class="cart-add" @click.stop="addCart">
-									<text class="iconfont icon-jia"></text>
-								</view>
-							</view>
+							<cartcontrol @add="addFood" @decrease="decreaseFood" :foodInfo="detailFood"></cartcontrol>
 						</view>
-						<view class="desc">西红柿炒土鸡蛋商品详情介绍西红柿炒土鸡蛋商品详情介绍西红柿炒土鸡蛋商品详情介绍</view>
-						<!-- 营养成分 -->
+						<view class="desc">{{proDetailInfo.productIntr}}</view>
+
 						<view>
 							<view class="f18 c-2a pb20 pt32 text-bold">营养成分</view>
 							<view class="cu-list menu nutritionList">
@@ -164,7 +138,7 @@
 										<text>能量</text>
 									</view>
 									<view class="action">
-										<text>1000 kcl</text>
+										<text>{{proDetailInfo.energy}} kcl</text>
 									</view>
 								</view>
 								<view class="cu-item">
@@ -173,7 +147,7 @@
 										<text>蛋白质</text>
 									</view>
 									<view class="action">
-										<text>90 kcl</text>
+										<text>{{proDetailInfo.protein}} g</text>
 									</view>
 								</view>
 								<view class="cu-item">
@@ -182,7 +156,7 @@
 										<text>脂肪</text>
 									</view>
 									<view class="action">
-										<text>100 kcl</text>
+										<text>{{proDetailInfo.fat}} g</text>
 									</view>
 								</view>
 								<view class="cu-item">
@@ -191,77 +165,115 @@
 										<text>碳水化合物</text>
 									</view>
 									<view class="action">
-										<text>90 kcl</text>
+										<text>{{proDetailInfo.carbohydrate}} g</text>
 									</view>
 								</view>
-								<view class="cu-item">
+								<view class="cu-item" v-for="(item,index) in proDetailInfo.nutritionList" v-if="moreNutrients">
 									<view class="content">
 										<image class="nutritionImg" src="../../static/image/meal/nutrition5.png"></image>
-										<text>钙</text>
+										<text>{{item.name}}</text>
 									</view>
 									<view class="action">
-										<text>1000 kcl</text>
+										<text>{{item.value}} {{item.unit}}</text>
 									</view>
 								</view>
 							</view>
-							<view class="text-center">
-								<button class="cu-btn round">查看更多</button>
+							<view class="text-center" v-if="proDetailInfo.nutritionList.length > 0">
+								<button class="cu-btn round" @tap="lookMoreTap">{{moreNutrients ? '收起' : '查看更多'}}</button>
 							</view>
 						</view>
-						<!-- 配料组成 -->
-						<view>
+
+						<view v-if="proDetailInfo.foodList.length > 0">
 							<view class="f18 c-2a pb20 pt32 text-bold">配料组成</view>
-							<view class="f14 c-4a pb15">西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿西红柿</view>
-							<view class="f14 c-4a pb15">鸡蛋</view>
-							<view class="f14 c-4a pb15">绿绿的小葱</view>
+							<view class="f14 c-4a pb15" v-for="(item,index) in proDetailInfo.foodList">{{item.name}}</view>
 						</view>
-						<!-- end -->
+
 					</view>
 				</scroll-view>
 			</view>
 		</view>
+		<!-- 购物车列表面板 start -->
+		<view class="shopcartPanel cu-modal bottom-modal" :class="shopcartPanelShow?'show':''" @tap="hideList">
+			<view class="cu-dialog">
+				<view class="cu-bar">
+					<view class="f18 c-2a">已选商品</view>
+					<view class="emptyBox flex" @tap="empty">
+						<image src="../../static/image/meal/empty.png" class="img"></image>
+						<text>清空</text>
+					</view>
+				</view>
+				<scroll-view scroll-y="true" class="content">
+					<scroll-view scroll-x class="nav dateCard text-left" scroll-with-animation :scroll-left="scrollCartLeft">
+						<view class="cu-item" :class="index==shopcartCur?'cur':''" v-for="(item,index) in selectFoods" :key="index"
+						 @tap.stop="tabCartSelect" :data-id="index">
+							{{item.orderDate.replace(/\"/g,'') | filtersDate}}<text class="week">{{item.orderDate.replace(/\"/g,'') | filtersWeek}}</text>
+						</view>
+					</scroll-view>
+					<view v-for="(item,index) in selectFoods" :key="index" v-if="shopCartRepCur == index">
+						<block v-for="(rep,repIndex) in item.repeatList" :key="repIndex">
+							<view class="repastName">- {{rep.repeatName.replace(/\"/g,'')}} -</view>
+							<view class="flex align-center shopCartItem" v-for="(food,idex) in rep.food">
+								<image class="img" src="../../static/image/meal/default.png"></image>
+								<view class="mealCon ovh flex1">
+									<view class="text-cut">{{food.name}}</view>
+									<view class="flex align-center justify-between">
+										<view class="price">¥{{food.price}}</view>
+										<cartcontrol @add="addFood" @decrease="decreaseFood" :foodInfo="food"></cartcontrol>
+									</view>
+								</view>
+							</view>
+							<!-- 一个菜 end -->
+						</block>
+						<!-- 一个餐次 end -->
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+		<!-- 购物车列表面板 end -->
+		<!-- 购物车底部 -->
+		<view class="shopcart justify-between" @click="toggleList">
+			<view class="flex align-center">
+				<view class="carCon">
+					<image src="../../static/image/meal/car.png" mode="" class="carImg"></image>
+					<view class="cu-tag badge">{{totalCount}}</view>
+				</view>
+				<view class="price" v-show="totalPrice">¥{{totalPrice}}</view>
+			</view>
+			<view @tap.stop="submitOrder">
+				<button class="cu-btn round" :disabled="totalCount==0" :class="totalCount>0 ? 'bg-cyan' : 'bg-gray'">去结算</button>
+			</view>
+		</view>
 		<!-- end -->
+		<m-loading></m-loading>
 	</view>
 </template>
 
 <script>
+	import {
+		formatDate,
+		getWeek,
+		groupBy
+	} from '../../common/util.js'
+	import mLoading from '../../components/m-loading.vue'
+	import cartcontrol from '../../components/cartcontrol/cartcontrol.vue'
 	export default {
+		components: {
+			mLoading,
+			cartcontrol
+		},
 		data() {
 			return {
 				modalName: null,
 				TabCur: 0,
 				scrollLeft: 0,
-				dateList: [{
-						orderDate: '11/27'
-					},
-					{
-						orderDate: '11/28'
-					},
-					{
-						orderDate: '11/29'
-					},
-					{
-						orderDate: '11/30'
-					},
-					{
-						orderDate: '12/01'
-					},
-					{
-						orderDate: '12/02'
-					}
-				],
-				mealTimesCur: 0,
+				dateList: [],
+
+				shopcartCur: 0,
+				scrollCartLeft: 0,
+
+				mealRepastCur: 0, //当前餐次
 				scrollMLeft: 0,
-				mealTimesList: [{
-					id: 1,
-					name: '早餐'
-				}, {
-					id: 2,
-					name: '午餐'
-				}, {
-					id: 3,
-					name: '晚餐'
-				}],
+
 				menuDate: [1.2],
 				currentLeft: 0, //左侧选中的下标
 				mainCur: 0,
@@ -271,165 +283,354 @@
 				distance: 0, //记录scroll-view滚动过程中距离顶部的高度
 
 				scrollTop: 0, //到顶部的距离
-				leftText: [{
-						id: 1,
-						title: '选项一'
-					},
-					{
-						id: 2,
-						title: '选项二选项二'
-					},
-					{
-						id: 3,
-						title: '选项三'
-					},
-					{
-						id: 4,
-						title: '选项四'
-					},
-					{
-						id: 5,
-						title: '选项五'
-					},
-					{
-						id: 6,
-						title: '选项六'
-					},
-					{
-						id: 7,
-						title: '选项七'
-					}
-				],
-				rightData: [{
-						id: 1,
-						title: '选项一',
-						content: [{
-								title: "清蒸鸡胸肉+新鲜时蔬炒莜面+海鲜蛤蜊蒸鸡蛋+紫菜蛋花汤"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 2,
-						title: '选项二',
-						content: [{
-								title: "产品一"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 3,
-						title: '选项三',
-						content: [{
-								title: "产品一"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 4,
-						title: '选项四',
-						content: [{
-								title: "产品一"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 5,
-						title: '选项五',
-						content: [{
-								title: "产品一"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 6,
-						title: '选项六',
-						content: [{
-								title: "产品一"
-							},
-							{
-								title: "产品二"
-							},
-							{
-								title: "产品三"
-							},
-							{
-								title: "产品四"
-							},
-						]
-					},
-					{
-						id: 7,
-						title: '选项七',
-						content: [{
-							title: "选项七产品一"
-						}]
-					}
-				],
 				food_detail_mask: false,
 				foodClass: '',
+				storeInfo: {
+					logo: '',
+					name: '',
+					notice: '',
+					orderDate: [],
+					phone: ''
+				},
+				storeId: '', //门店id
+				defaultDate: '',
+				menuList: [], //具体食谱数据，通过parentId区分
+				drawerFoodModal: null,
+				proDetailInfo: {}, //菜肴详情
+				detailFood: {}, //当前菜肴传到详情页
+				moreNutrients: false, //更多营养成分
+				selectSetFoods: [], //选中的菜肴
+				cartSelectSetFoods: [], //购物车中数据
+				fold: false, // 购物车底部弹框
+				shopCartRepCur: 0,
+
 			};
 		},
-		created() {
-			this.selectHeight();
+		onLoad(options) {
+			this.storeInfoObj(options.id);
+			this.storeId = options.id;
+			// this.$showLoading(true)
+			// setTimeout(() => {
+			// 	this.$showLoading(false)
+			// }, 2000)
+		},
+		computed: {
+			currentMenuList() {
+				// for (let j = 0; j < this.menuList.length; j++) {
+				// 	if (
+				// 		this.menuList[j].parentId ==
+				// 		this.currentModuleId + '_' + this.currentRepastId
+				// 	) {
+				// 		return this.menuList[j]
+				// 	}
+				// }
+				// return {}
+				return this.menuList;
+			},
+			selectFoods() {
+				let singleDataArr = [];
+				if (this.selectSetFoods.length == 0) {
+					return []
+				}
+				let orderDayModeGroup = groupBy(this.selectSetFoods, (food) => {
+					return food.orderDay
+				});
+
+				for (let orderDay in orderDayModeGroup) {
+					let module = {
+						orderDate: orderDay,
+						repeatList: []
+					};
+					let repastIdGroup = groupBy(orderDayModeGroup[orderDay], (food) => {
+						return food.repastName
+					})
+					console.log(repastIdGroup)
+					for (let index in repastIdGroup) {
+						let repeat = {
+							repeatName: index,
+							food: repastIdGroup[index]
+						}
+						module.repeatList.push(repeat)
+					}
+					singleDataArr.push(module)
+					return singleDataArr
+				}
+			},
+			shopcartPanelShow() {
+				if (!this.totalCount) {
+					this.fold = true;
+					return false;
+				}
+				let show = !this.fold;
+				return show;
+			},
+			totalCount() {
+				let count = 0
+				if (this.selectSetFoods.length == 0) return 0
+				this.selectSetFoods.forEach(food => {
+					count += food.count
+				})
+				return count
+			},
+			totalPrice() {
+				// debugger
+				let total = 0
+				if (this.selectSetFoods.length == 0) return ''
+				this.selectSetFoods.forEach(food => {
+					total += food.price * food.count
+				})
+				return total
+			},
+			newOrderDate() {
+				if (!this.storeInfo.orderDate) return {}
+
+				let dateArr = []
+				for (let i = 0; i < this.storeInfo.orderDate.length; i++) {
+					var item = this.storeInfo.orderDate[i]
+					dateArr.push({
+						date: item,
+						dateStr: formatDate(new Date(item), 'MM/dd'),
+						week: getWeek(item)
+					})
+				}
+				return dateArr
+			},
+		},
+		filters: {
+			filtersDate(time) {
+				let _date = formatDate(new Date(time), 'MM/dd')
+				return _date
+			},
+			filtersWeek(time) {
+				let _date = formatDate(new Date(time), 'yyyy-MM-dd')
+				return getWeek(_date)
+			},
 		},
 		methods: {
+			fnCartLoad() {
+				let singleDataArr = [];
+				if (this.selectSetFoods.length == 0) {
+					return []
+				}
+				debugger
+				let orderDayModeGroup = groupBy(this.selectSetFoods, (food) => {
+					return food.orderDay
+				});
+
+				// debugger
+				// 				let orderDayModeGroup =new Map();
+				// 				this.selectSetFoods.forEach(n=>{
+				// 					if(!orderDayModeGroup.has(n.orderDay)){
+				// 						orderDayModeGroup.set(n.orderDay,[n]);
+				// 					}else{
+				// 						let arr = orderDayModeGroup.get(n.orderDay);
+				// 						arr.push(n);
+				// 						orderDayModeGroup.set(n.orderDay,arr);
+				// 					}
+
+				// 				})
+				// 				orderDayModeGroup.forEach(function(value,key){
+				// 　　　　　　　　　　　　console.log(value,key);
+				// 　　　　　　　　　　});
+
+				// console.log(this.selectSetFoods)
+				// console.log(orderDayModeGroup)
+				// debugger
+				for (let orderDay in orderDayModeGroup) {
+					let module = {
+						orderDate: orderDay,
+						repeatList: []
+					};
+					let repastIdGroup = groupBy(orderDayModeGroup[orderDay], (food) => {
+						return food.repastName
+					})
+					console.log(repastIdGroup)
+					for (let index in repastIdGroup) {
+						let repeat = {
+							repeatName: index,
+							food: repastIdGroup[index]
+						}
+						module.repeatList.push(repeat)
+					}
+					singleDataArr.push(module)
+					console.log('购物车数据')
+					console.log(singleDataArr)
+				}
+				this.cartSelectSetFoods = singleDataArr
+
+			},
+			//获取门店信息
+			async storeInfoObj(id) {
+				this.$Api.storeInfo(id).then(res => {
+					let data = res.data;
+					this.storeInfo.logo = data.logo
+					this.storeInfo.name = data.name
+					this.storeInfo.notice = data.notice
+					this.storeInfo.orderDate = data.orderDate
+					this.storeInfo.phone = data.phone
+					this.defaultDate = data.orderDate[0]
+					this.storeMenu()
+				}, err => {})
+			},
+			//选择日期
+			tabSelect(e) {
+				let _date = e.currentTarget.dataset.date;
+				this.defaultDate = _date
+				this.storeMenu()
+				this.TabCur = e.currentTarget.dataset.id;
+				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
+
+			},
+			//获取菜谱列表
+			storeMenu() {
+				let params = {
+					storeId: this.storeId,
+					date: this.defaultDate
+				}
+				this.$Api.storeMenu(params).then(res => {
+					let tempMenu = res.data;
+					this.menuList = tempMenu.typeList;
+					this.mealRepastCur = tempMenu.typeList[0].typeId;
+					tempMenu.typeList.forEach(v => {
+						v.categoryList.forEach(m => {
+							m.productList.forEach(n => {
+								n.orderDay = tempMenu.dateValue
+								n.cid = n.productId
+								n.categoryValue = m.categoryId
+								n.serviceType = v.typeId
+								n.count = 0
+
+								n.repastName = v.type
+							})
+						})
+					})
+					this.menuList = tempMenu.typeList
+					console.log(this.menuList)
+					this.selectHeight();
+				}, err => {})
+			},
+			//获取菜肴详情
+			productDetail(food) {
+				this.modalName = 'DrawerModalR';
+				let params = {
+					prodoctId: food.productId
+				}
+				this.$Api.productDetail(params).then(res => {
+					this.proDetailInfo = res.data
+				}, err => {})
+				this.detailFood = food
+			},
+			//单选加一
+			addFood(food) {
+				// debugger
+				// console.log(this.selectSetFoods)
+				this.updateMenuList(food);
+				let filterGoods = this.selectSetFoods.filter(n =>
+					n.serviceType == food.serviceType &&
+					n.productId == food.productId);
+				// debugger
+				if (filterGoods && filterGoods.length > 0) {
+					// filterGoods todo 循环
+					filterGoods[0].count = food.count
+					filterGoods[0].surplus = food.surplus
+				} else {
+					this.selectSetFoods.push(food)
+				}
+				// this.fnCartLoad();
+				// debugger
+				console.log('addFood数量为：' + food.count)
+			},
+			//单选减一
+			decreaseFood(food) {
+				// debugger
+				this.updateMenuList(food);
+				let filterGoods = this.selectSetFoods.filter(n =>
+					n.serviceType == food.serviceType &&
+					n.productId == food.productId);
+				if (filterGoods.length > 0) {
+					filterGoods[0].count = food.count
+					filterGoods[0].surplus = food.surplus
+					if (food.count == 0) {
+						// debugger
+						let itemIndex = this.selectSetFoods.findIndex(n =>
+							n.serviceType == food.serviceType &&
+							n.productId == food.productId);
+						if (itemIndex != -1) {
+							this.selectSetFoods.splice(itemIndex, 1)
+						}
+					}
+				}
+			},
+			//更新菜谱数据
+			updateMenuList(food) {
+				let rIndex = this.menuList.findIndex(n => n.typeId == food.serviceType)
+				if (rIndex != -1) { //找到了餐
+					this.menuList[rIndex].categoryList.forEach(n => {
+						let foodIndex = n.productList.findIndex(n => n.productId == food.productId)
+						if (foodIndex != -1) {
+							n.productList[foodIndex].count = food.count;
+							n.productList[foodIndex].surplus = food.surplus;
+							return
+						}
+
+					})
+
+				}
+			},
+			//清空购物车
+			empty() {
+				var _this = this;
+				uni.showModal({
+					content: '清空购物车？',
+					cancelText: '取消',
+					confirmText: '清空',
+					success: function(res) {
+						if (res.confirm) {
+							_this.selectFoods.forEach(food => {
+								food.count = 0
+							})
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+				});
+			},
+			//购物车弹起面板
+			toggleList() {
+				if (!this.totalCount) {
+					return
+				}
+				this.fold = !this.fold
+			},
+			hideList() {
+				this.fold = !this.fold
+			},
+			// 拨打电话
+			makePhoneCall() {
+				uni.makePhoneCall({
+					phoneNumber: this.storeInfo.phone,
+					success: () => {
+						console.log("成功拨打电话")
+					}
+				})
+			},
+			lookMoreTap() {
+				this.moreNutrients = !this.moreNutrients
+			},
 			showModal(e) {
-				this.modalName = e.currentTarget.dataset.target
+				let val = e.currentTarget.dataset.target
+				if (val) this.modalName = null
+				this.modalName = val
 			},
 			hideModal(e) {
 				this.modalName = null
 			},
-			tabSelect(e) {
-				this.TabCur = e.currentTarget.dataset.id;
-				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
+			tabCartSelect(e) {
+				this.shopcartCur = e.currentTarget.dataset.id;
+				this.scrollCartLeft = (e.currentTarget.dataset.id - 1) * 60
 			},
 			mealTimeSelect(e) {
-				this.mealTimesCur = e.currentTarget.dataset.id;
+				this.mealRepastCur = e.currentTarget.dataset.id;
 				this.scrollMLeft = (e.currentTarget.dataset.id - 1) * 60
 			},
 			// 菜谱
@@ -490,12 +691,27 @@
 				// 	url: './food'
 				// })
 			},
+			submitOrder() {
+				uni.navigateTo({
+					url: `../confirmOrder/confirmOrder?storeId=${this.storeId}`
+				})
+			}
 		},
 
 	}
 </script>
 
 <style lang="scss">
+	.cu-custom .cu-bar {
+		&.bg-hyaline {
+			padding-top: 66rpx;
+
+			.content {
+				top: 66rpx;
+			}
+		}
+	}
+
 	page {
 		background: #FFFFFF;
 		width: 100%;
@@ -504,8 +720,12 @@
 	}
 
 	.response {
-		filter: blur(4px);
-		height: 160rpx;
+		// background: #EFA720;
+		display: block;
+		filter: blur(2px);
+		// height: 160rpx;
+		height: 240rpx;
+		overflow: hidden;
 	}
 
 	.topWrapper {
@@ -524,6 +744,7 @@
 		color: #2A2A2A;
 		position: absolute;
 		top: -95rpx;
+		width: calc(100% - 56rpx);
 
 		.logoImg {
 			width: 120rpx;
@@ -634,12 +855,13 @@
 	// 菜谱列表 578rpx
 	.verticalBox {
 		display: flex;
-		height: calc(100vh - 160rpx - 96rpx - 120rpx - 62rpx - 32rpx - 108rpx);
+		// height: calc(100vh - 160rpx - 96rpx - 120rpx - 62rpx - 32rpx - 108rpx);
 
 		.VerticalNav.nav {
 			width: 180rpx;
-			height: calc(100vh - 578rpx);
+			// height: calc(100vh - 578rpx);
 			white-space: initial;
+			background: #FAFAFA;
 		}
 
 		.VerticalNav.nav .cu-item {
@@ -680,7 +902,7 @@
 
 		.VerticalMain {
 			flex: 1;
-			height: calc(100vh - 578rpx);
+			// height: calc(100vh - 578rpx);
 
 			.title {
 				font-size: 30rpx;
@@ -693,6 +915,10 @@
 					display: flex;
 					margin: 0 0 36rpx;
 					position: relative;
+
+					&:last-child {
+						margin: 0;
+					}
 
 					.panel_left {
 						position: relative;
@@ -753,30 +979,6 @@
 									font-size: 36rpx;
 								}
 							}
-
-							.cartcontrol-wrapper {
-								display: flex;
-								align-items: center;
-
-								.iconfont {
-									font-size: 48rpx;
-									color: #4EC09B;
-								}
-
-								.soldOut {
-									display: none;
-
-									.iconfont {
-										color: #D6D6D6;
-									}
-								}
-
-								.cart-count {
-									font-size: 32rpx;
-									color: #4A4A4A;
-									padding: 4rpx 16rpx 0;
-								}
-							}
 						}
 					}
 				}
@@ -784,13 +986,40 @@
 		}
 	}
 
+	.cartcontrol-wrapper {
+		display: flex;
+		align-items: center;
+
+		.iconfont {
+			font-size: 48rpx;
+			color: #4EC09B;
+		}
+
+		.soldOut {
+			display: none;
+
+			.iconfont {
+				color: #D6D6D6;
+			}
+		}
+
+		.cart-count {
+			font-size: 32rpx;
+			color: #4A4A4A;
+			padding: 4rpx 16rpx 0;
+		}
+	}
+
 	//购物车
 	.shopcart {
+		position: relative;
+		z-index: 1111;
 		height: 108rpx;
-		box-sizing: border-box;
+		overflow: hidden;
+		// box-sizing: border-box;
 		background: #FFFFFF;
 		padding: 0 28rpx;
-		border-top: 2rpx solid #F2F2F2;
+		border-top: 1rpx solid #F2F2F2;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -806,7 +1035,7 @@
 			.cu-tag.badge:not([class*="bg-"]) {
 				background: #FF4D23;
 				font-size: 26rpx;
-				padding: 10rpx 8rpx;
+				padding: 12rpx 8rpx 8rpx;
 			}
 
 			.cu-tag.badge {
@@ -825,7 +1054,7 @@
 			font-size: 32rpx;
 			height: 80rpx;
 			padding: 0 56rpx;
-			margin-top: -6rpx;
+			// margin-top: -6rpx;
 		}
 
 		.bg-gray {
@@ -916,7 +1145,7 @@
 			.closeImg {
 				position: absolute;
 				right: 50rpx;
-				top: 50rpx;
+				top: 160rpx;
 				width: 70rpx;
 				height: 70rpx;
 			}
@@ -970,10 +1199,6 @@
 
 				.iconfont {
 					font-size: 48rpx;
-					color: #4EC09B;
-				}
-				.icon-jianshao{
-					color: #D6D6D6;
 				}
 			}
 
@@ -1018,6 +1243,7 @@
 				background: #F4F4F4;
 				padding: 0 40rpx;
 				margin-top: 8rpx;
+				height: 60rpx;
 			}
 		}
 	}
@@ -1026,5 +1252,91 @@
 		min-width: 100%;
 		width: 100%;
 		background-color: #FFFFFF;
+	}
+
+	// 购物车面板
+	.shopcartPanel {
+		.cu-dialog {
+			height: 900rpx;
+			padding-bottom: 108rpx;
+		}
+
+		.cu-bar {
+			padding: 32rpx 28rpx;
+			min-height: auto;
+		}
+
+		.emptyBox {
+			font-size: 28rpx;
+			color: #6A6A6A;
+
+			.img {
+				width: 36rpx;
+				height: 36rpx;
+				margin-right: 8rpx;
+				margin-top: 2rpx;
+			}
+		}
+
+		.content {
+			padding: 0 28rpx;
+			height: 680rpx;
+
+			.dateCard {
+				padding: 0 0 12rpx;
+
+				.cu-item {
+					height: auto;
+					line-height: normal;
+					font-size: 26rpx;
+					color: #4EC09B;
+					border: 2rpx solid #4EC09B;
+					border-radius: 8rpx;
+					padding: 11rpx 20rpx;
+					margin: 0 20rpx 0 0;
+
+					.week {
+						padding-left: 8rpx;
+					}
+
+					&.cur {
+						border-bottom: none;
+						background: #4EC09B;
+						color: #FFFFFF;
+					}
+				}
+			}
+
+			.repastName {
+				font-size: 32rpx;
+				color: #4A4A4A;
+				padding: 20rpx 0 24rpx;
+				text-align: left;
+			}
+
+			.shopCartItem {
+				margin-bottom: 24rpx;
+
+				.img {
+					width: 100rpx;
+					height: 100rpx;
+					border-radius: 8rpx;
+					margin-right: 24rpx;
+				}
+
+				.text-cut {
+					font-size: 28rpx;
+					color: #2A2A2A;
+					text-align: left;
+					padding-bottom: 20rpx;
+				}
+
+				.price {
+					font-size: 32rpx;
+					color: #FF4D23;
+				}
+			}
+		}
+
 	}
 </style>

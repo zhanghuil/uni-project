@@ -2,23 +2,15 @@
  * 小程序配置文件
  */
 
-//  接口域名
-const domain = 'https://soa.wincome.group';
 
-var config = {
-  //接口列表
-  api: {
-    /* 用户相关 */
-    GetStaffInfo: `${domain}/staffOrderWxApi/api/StaffOrder/GetStaffInfo`, //用户信息
+let url_config = ""
 
-    /* 菜谱相关 */
-  },
-  // 获取接口方法
-  getAPI(key) {
-    let url;
-    if (config && config.api) url = config.api[key]
-    return url
-  }
-};
+if (process.env.NODE_ENV === 'development') {
+	// 开发环境
+	url_config = 'http://192.172.2.78:3915'
+} else {
+	// 生产环境
+	url_config = 'https://soa.wincome.group'
+}
 
-module.exports = config
+export default url_config

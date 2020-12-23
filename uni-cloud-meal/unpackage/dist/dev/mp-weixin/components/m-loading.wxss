@@ -1,0 +1,49 @@
+
+.loadingBox {
+	width: 100%;
+	height: 100vh;
+	background-color: rgba(255, 255, 255, 1);
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 10000;
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-webkit-justify-content: center;
+	        justify-content: center;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	        align-items: center;
+}
+.loadingBox .rotateImg {
+	margin-bottom: 40px;
+	width: 180rpx;
+	height: 180rpx;
+}
+.rotateImg {
+	-webkit-animation: rotateImg 2s ease-in-out infinite;
+	        animation: rotateImg 2s ease-in-out infinite;
+}
+@-webkit-keyframes rotateImg {
+from {
+		-webkit-transform: rotate(0deg);
+		        transform: rotate(0deg)
+}
+to {
+		-webkit-transform: rotate(360deg);
+		        transform: rotate(360deg)
+}
+}
+@keyframes rotateImg {
+from {
+		-webkit-transform: rotate(0deg);
+		        transform: rotate(0deg)
+}
+to {
+		-webkit-transform: rotate(360deg);
+		        transform: rotate(360deg)
+}
+}
+

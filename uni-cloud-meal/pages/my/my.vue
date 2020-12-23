@@ -1,43 +1,20 @@
 <template>
 	<view>
-		<!-- 职工 -->
-		<view class="header">
+		<!-- 职工头部 -->
+		<view class="header" v-if="type == 1">
 			<view class="imgBox">
 				<image class="img" src="../../static/image/sex0.png"></image>
 			</view>
 			<view class="desc">
 				<view class="flex align-center justify-between">
-					<view class="name">张丹</view>
-					<view class="edit">退出登录</view>
+					<view class="name">{{name}}</view>
+					<view class="edit" @click="quitTap">退出登录</view>
 				</view>
-				<view class="hos">上海交通大学附属新华医院</view>
+				<view class="hos">{{company}}</view>
 			</view>
 		</view>
-		<view class="card-menu">
-			<view class="cu-item">
-				<view>
-					<view class="txt"><text class="pr10">部门：</text>本部 后勤科</view>
-					<view class="txt"><text class="pr10">手机：</text>{{getPhone}}</view>
-				</view>
-				<image class="img" src="../../static/image/card.png"></image>
-			</view>
-			<view class="cu-item" @click="rechargeTap">
-				<view class="cardTxt">
-					<view class="L">我的职工卡<text class="cuIcon-right"></text></view>
-					<view>查看卡余，在线充值</view>
-				</view>
-				<image src="../../static/image/bg1.png" class="bg-img"></image>
-			</view>
-			<view class="cu-item" @click="infoTap">
-				<view class="cardTxt">
-					<view class="L">完善健康信息<text class="cuIcon-right"></text></view>
-					<view>为您提供科学的营养推荐</view>
-				</view>
-				<image src="../../static/image/bg2.png" class="bg-img"></image>
-			</view>
-		</view>
-		<!-- 患者 -->
-		<view class="header">
+		<!-- 患者头部 -->
+		<view class="header" v-else>
 			<view class="imgBox">
 				<open-data style="border-radius:50%;overflow:hidden;display:block;height:140rpx;" type="userAvatarUrl"></open-data>
 				<!--  #ifdef MP-ALIPAY -->
@@ -46,20 +23,51 @@
 			</view>
 			<view class="desc">
 				<view class="flex align-center justify-between">
-					<view class="name"><open-data type="userNickName"></open-data></view>
+					<view class="name">
+						<open-data type="userNickName"></open-data>
+					</view>
 					<view class="edit">退出登录</view>
 				</view>
 				<view class="hos">手机：{{getPhone}}</view>
+			</view>
+		</view>
+		<view class="card-menu">
+			<view class="cu-item" v-if="type == 1">
+				<view>
+					<view class="txt"><text class="pr10">部门：</text>{{department}}</view>
+					<view class="txt"><text class="pr10">手机：</text>{{getPhone}}</view>
+				</view>
+				<image class="img" src="../../static/image/card.png"></image>
+			</view>
+			<view class="cu-item cu-item2" @click="rechargeTap" v-if="type == 1">
+				<view class="cardTxt">
+					<view class="L">我的职工卡<text class="cuIcon-right"></text></view>
+					<view>查看卡余，在线充值</view>
+				</view>
+				<image src="../../static/image/bg1.png" class="bg-img"></image>
+			</view>
+			<view class="cu-item cu-item3" @click="infoTap">
+				<view class="cardTxt">
+					<view class="L">完善健康信息<text class="cuIcon-right"></text></view>
+					<view>为您提供科学的营养推荐</view>
+				</view>
+				<image src="../../static/image/bg2.png" class="bg-img"></image>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import util from '../../common/util.js'
 	export default {
 		data() {
 			return {
-				phone: '17717960463'
+				phone: '',
+				type: 0, //身份类别 0-患者  1-职工
+				name: '',
+				department: '',
+				company: '',
+				cardNumber: ''
 			}
 		},
 		computed: {
@@ -68,26 +76,71 @@
 				return mphone;
 			}
 		},
+		onLoad() {
+			this.personalCenter()
+
+			let dateStr = util.formatDate(new Date('2020-12-17T09:23:54.577Z'), 'yyyy-MM-dd')
+			console.log(dateStr)
+			let week = util.getWeek('2020-12-17')
+			console.log(week)
+		},
 		methods: {
+			personalCenter() {
+				this.$Api.personalCenter().then(res => {
+					let data = res.data;
+					this.type = data.accountType
+					this.phone = data.phone
+					this.name = data.name
+					this.department = data.districtName + ' ' + data.departmentName
+					this.company = data.currentCompanyName
+					this.cardNumber = data.cardNumber
+				}, err => {})
+
+				// this.$Api.personalCenter().then(res => {
+				// 	debugger
+				// }, err => {})
+			},
 			rechargeTap() {
+				if (!this.rechargeTap) {
+					uni.showToast({
+						title: '请联系管理员绑定职工卡',
+						icon: "none"
+					});
+					return
+				}
 				uni.navigateTo({
 					url: './recharge'
 				})
 			},
 			infoTap() {
 				uni.navigateTo({
-					url: './perfectInfo'
+					url: './perfectInfo?from=info'
 				})
 			},
+			quitTap() {
+				var _this = this;
+				uni.showModal({
+					content: '退出登录？',
+					cancelText: '取消',
+					confirmText: '退出',
+					success: function(res) {
+						if (res.confirm) {
+							console.log('用户点击确定');
+							_this.$Api._this().then(res => {
+								//todo
+								console.log('解绑')
+							}, err => {})
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+				});
+			}
 		}
 	}
 </script>
 
 <style lang="scss">
-	page {
-		background: #FFFFFF;
-	}
-
 	.header {
 		display: flex;
 		align-items: center;
@@ -151,8 +204,8 @@
 				margin-top: 14rpx;
 			}
 
-			&:nth-child(2),
-			&:nth-child(3) {
+			&.cu-item2,
+			&.cu-item3 {
 				background-image: linear-gradient(90deg, #9FD9C7 0%, #6ECCAE 100%);
 				color: #FFFFFF;
 				line-height: 1.8;
@@ -179,7 +232,7 @@
 				}
 			}
 
-			&:nth-child(3) {
+			&.cu-item3 {
 				background-image: linear-gradient(90deg, #A2B9E4 0%, #7E9FDB 100%);
 				color: #FFFFFF;
 				line-height: 1.8;

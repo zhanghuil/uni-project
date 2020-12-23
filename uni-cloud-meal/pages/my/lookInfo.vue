@@ -5,7 +5,7 @@
 			<image src="../../static/image/info.png" class="img"></image>
 			<view class="content">
 				<view class="name">能量</view>
-				<view class="c-f f26 text-bold">2000</view>
+				<view class="c-f f26 text-bold">{{energy}}</view>
 				<view class="c-f f16">kcal</view>
 			</view>
 		</view>
@@ -13,21 +13,21 @@
 			<view class="item">
 				<view>蛋白质</view>
 				<view class="numBox c-f f16">
-					<view class="text-bold f20">120.5</view>
+					<view class="text-bold f20">{{protein}}</view>
 					<view>g</view>
 				</view>
 			</view>
 			<view class="item">
 				<view>脂肪</view>
 				<view class="numBox c-f f16">
-					<view class="text-bold f20">45</view>
+					<view class="text-bold f20">{{fat}}</view>
 					<view>g</view>
 				</view>
 			</view>
 			<view class="item">
 				<view>碳水化合物</view>
 				<view class="numBox c-f f16">
-					<view class="text-bold f20">66</view>
+					<view class="text-bold f20">{{carbohydrate}}</view>
 					<view>g</view>
 				</view>
 			</view>
@@ -47,18 +47,45 @@
 	export default {
 		data() {
 			return {
-
+				from: null,
+				id: '',
+				energy: 0,
+				protein: 0,
+				fat: 0,
+				carbohydrate: 0
 			};
 		},
-		methods:{
-			gotIt(){
-				uni.reLaunch({
-				    url: '../home/home'
-				});
+		onLoad(options) {
+			this.recommend()
+			this.from = options.from
+			this.id = options.id
+			console.log(options)
+		},
+		methods: {
+			recommend() {
+				this.$Api.recommend().then(res => {
+					let data = res.data
+					this.energy = data.energy
+					this.protein = data.protein
+					this.fat = data.fat
+					this.carbohydrate = data.carbohydrate
+				}, err => {})
 			},
-			recalculate(){
+			gotIt() {
+				if (!this.id || this.id == "undefined") { //返回个人中心
+					uni.navigateBack({
+						delta: 2
+					})
+				} else { //返回门店主页
+					uni.redirectTo({
+						url: `../home/home?id=${this.id}`
+					});
+				}
+
+			},
+			recalculate() {
 				uni.redirectTo({
-				    url: './perfectInfo'
+					url: './perfectInfo'
 				});
 			}
 		}
@@ -67,7 +94,6 @@
 
 <style lang="scss">
 	page {
-		background: #FFFFFF;
 		padding-bottom: 72rpx;
 	}
 
@@ -128,9 +154,11 @@
 		font-size: 28rpx;
 		color: #4A4A4A;
 		padding: 64rpx 76rpx 196rpx;
-		.item{
+
+		.item {
 			text-align: center;
 		}
+
 		.numBox {
 			margin: 20rpx 0 0;
 			background-image: linear-gradient(-142deg, #FFBE8D 0%, #FFA561 100%);
@@ -138,23 +166,27 @@
 			height: 160rpx;
 			border-radius: 50%;
 			display: flex;
-			flex-direction:column;
+			flex-direction: column;
 			justify-content: center;
 			align-content: stretch;
 		}
 	}
-	.footer{
+
+	.footer {
 		text-align: center;
-		.cu-btn{
+
+		.cu-btn {
 			padding: 0 96rpx;
 			height: 80rpx;
 			font-size: 32rpx;
 		}
-		.bg-gray{
+
+		.bg-gray {
 			color: #C0C0C0;
 			background: none;
 		}
-		.mt18{
+
+		.mt18 {
 			margin-top: 36rpx;
 		}
 	}

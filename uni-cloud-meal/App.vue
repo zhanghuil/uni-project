@@ -18,10 +18,18 @@
 	@import "colorui/icon.css";
 	@import "common/iconfont.css";
 
+	page {
+		background: #FFFFFF;
+	}
+
 	.block10 {
 		background: #FAFAFA;
 		width: 100%;
 		height: 20rpx;
+	}
+
+	.mt12 {
+		margin-top: 24rpx;
 	}
 
 	.mt16 {
@@ -52,6 +60,10 @@
 		padding-bottom: 40rpx;
 	}
 
+	.pb40 {
+		padding-bottom: 80rpx;
+	}
+
 	.white_space_line_2 {
 		text-overflow: -o-ellipsis-lastline;
 		overflow: hidden;
@@ -68,6 +80,17 @@
 		color: #C0C0C0;
 	}
 
+	.cu-btn[disabled] {
+		opacity: 1;
+		background: #C0C0C0;
+		color: #FFFFFF;
+	}
+
+	button[disabled]:not([type]) {
+		background: #C0C0C0;
+		color: #FFFFFF;
+	}
+
 	.f14 {
 		font-size: 28rpx;
 	}
@@ -76,8 +99,20 @@
 		font-size: 30rpx;
 	}
 
+	.f16 {
+		font-size: 32rpx;
+	}
+
 	.f18 {
 		font-size: 36rpx;
+	}
+
+	.c-c0 {
+		color: #C0C0C0;
+	}
+
+	.c-4e {
+		color: #4EC09B;
 	}
 
 	.c-4a {
@@ -98,6 +133,10 @@
 
 	.flex1 {
 		flex: 1;
+	}
+
+	.rel {
+		position: relative;
 	}
 
 	.ovh {

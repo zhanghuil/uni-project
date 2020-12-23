@@ -1,0 +1,2 @@
+<view><view class="text-center"><image class="entryImg" src="../../static/image/entry.png"></image></view><view class="tit">方法一</view><view class="txt">请使用微信扫医院订餐二维码进入订餐</view><view class="tit">方法二</view><view class="txt">通过贵医院微信公众号菜单入口或企业微信等
+		医院指定入口进入订餐</view></view>

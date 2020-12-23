@@ -39,6 +39,7 @@
 					<view class="orderBtn bg-cyan" @tap="showModal" data-target="bottomModal">待支付 09:20</view>
 					<view class="orderBtn bg-cyan">申请退款</view>
 				</view>
+				<uni-countdown :show-day="false" :show-hour="false" :minute="10" :second="00" />
 				<!-- 已取消、已退款 -->
 				<!-- <view class="orderBtnBox2 flex justify-end">
 					<button class="cu-btn">已取消</button>
@@ -82,10 +83,12 @@
 		},
 		methods: {
 			showModal(e) {
+				// uni.hideTabBar()
 				this.modalName = e.currentTarget.dataset.target
 			},
 			hideModal(e) {
 				this.modalName = e
+				// uni.showTabBar()
 			},
 			reselectId(id) {
 				console.log(`父组件接收的支付方式id：${id}`)

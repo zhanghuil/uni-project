@@ -1,0 +1,1 @@
+<view><textarea class="notes_textarea" maxlength="50" placeholder-class="placeholder" placeholder="可输入不超过50个字" data-event-opts="{{[['input',[['__set_model',['','notes','$event',[]]]]]]}}" value="{{notes}}" bindinput="__e"></textarea><view data-event-opts="{{[['tap',[['submitTap',['$event']]]]]}}" class="footer" bindtap="__e"><button class="cu-btn">确定</button></view></view>

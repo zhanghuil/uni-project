@@ -1,0 +1,1 @@
+<view data-event-opts="{{[['tap',[['dismiss',['$event']]]]]}}" hidden="{{!(show)}}" class="loadingBox" bindtap="__e"><image class="rotateImg" src="../static/image/loading.svg"></image></view>

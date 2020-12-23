@@ -1,11 +1,11 @@
 <template>
 	<view class="container">
 		<!-- 轮播图 -->
-		<view class="banner">
+		<view class="banner" v-if="imgs.length>0">
 			<swiper class="bannerswipers" :autoplay="autoplay" :current="currentSwiper" @change="swiperChange">
 				<block v-for="item in imgs" :key="item">
 					<swiper-item>
-						<image :src="item.url"></image>
+						<image :src="item.coverImg" :data-url="item.skipLink" :data-type="item.skipLinkType" @tap="onClickSwiper"></image>
 					</swiper-item>
 				</block>
 			</swiper>
@@ -13,7 +13,7 @@
 			<view class='bannerNum'>{{(currentSwiper+1)}}/{{imgs.length}}</view>
 		</view>
 		<!-- 门店列表 -->
-		<view class="storeBox">
+		<view class="storeBox" v-if="storeList.length > 0">
 			<view class="storeTab flex text-left">
 				<view class="cu-item flex-sub" :class="0==TabCur?'cur':''" @tap="tabSelect" data-id="0">
 					全部门店
@@ -22,95 +22,257 @@
 					经常光顾
 				</view>
 				<view class="cu-item flex-sub" :class="2==TabCur?'cur':''" @tap="tabSelect" data-id="2">
-					门店位置<text class="icon cuIcon-unfold"></text>
+					门店位置<text class="icon cuIcon-unfold" @tap.stop="dropDown"></text>
+				</view>
+			</view>
+			<!-- 门店区域 -->
+			<view class="areaBox" :animation="animationData" v-show="areaBoxShow" :class="areaBoxShow ? 'on' : ''">
+				<view class="item" :data-id="item.id" @tap="selectAreaTap" :class="areaCur==item.id?'on':''" v-for="(item,index) in areaList"
+				 :key="index">{{item.name}}</view>
+			</view>
+			<view class="cu-modal top-modal" :class="modalName=='topModal'?'show':''">
+				<view class="cu-dialog">
+					<view class="cu-bar bg-white">
+						<view class="action text-green">确定</view>
+						<view class="action text-blue" @tap="hideModal">取消</view>
+					</view>
+					<view class="padding-xl">
+						Modal 内容。
+					</view>
 				</view>
 			</view>
 			<!-- 门店列表 -->
 			<view class="storeList">
-				<view class="storeItem" @click="homeTap">
+				<view class="storeItem" @click="homeTap(item.id)" v-for="(item,index) in storeList" :key="index">
 					<view>
-						<image class="item_img" src="../../static/image/default_store.png" mode=""></image>
+						<!-- <image class="item_img" src="../../static/image/default_store.png" mode=""></image> -->
+						<image class="item_img" :src="item.logo"></image>
 					</view>
 					<view class="content ovh">
-						<view class="text-cut">尔美餐厅</view>
+						<view class="text-cut">{{item.name}}</view>
 						<view class="text-loca flex">
-							<image class="icon_img" src="../../static/image/icon0.png"></image>浦东院区<image class="icon_img icon_img1" src="../../static/image/icon1.png"></image>月售&nbsp;51
+							<image class="icon_img" src="../../static/image/icon0.png"></image>{{item.districtName}}
+							<image class="icon_img icon_img1" src="../../static/image/icon1.png"></image>月售&nbsp;{{item.monthSale}}
 						</view>
 						<view class="itemFoot">
 							<view class="desc">
-								<text class="iconfont icon-yinhao"></text>正宗川菜，值得光临
-								<text class="iconfont icon-quote-right"></text>
+								<view class="iconfont icon-yinhao"></view>
+								<view class="text-cut">{{item.slogan}}</view>
+								<view class="iconfont icon-quote-right"></view>
 							</view>
 						</view>
 					</view>
 				</view>
 				<!-- item -->
-				<view class="text-center lookAllBox">
+				<!-- <view class="text-center lookAllBox">
 					<text class="lookAllStore">查看全部门店</text>
-				</view>
+				</view> -->
 			</view>
 		</view>
-		<view class="block10"></view>
+
 		<!-- 营养科普 -->
-		<view class="articleTitle">营养科普</view>
-		<scroll-view scroll-x class="bg-white nav articleNav" scroll-with-animation :scroll-left="scrollLeft">
-			<view class="cu-item" :class="index==TabACur?'cur':''" v-for="(item,index) in articleItem" :key="index" @tap="tabArticle"
-			 :data-id="index">
-				{{item}}
-			</view>
-		</scroll-view>
-		<view class="articleList">
-			<view class="articleItem">
-				<view class="L">
-					<view class="tit white_space_line_2">文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题</view>
-					<view class="flex mt20"><image src="../../static/image/icon2.png" mode=""></image>作者信息</view>
+		<view class="dn">
+			<view class="block10"></view>
+			<view class="articleTitle">营养科普</view>
+			<scroll-view scroll-x class="bg-white nav articleNav" scroll-with-animation :scroll-left="scrollLeft">
+				<view class="cu-item" :class="index==TabACur?'cur':''" v-for="(item,index) in articleItem" :key="index" @tap="tabArticle"
+				 :data-id="index">
+					{{item}}
 				</view>
-				<view class="R">
-					<image class="img" src="../../static/image/default_store.png"></image>
+			</scroll-view>
+			<view class="articleList">
+				<view class="articleItem">
+					<view class="L">
+						<view class="tit white_space_line_2">文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题文章标题</view>
+						<view class="flex mt20">
+							<image src="../../static/image/icon2.png" mode=""></image>作者信息
+						</view>
+					</view>
+					<view class="R">
+						<image class="img" src="../../static/image/default_store.png"></image>
+					</view>
 				</view>
-			</view>
-			<!-- 加载更多 -->
-			<view class="loadMore">
+				<!-- 加载更多 -->
+				<view class="loadMore">
 					<text class="icon cuIcon-loading2 cuIconfont-spin"></text>更多文章载入中</button>
+				</view>
 			</view>
+			<!-- end -->
 		</view>
-		<!-- end -->
+		<m-loading></m-loading>
 	</view>
 </template>
 
 <script>
+	import mLoading from '../../components/m-loading.vue'
 	export default {
+		components: {
+			mLoading
+		},
 		data() {
 			return {
-				imgs: [{
-					url: 'http://demo.sc.chinaz.com/Files/DownLoad/webjs1/201801/jiaoben5647/img/1.jpg'
-				}],
+				imgs: [],
 				currentSwiper: 0,
 				autoplay: true,
 				TabCur: 0,
 				articleItem: ['高血糖', '心脑血管', '肿瘤', '术后康复', '孕妇', '冠心病', '脂肪肝'],
-				TabACur: 0,
-				scrollLeft: 0
-
+				TabACur: 0, //默认全部
+				scrollLeft: 0,
+				storeList: [],
+				areaList: [],
+				areaCur: '',
+				areaBoxShow: false,
+				modalName: ''
 			}
 		},
 		created() {
+			// this.$showLoading(true)
+			//todo
+			let tit = this.$store.state.setCompanyTit || '医院营养云订餐'
 			uni.setNavigationBarTitle({
-				title: '云订餐'
+				title: tit
 			})
 		},
+		onLoad(options) {
+			// options.HosId = '2D27DCE7CA88417992C164B0D46AA89C'
+			let companyID = options.HosId // 单位id  companyID
+			if (companyID) this.$store.commit('setCompanyID', companyID)
+			this.isWechat(companyID) //是否登录
+		},
 		methods: {
-			homeTap(){
-				uni.navigateTo({
-					url: '../home/home'
-				})
+			isWechat(companyID) {
+				var _this = this;
+				uni.login({
+					success: function(res) {
+						console.log(`获取到的code：${res.code}`);
+						// return
+						let params = {
+							jsCode: res.code,
+							companyId: companyID
+						}
+						// return
+						_this.$Api.isWechat(params).then(res => {
+							// console.log(res.data.expiresIn) //有效期(秒)
+							// console.log(res.data.accessToken)
+							uni.setStorageSync('token', res.data.accessToken)
+							_this.storeLocation()
+							_this.store()
+							_this.getBanner()
+						}, err => {})
+					}
+				});
+			},
+			//banner
+			getBanner() {
+				this.$Api.getBanner().then(res => {
+					this.imgs = res.data
+				}, err => {})
+			},
+			// 门店位置：全部+区域字典，默认展示全部区域的门店
+			storeLocation() {
+				this.$Api.storeLocation().then(res => {
+					let allArr = [{
+						id: '',
+						name: "全部"
+					}]
+					this.areaList = [...allArr, ...res.data]
+				}, err => {})
+			},
+			// 如果没有访问过的门店数据，则默认展示全部门店的分类，如果有访问过的门店数据，则默认展示经常光顾的分类
+			async store() {
+				let res = await this.$Api.storeOften()
+				if (res.data.length > 0) {
+					this.storeList = res.data
+					this.TabCur = 1
+				} else {
+					this.storeAll()
+				}
+			},
+			storeAll() {
+				this.$Api.storeAll().then(res => {
+					this.storeList = res.data
+				}, err => {})
+			},
+			storeOften() {
+				this.$Api.storeOften().then(res => {
+					this.storeList = res.data
+				}, err => {})
+			},
+			// 选择不同区域
+			selectAreaTap(e) {
+				this.areaCur = e.currentTarget.dataset.id
+				this.storeDistrict()
+				this.areaBoxShow = !this.areaBoxShow
+			},
+			storeDistrict() {
+				this.$Api.storeDistrict({
+					districtId: this.areaCur
+				}).then(res => {
+					this.storeList = res.data
+				}, err => {})
+			},
+			onClickSwiper(e) {
+				const dataset = e.currentTarget.dataset;
+				if (!dataset.url) return
+				this.statisticsHits(dataset.url, dataset.type);
+			},
+			statisticsHits(urlLink, urlType) {
+				// 0-没有链接  1-外链  2-内链
+				if (urlType == '2') { //内链
+					uni.navigateTo({
+						url: `../${urlLink}`
+					})
+				} else {
+					var LinkUrl = encodeURIComponent(urlLink)
+					let type = 'encodeUrl'
+					uni.navigateTo({
+						url: `../d_webview/d_webview?type=${type}&url=${LinkUrl}`
+					})
+				}
+			},
+			//门店详情
+			homeTap(id) {
+				// uni.removeStorageSync('isFirst')
+
+				let isFirst = uni.getStorageSync('isFirst');
+				if (!isFirst) {
+					uni.setStorageSync('isFirst', 1)
+					uni.navigateTo({
+						url: `../my/perfectInfo?id=${id}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `../home/home?id=${id}`
+					})
+				}
 			},
 			swiperChange: function(e) {
 				this.currentSwiper = e.detail.current
 			},
+			// 门店筛选
 			tabSelect(e) {
+				switch (e.currentTarget.dataset.id) {
+					case '0':
+						this.areaBoxShow = false
+						this.storeAll()
+						break;
+					case '1':
+						this.areaBoxShow = false
+						this.storeOften()
+						break;
+					case '2':
+						this.storeDistrict()
+						break;
+				}
+				this.storeList = this.storeList
 				this.TabCur = e.currentTarget.dataset.id;
 			},
+			//展开门店位置
+			dropDown() {
+				this.TabCur = 2
+				this.areaBoxShow = !this.areaBoxShow
+			},
+			// 文章列表
 			tabArticle(e) {
 				this.TabACur = e.currentTarget.dataset.id;
 				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
@@ -120,10 +282,6 @@
 </script>
 
 <style lang="scss">
-	page {
-		background: #FFFFFF;
-	}
-
 	.banner {
 		height: auto;
 		position: relative;
@@ -291,6 +449,9 @@
 			bottom: 6rpx;
 
 			.desc {
+				display: flex;
+				align-items: center;
+
 				.iconfont {
 					margin: 0 10rpx;
 					font-size: 28rpx;
@@ -302,6 +463,12 @@
 				font-size: 24rpx;
 				color: #FDA130;
 				padding: 6rpx 4rpx;
+
+				.text-cut {
+					max-width: 390rpx;
+					font-size: 24rpx;
+					color: #FDA130;
+				}
 			}
 		}
 
@@ -363,11 +530,13 @@
 			.L {
 				font-size: 24rpx;
 				color: #AAAAAA;
-				image{
+
+				image {
 					width: 32rpx;
 					height: 32rpx;
 					margin-right: 4rpx;
 				}
+
 				.tit {
 					font-family: PingFangSC-Medium;
 					font-size: 30rpx;
@@ -390,17 +559,56 @@
 			}
 		}
 	}
-	.loadMore{
+
+	.loadMore {
 		padding: 50rpx 0 10rpx;
 		font-size: 24rpx;
 		color: #AAAAAA;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		.icon{
+
+		.icon {
 			font-size: 36rpx;
 			color: #AAAAAA;
 			margin-right: 10rpx;
 		}
+	}
+
+	.areaBox {
+		background: #FFFFFF;
+		width: 100%;
+		position: absolute;
+		z-index: 10;
+		box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+		border-top: 1px solid #F4F4F4;
+		padding: 30rpx 0 10rpx;
+
+		.item {
+			font-size: 28rpx;
+			color: #2A2A2A;
+			padding: 0 28rpx 28rpx;
+
+			&.on {
+				color: #4EC09B;
+			}
+		}
+	}
+
+	.cu-modal.top-modal::before {
+		vertical-align: top;
+	}
+
+	.cu-modal.top-modal .cu-dialog {
+		width: 100%;
+		border-radius: 0;
+	}
+
+	.cu-modal.top-modal {
+		margin-top: -1000upx;
+	}
+
+	.cu-modal.top-modal.show {
+		margin-top: 0;
 	}
 </style>

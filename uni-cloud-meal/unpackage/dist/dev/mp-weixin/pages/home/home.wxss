@@ -24,6 +24,12 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+.cu-custom .cu-bar.bg-hyaline {
+  padding-top: 66rpx;
+}
+.cu-custom .cu-bar.bg-hyaline .content {
+  top: 66rpx;
+}
 page {
   background: #FFFFFF;
   width: 100%;
@@ -31,9 +37,11 @@ page {
   overflow: hidden;
 }
 .response {
-  -webkit-filter: blur(4px);
-          filter: blur(4px);
-  height: 160rpx;
+  display: block;
+  -webkit-filter: blur(2px);
+          filter: blur(2px);
+  height: 240rpx;
+  overflow: hidden;
 }
 .topWrapper {
   width: 100%;
@@ -52,6 +60,7 @@ page {
   color: #2A2A2A;
   position: absolute;
   top: -95rpx;
+  width: calc(100% - 56rpx);
 }
 .homeTop .logoImg {
   width: 120rpx;
@@ -150,12 +159,11 @@ page {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
-  height: calc(100vh - 160rpx - 96rpx - 120rpx - 62rpx - 32rpx - 108rpx);
 }
 .verticalBox .VerticalNav.nav {
   width: 180rpx;
-  height: calc(100vh - 578rpx);
   white-space: initial;
+  background: #FAFAFA;
 }
 .verticalBox .VerticalNav.nav .cu-item {
   width: 100%;
@@ -195,7 +203,6 @@ page {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
           flex: 1;
-  height: calc(100vh - 578rpx);
 }
 .verticalBox .VerticalMain .title {
   font-size: 30rpx;
@@ -208,6 +215,9 @@ page {
   display: flex;
   margin: 0 0 36rpx;
   position: relative;
+}
+.verticalBox .VerticalMain .menuList .item:last-child {
+  margin: 0;
 }
 .verticalBox .VerticalMain .menuList .item .panel_left {
   position: relative;
@@ -267,7 +277,7 @@ page {
 .verticalBox .VerticalMain .menuList .item .panel_right .mealCon .price .f18 {
   font-size: 36rpx;
 }
-.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper {
+.cartcontrol-wrapper {
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -275,28 +285,29 @@ page {
   -webkit-align-items: center;
           align-items: center;
 }
-.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .iconfont {
+.cartcontrol-wrapper .iconfont {
   font-size: 48rpx;
   color: #4EC09B;
 }
-.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .soldOut {
+.cartcontrol-wrapper .soldOut {
   display: none;
 }
-.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .soldOut .iconfont {
+.cartcontrol-wrapper .soldOut .iconfont {
   color: #D6D6D6;
 }
-.verticalBox .VerticalMain .menuList .item .panel_right .mealCon .cartcontrol-wrapper .cart-count {
+.cartcontrol-wrapper .cart-count {
   font-size: 32rpx;
   color: #4A4A4A;
   padding: 4rpx 16rpx 0;
 }
 .shopcart {
+  position: relative;
+  z-index: 1111;
   height: 108rpx;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  overflow: hidden;
   background: #FFFFFF;
   padding: 0 28rpx;
-  border-top: 2rpx solid #F2F2F2;
+  border-top: 1rpx solid #F2F2F2;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -317,7 +328,7 @@ page {
 .shopcart .carCon .cu-tag.badge:not([class*="bg-"]) {
   background: #FF4D23;
   font-size: 26rpx;
-  padding: 10rpx 8rpx;
+  padding: 12rpx 8rpx 8rpx;
 }
 .shopcart .carCon .cu-tag.badge {
   top: -2rpx;
@@ -332,7 +343,6 @@ page {
   font-size: 32rpx;
   height: 80rpx;
   padding: 0 56rpx;
-  margin-top: -6rpx;
 }
 .shopcart .bg-gray {
   background: #C0C0C0;
@@ -417,7 +427,7 @@ page {
 .foodDescDiv .headImg .closeImg {
   position: absolute;
   right: 50rpx;
-  top: 50rpx;
+  top: 160rpx;
   width: 70rpx;
   height: 70rpx;
 }
@@ -472,10 +482,6 @@ page {
 }
 .foodDescDiv .foodDesWrap .hd .iconfont {
   font-size: 48rpx;
-  color: #4EC09B;
-}
-.foodDescDiv .foodDesWrap .hd .icon-jianshao {
-  color: #D6D6D6;
 }
 .foodDescDiv .foodDesWrap .desc {
   font-size: 26rpx;
@@ -514,10 +520,81 @@ page {
   background: #F4F4F4;
   padding: 0 40rpx;
   margin-top: 8rpx;
+  height: 60rpx;
 }
 .cu-modal.drawer-modal .cu-dialog {
   min-width: 100%;
   width: 100%;
   background-color: #FFFFFF;
+}
+.shopcartPanel .cu-dialog {
+  height: 900rpx;
+  padding-bottom: 108rpx;
+}
+.shopcartPanel .cu-bar {
+  padding: 32rpx 28rpx;
+  min-height: auto;
+}
+.shopcartPanel .emptyBox {
+  font-size: 28rpx;
+  color: #6A6A6A;
+}
+.shopcartPanel .emptyBox .img {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 8rpx;
+  margin-top: 2rpx;
+}
+.shopcartPanel .content {
+  padding: 0 28rpx;
+  height: 680rpx;
+}
+.shopcartPanel .content .dateCard {
+  padding: 0 0 12rpx;
+}
+.shopcartPanel .content .dateCard .cu-item {
+  height: auto;
+  line-height: normal;
+  font-size: 26rpx;
+  color: #4EC09B;
+  border: 2rpx solid #4EC09B;
+  -webkit-border-radius: 8rpx;
+          border-radius: 8rpx;
+  padding: 11rpx 20rpx;
+  margin: 0 20rpx 0 0;
+}
+.shopcartPanel .content .dateCard .cu-item .week {
+  padding-left: 8rpx;
+}
+.shopcartPanel .content .dateCard .cu-item.cur {
+  border-bottom: none;
+  background: #4EC09B;
+  color: #FFFFFF;
+}
+.shopcartPanel .content .repastName {
+  font-size: 32rpx;
+  color: #4A4A4A;
+  padding: 20rpx 0 24rpx;
+  text-align: left;
+}
+.shopcartPanel .content .shopCartItem {
+  margin-bottom: 24rpx;
+}
+.shopcartPanel .content .shopCartItem .img {
+  width: 100rpx;
+  height: 100rpx;
+  -webkit-border-radius: 8rpx;
+          border-radius: 8rpx;
+  margin-right: 24rpx;
+}
+.shopcartPanel .content .shopCartItem .text-cut {
+  font-size: 28rpx;
+  color: #2A2A2A;
+  text-align: left;
+  padding-bottom: 20rpx;
+}
+.shopcartPanel .content .shopCartItem .price {
+  font-size: 32rpx;
+  color: #FF4D23;
 }
 

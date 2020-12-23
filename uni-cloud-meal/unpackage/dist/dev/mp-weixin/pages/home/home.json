@@ -1,4 +1,9 @@
 {
   "navigationBarTitleText": "在线订餐",
-  "usingComponents": {}
+  "navigationBarTextStyle": "white",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "cartcontrol": "/components/cartcontrol/cartcontrol",
+    "m-loading": "/components/m-loading"
+  }
 }

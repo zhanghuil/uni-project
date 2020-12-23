@@ -44,10 +44,6 @@
 </script>
 
 <style lang="scss">
-	page {
-		background: #FFFFFF;
-	}
-
 	.contenter {
 		height: 100vh;
 		position: relative;

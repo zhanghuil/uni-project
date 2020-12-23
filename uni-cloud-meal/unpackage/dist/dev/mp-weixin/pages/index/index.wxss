@@ -24,9 +24,6 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-page {
-  background: #FFFFFF;
-}
 .banner {
   height: auto;
   position: relative;
@@ -181,6 +178,12 @@ page {
   bottom: 6rpx;
 }
 .storeItem .itemFoot .desc {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
   font-family: PingFangSC-Regular;
   background: #FFEFD6;
   -webkit-border-radius: 4rpx;
@@ -192,6 +195,11 @@ page {
 .storeItem .itemFoot .desc .iconfont {
   margin: 0 10rpx;
   font-size: 28rpx;
+}
+.storeItem .itemFoot .desc .text-cut {
+  max-width: 390rpx;
+  font-size: 24rpx;
+  color: #FDA130;
 }
 .lookAllBox {
   margin: 20rpx 0 60rpx;
@@ -289,5 +297,37 @@ page {
   font-size: 36rpx;
   color: #AAAAAA;
   margin-right: 10rpx;
+}
+.areaBox {
+  background: #FFFFFF;
+  width: 100%;
+  position: absolute;
+  z-index: 10;
+  -webkit-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+          box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+  border-top: 1px solid #F4F4F4;
+  padding: 30rpx 0 10rpx;
+}
+.areaBox .item {
+  font-size: 28rpx;
+  color: #2A2A2A;
+  padding: 0 28rpx 28rpx;
+}
+.areaBox .item.on {
+  color: #4EC09B;
+}
+.cu-modal.top-modal::before {
+  vertical-align: top;
+}
+.cu-modal.top-modal .cu-dialog {
+  width: 100%;
+  -webkit-border-radius: 0;
+          border-radius: 0;
+}
+.cu-modal.top-modal {
+  margin-top: -1000rpx;
+}
+.cu-modal.top-modal.show {
+  margin-top: 0;
 }
 

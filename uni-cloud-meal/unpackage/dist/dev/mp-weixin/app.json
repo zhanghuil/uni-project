@@ -7,9 +7,17 @@
     "pages/order/orderDetail",
     "pages/my/perfectInfo",
     "pages/my/lookInfo",
-    "pages/home/food",
     "pages/my/recharge",
-    "pages/my/rechargeRecord"
+    "pages/my/rechargeRecord",
+    "pages/entry/entry",
+    "pages/entry/choose",
+    "pages/registerPatient/registerPatient",
+    "pages/registerStaff/registerStaff",
+    "pages/tips/tips",
+    "pages/confirmOrder/confirmOrder",
+    "pages/confirmOrder/distributionInfo",
+    "pages/confirmOrder/orderNote",
+    "pages/d_webview/d_webview"
   ],
   "subPackages": [],
   "window": {

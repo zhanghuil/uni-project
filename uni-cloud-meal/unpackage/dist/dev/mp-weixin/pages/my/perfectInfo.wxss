@@ -25,7 +25,6 @@
 /* 透明度 */
 /* 文章场景相关 */
 page {
-  background: #FFFFFF;
   padding-bottom: 120rpx;
 }
 .infoH1 {
@@ -151,18 +150,19 @@ page {
           flex: 1;
   text-align: center;
   font-size: 32rpx;
-  color: #C0C0C0;
-  background: #fff;
   -webkit-border-radius: 40rpx;
           border-radius: 40rpx;
   padding: 20rpx 0;
 }
-.footer .btn2 {
-  margin-left: 18rpx;
+.footer .btn.btn1 {
+  color: #C0C0C0;
+  background: #fff;
+}
+.footer .btn.bg-gray {
   background: #C0C0C0;
   color: #FFFFFF;
 }
-.footer .confirmBtn {
-  background: #4EC09B;
+.footer .ml9 {
+  margin-left: 18rpx;
 }
 

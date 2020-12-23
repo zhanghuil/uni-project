@@ -4,7 +4,7 @@
 		<view class="infoH3 text-center">请花1分钟回答几个小问题吧！</view>
 		<!-- 性别 -->
 		<view class="infoH2 text-center mt16">性别</view>
-		<radio-group class="sexGroup">
+		<radio-group class="sexGroup" @change="sexChange">
 			<label class="item" v-for="(item,index) in sexList" :key="item.value">
 				<image class="img" :src="item.img"></image>
 				<radio class='green radioSex' :class="radio==item.value?'checked':''" :checked="radio==item.value?true:false"
@@ -15,20 +15,20 @@
 			<view class="item">
 				<view class="tit">年龄</view>
 				<view>
-					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" @input="getAge" />
+					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" v-model="age" />
 				</view>
 			</view>
 			<view class="item">
 				<view class="tit">身高</view>
 				<view class="flex align-center px15">
-					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" @input="getHeight" />
+					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" v-model="height" />
 					<text class="unit">cm</text>
 				</view>
 			</view>
 			<view class="item">
 				<view class="tit">体重</view>
 				<view class="flex align-center px15">
-					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" @input="getWeight" />
+					<input class="inputNum" type="number" maxlength="4" placeholder="请输入" placeholder-class="placeholder" v-model="weight" />
 					<text class="unit">kg</text>
 				</view>
 			</view>
@@ -36,13 +36,18 @@
 		<!-- 疾病类型 -->
 		<view class="infoH2 text-center">有无以下特殊情况？</view>
 		<view class="diseaseType">
-			<view class="item" v-for="(item,index) in checkboxData" :key="index" :class="{'checked':checkActive(item)}"
-			 @tap="changeCheckbox(item)">{{item.label}}</view>
+			<view class="item" v-for="(item,index) in checkboxData" :key="index" :class="{'checked':checkActive(item)}" @tap="changeCheckbox(item)">{{item.value}}</view>
 		</view>
 		<view class="footer">
-			<view class="wrapper">
-				<view class="btn btn1">跳过</view>
-				<view class="btn btn2" @tap="confirmTap">确定</view>
+			<!-- 个人中心进入 -->
+			<view class="wrapper" v-if="from=='info'">
+				<view class="btn btn1" @tap="returnTap">返回</view>
+				<button class="btn cu-btn round ml9" @click="confirmTap" :class="isLogin ? 'bg-cyan' : 'bg-gray'" :disabled="!isLogin">确定</button>
+			</view>
+			<!-- 门店进入 -->
+			<view class="wrapper" v-else>
+				<view class="btn btn1" @tap="skipTap">跳过</view>
+				<button class="btn cu-btn round ml9" @click="confirmTap" :class="isLogin ? 'bg-cyan' : 'bg-gray'" :disabled="!isLogin">确定</button>
 			</view>
 		</view>
 	</view>
@@ -52,66 +57,72 @@
 	export default {
 		data() {
 			return {
-				checkboxData: [{
-						'value': 0,
-						'label': '高血糖'
-					},
-					{
-						'value': 1,
-						'label': '心脑血管'
-					},
-					{
-						'value': 2,
-						'label': '肿瘤'
-					},
-					{
-						'value': 3,
-						'label': '术后康复'
-					},
-					{
-						'value': 4,
-						'label': '孕妇'
-					},
-					{
-						'value': 5,
-						'label': '冠心病'
-					},
-					{
-						'value': 6,
-						'label': '脂肪肝'
-					},
-					{
-						'value': 7,
-						'label': '肾病'
-					},
-					{
-						'value': 8,
-						'label': '透析'
-					},
-					{
-						'value': 9,
-						'label': '骨质疏松'
-					}
-				],
+				from: null,
+				id: '',
+				checkboxData: [],
 				checkedArr: [], //复选框选中的值
-				radio: 0,
+				radio: 1,
 				sexList: [{
-					value: 0,
+					value: 1,
 					name: '男',
 					img: '../../static/image/sex0.png',
 					checked: true
 				}, {
-					value: 1,
+					value: 2,
 					name: '女',
 					img: '../../static/image/sex1.png',
 					checked: false
 				}],
-				age: '',
+				age: null,
 				height: '',
-				weigth: ''
+				weight: '',
+				diseaseArr: []
 			}
 		},
+		onLoad(options) {
+			this.diseaseDictionary();
+			this.from = options.from
+			this.id = options.id
+		},
+		computed: {
+			isLogin() {
+				return !!this.age && !!this.height && !!this.weight
+			},
+		},
 		methods: {
+			returnTap() {
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+			//跳过-到门店主页
+			skipTap() {
+				uni.redirectTo({
+					url: `../home/home?id=${this.id}`
+				});
+			},
+			diseaseDictionary() {
+				this.$Api.diseaseDictionary().then(res => {
+					this.checkboxData = res.data
+					this.lookInfo()
+				}, err => {})
+			},
+			lookInfo() {
+				this.$Api.lookInfo().then(res => {
+					let data = res.data
+					this.radio = data.sex || 1
+					this.age = data.age
+					this.height = data.height
+					this.weight = data.weight
+
+					let newArr = this.checkboxData.filter(item =>
+						data.physicalCondition.indexOf(item.code) > -1
+					)
+
+					this.checkedArr = newArr
+					this.diseaseArr = newArr.map(item => item.code)
+				}, err => {})
+			},
 			// 疾病类型多选
 			changeCheckbox(item) {
 				if (this.checkedArr.indexOf(item) === -1) {
@@ -122,26 +133,28 @@
 					this.checkedArr.splice(this.checkedArr.indexOf(item), 1)
 				}
 				console.log(this.checkedArr)
+				this.diseaseArr = this.checkedArr.map(item => item.code)
 			},
 			checkActive(item) {
 				return this.checkedArr.indexOf(item) !== -1 //多选
 			},
 			sexChange(e) {
+				console.log(`选择的性别：${e.detail.value}`)
 				this.radio = e.detail.value
 			},
-			getAge(e) {
-				this.age = e.detail.value
-			},
-			getHeight(e) {
-				this.height = e.detail.value
-			},
-			getWeight(e) {
-				this.weigth = e.detail.value
-			},
 			confirmTap() {
-				uni.navigateTo({
-					url: './lookInfo'
-				})
+				let params = {
+					sex: this.radio,
+					age: this.age,
+					height: this.height,
+					weight: this.weight,
+					physicalCondition: this.diseaseArr
+				}
+				this.$Api.infoGather(params).then(res => {
+					uni.navigateTo({
+						url: `./lookInfo?id=${this.id}`
+					})
+				}, err => {})
 			}
 		}
 	}
@@ -149,7 +162,6 @@
 
 <style lang="scss">
 	page {
-		background: #FFFFFF;
 		padding-bottom: 120rpx;
 	}
 
@@ -275,20 +287,22 @@
 			flex: 1;
 			text-align: center;
 			font-size: 32rpx;
-			color: #C0C0C0;
-			background: #fff;
 			border-radius: 40rpx;
 			padding: 20rpx 0;
+
+			&.btn1 {
+				color: #C0C0C0;
+				background: #fff;
+			}
+
+			&.bg-gray {
+				background: #C0C0C0;
+				color: #FFFFFF;
+			}
 		}
 
-		.btn2 {
+		.ml9 {
 			margin-left: 18rpx;
-			background: #C0C0C0;
-			color: #FFFFFF;
-		}
-
-		.confirmBtn {
-			background: #4EC09B;
 		}
 	}
 </style>

@@ -7,7 +7,10 @@
 	}, {
 		"path": "pages/home/home",
 		"style": {
-			"navigationBarTitleText": "在线订餐"
+			"navigationBarTitleText": "在线订餐",
+			// "navigationBarBackgroundColor": "#EFA720",
+			"navigationBarTextStyle": "white",
+			"navigationStyle": "custom"
 		}
 	}, {
 		"path": "pages/my/my",
@@ -37,12 +40,6 @@
 		}
 
 	}, {
-		"path": "pages/home/food",
-		"style": {
-			"navigationBarTitleText": ""
-		}
-
-	}, {
 		"path": "pages/my/recharge",
 		"style": {
 			"navigationBarTitleText": "职工卡"
@@ -52,6 +49,61 @@
 		"path": "pages/my/rechargeRecord",
 		"style": {
 			"navigationBarTitleText": "在线充值记录"
+		}
+
+	}, {
+		"path": "pages/entry/entry",
+		"style": {
+			"navigationBarTitleText": "请选择医院"
+		}
+
+	}, {
+		"path": "pages/entry/choose",
+		"style": {
+			"navigationBarTitleText": "医院营养云订餐"
+		}
+
+	}, {
+		"path": "pages/registerPatient/registerPatient",
+		"style": {
+			"navigationBarTitleText": ""
+		}
+
+	}, {
+		"path": "pages/registerStaff/registerStaff",
+		"style": {
+			"navigationBarTitleText": "身份验证"
+		}
+
+	}, {
+		"path": "pages/tips/tips",
+		"style": {
+			"navigationBarTitleText": "提示"
+		}
+
+	}, {
+		"path": "pages/confirmOrder/confirmOrder",
+		"style": {
+			"navigationBarTitleText": "确认订单"
+		}
+
+	}, {
+		"path": "pages/confirmOrder/distributionInfo",
+		"style": {
+			"navigationBarTitleText": "配送信息"
+		}
+
+	}, {
+		"path": "pages/confirmOrder/orderNote",
+		"style": {
+			"navigationBarTitleText": "订单备注"
+		}
+
+	}, {
+		"path": "pages/d_webview/d_webview",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
 		}
 
 	}],
