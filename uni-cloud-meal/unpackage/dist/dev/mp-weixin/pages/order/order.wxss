@@ -69,6 +69,7 @@ page {
   -webkit-border-radius: 12rpx;
           border-radius: 12rpx;
   padding: 32rpx 32rpx 0;
+  margin-bottom: 32rpx;
 }
 .orderList .item .shopInfo {
   font-size: 32rpx;

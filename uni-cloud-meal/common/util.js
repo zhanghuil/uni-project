@@ -119,26 +119,89 @@ const groupBy = (list, fn) => {
 		groups[group] = groups[group] || [];
 		groups[group].push(o);
 	});
-	// return Object.keys(groups).map(function (group) {
-	//     return groups[group];
-	// });
 	return groups;
 }
 
-// const groupBy=( array , id )=> {
-//     let groups = {};
-//     array.forEach( function( o ) {
-//         let group = JSON.stringify( o[id] );
-//         groups[group] = groups[group] || [];
-//         groups[group].push( o );
-//     });
-//     return Object.values(groups);
-// }
+/**
+ * 提示弹框
+ */
+const showToast = (title, icon) => {
+	if (!icon) {
+		icon = 'none';
+	}
+	if (!title) {
+		title = '请求出错';
+	}
+	uni.showToast({
+		title: title,
+		icon: icon,
+		duration: 2000
+	})
+}
+
+/**
+ * 对输入框的整数位数和小数位数做限制
+ * intNum表示整数位个数，必填 0表示整数位数不做限制
+ * decNum表示小数位个数，选填 默认为0，表示没有小数
+ */
+const checkNum = (obj, intNum = 0, decNum = 0) => {
+	var value = obj;
+	var changeValue, t1, t2;
+	switch (decNum) {
+		case 0:
+			value = value.replace(/[^\d]/g, ''); //去除数字以外的字符;
+			value = value.replace(/^0\d+/g, '0'); //防止整数位出现'00'的情况
+			if (intNum != 0) {
+				value = value.substr(0, intNum);
+			}
+			break;
+		default:
+			value = value.replace(/[^\d.]/g, ''); //去除数字和小数点以外的字符;
+			value = value.replace(/^[^\d]/g, ''); //保证第一个字符是数字
+			value = value.replace(/\.{2}/g, '.'); //去除第二个小数点
+			value = value.replace(/^0\d+/g, '0');
+			changeValue = value.split('.');
+			if (changeValue.length > 1) { //表示用户输入的既有整数又有小数
+				if (intNum == 0) {
+					t1 = changeValue[0];
+				} else {
+					t1 = changeValue[0].substr(0, intNum);
+				}
+				t2 = changeValue[1].substr(0, decNum);
+				value = t1 + '.' + t2;
+			} else {
+				if (intNum != 0) {
+					value = value.substr(0, intNum);
+				}
+			}
+			break;
+	}
+	if (obj != value) {
+		obj = value;
+	}
+	return value;
+}
+
+/**判断时间是否过期
+ * @param {Object} time
+ */
+const judgeTime = (time) => {
+	var strtime = time.replace("/-/g", "/"); //时间转换
+	//时间
+	var date1 = new Date(strtime);
+	//现在时间
+	var date2 = new Date();
+	//判断时间是否过期
+	return date1 < date2 ? true : false;
+}
 
 module.exports = {
 	SearchData,
 	SearchDataIndex,
 	formatDate,
 	getWeek,
-	groupBy
+	groupBy,
+	showToast,
+	checkNum,
+	judgeTime
 }

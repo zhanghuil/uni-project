@@ -28,7 +28,7 @@ page {
   background: #FAFAFA;
 }
 .confirmOrderBox {
-  padding: 28rpx 28rpx 32rpx;
+  padding: 28rpx 28rpx 108rpx;
 }
 .confirmOrderBox .cardItem {
   background: #FFFFFF;

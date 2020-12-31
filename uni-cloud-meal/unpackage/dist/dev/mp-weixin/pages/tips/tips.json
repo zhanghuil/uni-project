@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "提示",
-  "usingComponents": {}
+  "usingComponents": {
+    "payment-list": "/components/paymentList"
+  }
 }

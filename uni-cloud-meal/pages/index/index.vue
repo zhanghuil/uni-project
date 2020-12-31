@@ -127,7 +127,7 @@
 		},
 		created() {
 			// this.$showLoading(true)
-			//todo
+			//todo新接口
 			let tit = this.$store.state.setCompanyTit || '医院营养云订餐'
 			uni.setNavigationBarTitle({
 				title: tit
@@ -140,6 +140,15 @@
 			this.isWechat(companyID) //是否登录
 		},
 		methods: {
+			currentCompany() {
+				this.$Api.currentCompany().then(res => {
+					let companyTit = res.data.title || ''
+					this.$store.commit('setCompanyTit', companyTit)
+					uni.setNavigationBarTitle({
+						title: companyTit + '营养订餐'
+					})
+				}, err => {})
+			},
 			isWechat(companyID) {
 				var _this = this;
 				uni.login({
@@ -158,6 +167,7 @@
 							_this.storeLocation()
 							_this.store()
 							_this.getBanner()
+							_this.currentCompany() //设置医院title
 						}, err => {})
 					}
 				});

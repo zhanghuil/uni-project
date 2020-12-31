@@ -40,14 +40,17 @@
 				type: Number
 			}
 		},
-
-		//组件生命周期
-		created() {
-
+		watch: {
+			selectId: {
+				handler(newVal, oldVal) {
+					this.payType = newVal
+				},
+				deep: true
+			}
 		},
 		data() {
 			return {
-				payType: null || this.selectId
+				payType: this.selectId
 			}
 		},
 		methods: {

@@ -9,7 +9,7 @@
 					<view v-else class="f14 c-6a">{{addressStr}}</view>
 				</view>
 			</view>
-			<view class="item">
+			<view class="item" v-if="$store.state.isRemark.enabledDetailAddress">
 				<view class="title">详细地址</view>
 				<input type="text" class="ipt" placeholder="进一步补充具体位置" placeholder-class="placeholder" maxlength="20" v-model="detailAddress" />
 			</view>
@@ -18,8 +18,8 @@
 				<input type="text" class="ipt" placeholder="请输入" placeholder-class="placeholder" maxlength="15" v-model="userName" />
 			</view>
 			<view class="item">
-				<view class="title">联系手机号 <text class="star iconfont icon-bitian"></text></view>
-				<input type="text" class="ipt" placeholder="请输入" placeholder-class="placeholder" maxlength="11" v-model="phone" />
+				<view class="title">联系手机号<text class="star iconfont icon-bitian"></text></view>
+				<input type="number" class="ipt" placeholder="请输入" placeholder-class="placeholder" maxlength="11" v-model="phone" />
 			</view>
 		</view>
 		<view class="footer" @tap="submitTap">
@@ -40,19 +40,17 @@
 				<view class="content">
 					<!-- 一级地址 -->
 					<scroll-view class="scroll-Y" scroll-y="true" v-show="currIndex == 0">
-						<view class="item" v-for="(item,index) in addressList" :key="index" @tap="oneLevel" :id="item.districtId"
-						 :data-index="1">{{item.districtName}}</view>
+						<view class="item" v-for="(item,index) in addressList" :key="index" @tap="oneLevel" :id="item.areaId" :data-index="1">{{item.areaName}}</view>
 					</scroll-view>
 					<!-- 二级地址 -->
 					<scroll-view class="scroll-Y" scroll-y="true" v-show="currIndex == 1">
-						<view class="item" v-for="(item,index) in addresslist2" :key="index" @tap="twoLevel" :id="item.buildingId"
-						 :data-index="2">{{item.buildingName}}</view>
+						<view class="item" v-for="(item,index) in addresslist2" :key="index" @tap="twoLevel" :id="item.id" :data-index="2">{{item.name}}</view>
 					</scroll-view>
 					<!-- 三级地址 pb30-->
 					<view class="rel" v-show="currIndex == 2">
 						<scroll-view class="scroll-Y" scroll-y="true">
 							<view class="item" :class="currFloor == index ? 'on' : ''" v-for="(item,index) in addresslist3" :key="index"
-							 @tap="threeLevel(index,item.floorId,item.floorName)">{{item.floorName}}</view>
+							 @tap="threeLevel(index,item.id,item.name)">{{item.name}}</view>
 						</scroll-view>
 						<!-- <view class="footer" @tap="confirmAddress">
 							<button class="cu-btn bg-cyan">确定</button>
@@ -67,15 +65,25 @@
 </template>
 
 <script>
+	import {
+		showToast
+	} from '../../common/util.js'
 	export default {
 		data() {
 			return {
-				modalName: null,
+				detailAddress: '', //详细地址
+				userName: '', //联系人
+				phone: '', // 联系手机号
+				modalName: null, //地址选择弹框
 				currIndex: 0,
+
 				districtName: '', //院区
+				districtId: '',
 				buildingName: '', //楼栋
+				buildingId: '',
 				floorName: '', //楼层
-				addressStr: '',
+				floorId: '',
+				addressStr: '', //拼接地址
 				currFloor: -1,
 				addressList: [{
 						"buildingList": [{
@@ -141,28 +149,60 @@
 				],
 				addresslist2: [],
 				addresslist3: [],
+				storeId: '',
 			};
 		},
+		onLoad(options) {
+			this.storeId = options.storeId;
+			this.personalCenter()
+			this.shippingAddress()
+		},
 		methods: {
+			shippingAddress() {
+				this.$Api.shippingAddress({
+					storeId: this.storeId
+				}).then(res => {
+					this.addressList = res.data
+				}, err => {})
+			},
+			async personalCenter() {
+				let historyRes = await this.$Api.lastAddress();
+				if (!historyRes.data.district) { //没有历史配送地址
+					this.$Api.personalCenter().then(res => {
+						let data = res.data;
+						this.phone = data.phone;
+						this.userName = data.name;
+					}, err => {})
+				} else {
+					let _data = historyRes.data;
+					this.addressStr = `${_data.district}-${_data.firstAddressName}-${_data.secondAddressName}`;
+					this.detailAddress = _data.addRemark;
+					this.phone = _data.phone;
+					this.userName = _data.contacts;
+				}
+			},
 			oneLevel(e) {
 				let id = e.currentTarget.id;
 				let currIndex = e.currentTarget.dataset.index;
-				let result = this.addressList.find(item => item.districtId == id);
-				this.addresslist2 = result.buildingList
-				this.districtName = result.districtName
-				this.currIndex = currIndex
+				let result = this.addressList.find(item => item.areaId == id);
+				this.addresslist2 = result.firstAddressList;
+				this.districtName = result.areaName;
+				this.districtId = id;
+				this.currIndex = currIndex;
 			},
 			twoLevel(e) {
 				let id = e.currentTarget.id;
 				let currIndex = e.currentTarget.dataset.index;
-				let result = this.addresslist2.find(item => item.buildingId == id);
-				this.addresslist3 = result.floorList
-				this.buildingName = result.buildingName
-				this.currIndex = currIndex
+				let result = this.addresslist2.find(item => item.id == id);
+				this.addresslist3 = result.secondAddressList;
+				this.buildingName = result.name;
+				this.buildingId = id;
+				this.currIndex = currIndex;
 			},
 			threeLevel(index, id, name) {
 				this.currFloor = index
 				this.floorName = name
+				this.floorId = id
 				this.addressStr = `${this.districtName}-${this.buildingName}-${this.floorName}`
 				this.hideModal()
 			},
@@ -184,6 +224,57 @@
 			hideModal(e) {
 				this.modalName = null
 			},
+			//保存配送地址
+			submitTap() {
+				if (!this.addressStr) {
+					showToast('请完善配送地址')
+					return
+				} else if (!this.userName) {
+					showToast('请完善联系人')
+					return
+				} else if (!this.phone) {
+					showToast('请完善联系手机号')
+					return
+				}
+
+				let params = {
+					district: this.districtName,
+					districtId: this.districtId,
+					firstAddressName: this.buildingName,
+					firstAddressId: this.buildingId,
+					secondAddressName: this.floorName,
+					secondAddressId: this.floorId,
+					addRemark: this.detailAddress,
+					contacts: this.userName,
+					phone: this.phone
+				}
+				console.log(JSON.stringify(params))
+				this.$Api.saveOrderAddress(params).then(res => {
+					let distributionInfo = {
+						addressStr: this.addressStr,
+						districtId: this.districtId,
+						districtName: this.districtName,
+						firstAddressId: this.buildingId,
+						firstAddressName: this.buildingName,
+						secondAddressId: this.floorId,
+						secondAddressName: this.floorName,
+						addRemark: this.detailAddress,
+						orderAddressStr: this.districtName + this.buildingName + this.floorName + this.detailAddress,
+						phone: this.phone,
+						name: this.userName
+					}
+					this.$store.commit('setDistributionInfo', JSON.stringify(distributionInfo));
+
+					showToast('保存成功')
+					setTimeout(() => (
+						wx.navigateBack({
+							delta: 1
+						})
+					), 1500)
+				}, err => {
+					showToast(err.errMsg)
+				})
+			}
 		},
 	}
 </script>

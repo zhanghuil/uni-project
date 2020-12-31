@@ -157,13 +157,18 @@ var _default =
       code: '',
       codeTime: 0,
       txtType: 'success',
-      toastTxt: '' };
-
+      toastTxt: '',
+      crowdId: '', //身份id
+      type: '' //身份类型（职工、患者）
+    };
   },
-  created: function created() {
-    uni.setNavigationBarTitle({
-      title: '上海新华医院营养订餐' });
-
+  onLoad: function onLoad(option) {
+    console.log(option);
+    this.crowdId = option.crowdId;
+    this.type = option.type;
+    // uni.setNavigationBarTitle({
+    // 	title: ''
+    // })
   },
   computed: {
     isLogin: function isLogin() {
@@ -208,23 +213,51 @@ var _default =
         this.showToast('请将验证码输入完整', 'error');
         return;
       }
-      // 注册成功并进入首页
       var _sessionBagKey = uni.getStorageSync('sessionBagKey');
-      var params = {
-        phone: this.phone,
-        smsCode: this.code,
-        sessionBagKey: _sessionBagKey,
-        companyId: this.$store.state.companyID };
+      if (this.type == 'p') {
+        // 患者注册成功并进入首页
+        var params = {
+          phone: this.phone,
+          smsCode: this.code,
+          sessionBagKey: _sessionBagKey,
+          companyId: this.$store.state.companyID,
+          crowdId: this.crowdId };
 
-      this.$Api.phonePatient(params).then(function (res) {
-        uni.setStorageSync('token', res.data.accessToken);
-        _this2.showToast('验证成功', 'success');
-        setTimeout(function () {
-          uni.switchTab({
-            url: '../index/index' });
+        this.$Api.phonePatient(params).then(function (res) {
+          uni.setStorageSync('token', res.data.accessToken);
+          _this2.showToast('验证成功', 'success');
+          setTimeout(function () {
+            uni.switchTab({
+              url: '../index/index' });
 
-        }, 1500);
-      }, function (err) {});
+          }, 1500);
+        }, function (err) {
+          _this2.showToast(err.data.message, 'error');
+        });
+      } else {//职工
+        var _params = {
+          phone: this.phone,
+          name: '',
+          districtId: '',
+          departmentId: '',
+          smsCode: this.code,
+          sessionBagKey: _sessionBagKey,
+          companyId: this.$store.state.companyID,
+          crowdId: this.crowdId };
+
+        this.$Api.phoneStaff(_params).then(function (res) {
+          uni.setStorageSync('token', res.data.accessToken);
+          // 注册成功并进入首页
+          _this2.showToast('验证成功', 'success');
+          setTimeout(function () {
+            uni.switchTab({
+              url: '../index/index' });
+
+          }, 1500);
+        }, function (err) {
+          _this2.showToast(err.data.message, 'error');
+        });
+      }
     },
     showToast: function showToast(txt, type) {var _this3 = this;
       this.toastTxt = txt;

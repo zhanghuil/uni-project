@@ -130,54 +130,110 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 182));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {
+  components: {
+    paymentList: paymentList },
+
   data: function data() {
-    return {};
+    return {
+      payType: '', //支付方式
+      payFail: false, //默认支付成功
+      orderId: '', // 订单id
 
+      modalName: null,
+      radio: '', //默认支付方式value
+      payList: [] // 支付方式列表
+    };
+  },
+  onLoad: function onLoad(options) {
+    console.log(options);
+    this.payType = options.payType;
+    var _orderId = options.orderId;
+    this.orderId = _orderId;
+    this.payFail = _orderId ? true : false;
 
+    this.getPayType(options.storeId);
   },
   methods: {
+    // 获取支付方式
+    getPayType: function getPayType(storeId) {var _this2 = this;
+      if (!storeId) return;
+      this.$Api.getPayType({
+        storeId: storeId }).
+      then(function (res) {
+        var data = res.data;
+        _this2.payList = data;
+        _this2.radio = data[0].payType;
+      }, function (err) {});
+    },
+    hideModal: function hideModal(e) {
+      this.modalName = e;
+    },
+    // 修改支付方式
+    reselectId: function reselectId(id) {var _this3 = this;
+      console.log("\u7236\u7EC4\u4EF6\u63A5\u6536\u7684\u652F\u4ED8\u65B9\u5F0Fid\uFF1A".concat(id));
+      this.radio = id;
+      this.$Api.updOrderPayment({
+        orderId: this.orderId,
+        payment: id }).
+      then(function (res) {
+        console.log('修改支付方式');
+        if (id == 0) {//支付成功
+          _this3.payType = 0;
+        } else if (id == 1) {
+          _this3.payType = 1;
+        } else if (id == 2 || id == 4) {//调支付接口
+          _this3.againPay();
+        }
+      }, function (err) {});
+    },
+    changePay: function changePay(e) {
+      this.modalName = e.currentTarget.dataset.target;
+    },
     goHome: function goHome() {
       uni.switchTab({
         url: '../index/index' });
@@ -186,6 +242,68 @@ var _default =
     lookOrder: function lookOrder() {
       uni.switchTab({
         url: '../order/order' });
+
+    },
+    // 取消订单
+    cancelTap: function cancelTap() {
+      this.$Api.orderCancel({
+        orderId: this.orderId }).
+      then(function (res) {
+        uni.showModal({
+          content: '订单取消成功',
+          showCancel: false,
+          buttonText: '好的',
+          success: function success(res) {
+            if (res.confirm) {
+              uni.switchTab({
+                url: '../order/order' });
+
+            } else if (res.cancel) {
+              console.log('用户点击取消');
+            }
+          } });
+
+      }, function (err) {});
+    },
+    //重新支付
+    againPay: function againPay() {var _this4 = this;
+      this.$Api.orderPay({
+        orderId: this.orderId }).
+      then(function (res) {
+
+        if (res.data.paymentType == 4) {
+          //职工卡支付成功
+          _this4.payType = 4;
+          _this4.payFail = false;
+        } else if (res.data.paymentType == 2) {
+          //微信支付
+          _this4.wechatPay(res.data);
+        }
+
+      }, function (err) {});
+    },
+    //微信支付
+    wechatPay: function wechatPay(info) {
+      var _this = this;
+      wx.requestPayment({
+        timeStamp: info.timeStamp,
+        nonceStr: info.nonceStr,
+        package: info.package,
+        signType: 'MD5',
+        paySign: info.paySign,
+        success: function success(res) {
+          console.log(res);
+          if (res.errMsg == 'requestPayment:ok') {
+            _this.payType = 2;
+            _this.payFail = false;
+          }
+        },
+        fail: function fail(res) {
+          // console.log(res)
+        },
+        complete: function complete(res) {
+          // console.log(res)
+        } });
 
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))

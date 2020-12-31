@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<view class="orderTop">
+		<!-- <view class="orderTop">
 			<view class="L flex align-center">
 				<image src="../../static/image/icon3.png"></image>
 				2020年11月
@@ -9,41 +9,48 @@
 				<text>消费合计：</text>
 				<text class="price">268.50</text>
 			</view>
-		</view>
+		</view> -->
 		<view class="orderList">
-			<view class="item">
-				<view class="shopInfo flex align-center" @tap="lookTap">
+			<view class="item" v-for="(item,index) in orderListAll" :key="index">
+				<view class="shopInfo flex align-center" @tap="lookTap(item.orderId,item.subOrderId,item.state)">
 					<view class="shopImgBox">
-						<image src="../../static/image/default_store.png" class="shopImg"></image>
+						<image :src="item.storeLogo?item.storeLogo:'../../static/image/default_store.png'" lazy-load="true" class="shopImg"></image>
 					</view>
 					<view class="flex1 ovh">
 						<view class="flex justify-between">
-							<view class="text-cut">Noodle’s Truth面有道劲道酸爽超级爆款拉面江杨南路店</view>
-							<view class="phoneCon flex align-center" @tap.stop="phone">
+							<view class="text-cut">{{item.storeName}}</view>
+							<view class="phoneCon flex align-center" @tap.stop="phone(ittem.storePhone)" v-if="(item.state==1||item.state==2||item.state==3)&&!item.refundMark">
 								<image class="pimg" mode="scaleToFill" src="../../static/image/meal/phone.png"></image>
 							</view>
 						</view>
-						<view class="time">2020-11-05 10:30</view>
+						<view class="time">{{item.orderTime | filterDate}}</view>
 					</view>
 				</view>
 				<view class="flex align-center justify-between hd">
-					<view class="flex align-center">
-						<view class="tag">02/19 周二</view>
-						<view class="tag">早餐</view>
+					<view class="flex align-center" v-if="item.state != 0 && item.dateValue">
+						<view class="tag">{{item.dateValue | mealDate}} {{item.dateValue | filtersWeek}}</view>
+						<view class="tag">{{item.serviceTypeName}}</view>
 					</view>
-					<view>￥126</view>
+					<view></view>
+					<view class="">￥{{item.amount}}</view>
 				</view>
-				<!-- 待支付 、已支付-->
-				<view class="orderBtnBox">
-					<view class="orderBtn" @tap="cancleOrder">取消订单</view>
-					<view class="orderBtn bg-cyan" @tap="showModal" data-target="bottomModal">待支付 09:20</view>
-					<view class="orderBtn bg-cyan">申请退款</view>
+				<!-- 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消 -->
+				<!-- 待支付 -->
+				<view class="orderBtnBox" v-if="item.state == 0">
+					<view class="orderBtn" @tap="cancleOrderTap(item.orderId)">取消订单</view>
+					<view class="orderBtn bg-cyan" @tap="showModal" data-target="bottomModal" :data-sid="item.storeId" :data-pid="item.payType"
+					 :data-oid="item.orderId">待支付
+						{{item.end_time1}}</view>
+					<!-- <uni-countdown :show-day="false" :show-hour="false" :minute="10" :second="00" /> -->
 				</view>
-				<uni-countdown :show-day="false" :show-hour="false" :minute="10" :second="00" />
+				<!-- 已支付 -->
+				<view class="orderBtnBox" v-else-if="item.state == 2&&item.refundMark">
+					<view class="orderBtn bg-cyan" @tap="refundTap(item.subOrderId)">申请退款</view>
+				</view>
 				<!-- 已取消、已退款 -->
-				<!-- <view class="orderBtnBox2 flex justify-end">
-					<button class="cu-btn">已取消</button>
-				</view> -->
+				<view class="orderBtnBox2 flex justify-end" v-else-if="item.state == 3 || item.state == 4">
+					<button class="cu-btn">{{item.state == 3 ? '已退款' : '已取消'}}</button>
+				</view>
 			</view>
 		</view>
 		<!-- 支付方式 -->
@@ -53,6 +60,11 @@
 </template>
 
 <script>
+	import {
+		formatDate,
+		getWeek,
+		judgeTime
+	} from '../../common/util.js'
 	import paymentList from "../../components/paymentList.vue";
 	export default {
 		components: {
@@ -60,63 +72,267 @@
 		},
 		data() {
 			return {
+				timeData: '', //存放每条数据的处理好的倒计时
+				timer: '', //用来清除定时器
 				modalName: null,
-				radio: '1',
-				payList: [{
-						paymentId: 1,
-						paymentName: "职工卡在线付"
-					},
-					{
-						paymentId: 2,
-						paymentName: "微信支付"
-					},
-					{
-						paymentId: 3,
-						paymentName: "到付"
-					},
-					{
-						paymentId: 4,
-						paymentName: "记账"
-					}
-				]
+				radio: '',
+				payList: [],
+				orderListAll: [],
+				orderId: '', //订单id
+				lastOrderCode: '', //分页使用最后的订单id
 			};
 		},
+		onUnload() { //卸载页面清除定时器
+			clearInterval(this.timer)
+		},
+		filters: {
+			filterDate(time) {
+				let _date = formatDate(new Date(time), 'yyyy-MM-dd hh:mm');
+				return _date;
+			},
+			mealDate(time) {
+				let _date = formatDate(new Date(time), 'MM/dd');
+				return _date;
+			},
+			filtersWeek(time) {
+				let _date = formatDate(new Date(time), 'yyyy-MM-dd');
+				return getWeek(_date);
+			},
+		},
+		onLoad() {
+			// this.orderList();
+			// this.getMonthAmount();
+		},
+		onShow() {
+			this.orderList();
+			this.getMonthAmount();
+		},
 		methods: {
+			// 获取月消费合计
+			getMonthAmount() {
+				this.$Api.getMonthAmount().then(res => {
+					//todo
+				}, err => {})
+			},
+			/**
+			 * 订单列表 
+			 * state为0,4未支付详情传orderId；其余1,2,3已支付传 subOrderId
+			 * 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消
+			 */
+			orderList() {
+				let that = this
+				this.$Api.orderList({
+					orderCode: ''
+				}).then(res => {
+					this.orderListAll = res.data;
+					if (res.data.length > 0) {
+						//todo
+						this.lastOrderCode = res.data.slice(-1)[0].subOrderCode;
+						
+						that.getTimeList()
+						var timer = setInterval(function() {
+							that.getTimeList()
+						}, 1000)
+						this.timer = timer
+					}
+
+				}, err => {})
+			},
+			/**
+			 * 未支付订单倒计时
+			 */
+			getTimeList() {
+				let that = this
+				that.orderListAll.forEach((item) => {
+					let state = item.state;
+					if (state == 0) { //未支付
+						var nowdate = new Date().getTime() //获取当前时间毫秒数
+						var time = formatDate(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/")
+						var enddate = new Date(time).getTime() //处理好格式之后获取结束时间的毫秒数
+						var totaltime = enddate - nowdate //获取时间差
+						that.totaltime(totaltime, item.id) //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
+						item.end_time1 = that.timeData //处理好的单个时间安排到item上（重要）
+					}
+				});
+				this.orderListAll = that.orderListAll;
+			},
+			totaltime(a, id) { //计算单个剩余时间
+				let totaltime = a
+				let that = this
+				var h, m, s, d
+
+				function test(num) {
+					if (num < 10) {
+						num = "0" + num
+					}
+					return num
+				}
+				if (totaltime > 0) {
+					d = Math.floor(totaltime / 1000 / 60 / 60 / 24) * 24
+					h = Math.floor(totaltime / 1000 / 60 / 60 % 24)
+					m = Math.floor(totaltime / 1000 / 60 % 60)
+					s = Math.floor(totaltime / 1000 % 60)
+					//获取时分秒
+					h = d + h
+					h = test(h)
+					m = test(m)
+					s = test(s)
+					this.timeData = `${m}:${s}` // 每个时间的显示格式
+				} else {
+					//超时未支付的订单 取消订单
+					this.cancleOrder(id)
+				}
+			},
+			//获取支付方式
+			getPayType(sid) {
+				this.$Api.getPayType({
+					storeId: sid
+				}).then(res => {
+					this.payList = res.data;
+				}, err => {})
+			},
+			//弹起支付选择框
 			showModal(e) {
-				// uni.hideTabBar()
-				this.modalName = e.currentTarget.dataset.target
+				uni.hideTabBar()
+				this.modalName = e.currentTarget.dataset.target;
+				let storeId = e.currentTarget.dataset.sid;
+				let payId = e.currentTarget.dataset.pid;
+				this.orderId = e.currentTarget.dataset.oid;
+				this.radio = payId;
+				this.getPayType(storeId);
 			},
 			hideModal(e) {
 				this.modalName = e
-				// uni.showTabBar()
+				uni.showTabBar()
 			},
+			//修改支付方式后点击确定按钮
 			reselectId(id) {
 				console.log(`父组件接收的支付方式id：${id}`)
+				this.$Api.updOrderPayment({
+					orderId: this.orderId,
+					payment: id
+				}).then(res => {
+					console.log('修改支付方式')
+					if (id == 0 || id == 1) { //支付成功
+						this.orderList();
+					} else if (id == 2 || id == 4) { //调支付接口
+						this.againPay()
+					}
+				}, err => {})
 			},
-			phone() {
-				uni.makePhoneCall({
-					phoneNumber: '114' //仅为示例
-				});
+			//重新支付
+			againPay() {
+				this.$Api.orderPay({
+					orderId: this.orderId
+				}).then(res => {
+					// #ifdef MP-WEIXIN
+					if (res.data.paymentType == 4) {
+						//职工卡支付成功
+						this.orderList();
+					} else if (res.data.paymentType == 2) {
+						//微信支付
+						this.wechatPay(res.data)
+					}
+					// #endif
+				}, err => {})
 			},
-			lookTap() {
-				uni.navigateTo({
-					url: './orderDetail'
+			//微信支付
+			wechatPay(info) {
+				var _this = this;
+				wx.requestPayment({
+					timeStamp: info.timeStamp,
+					nonceStr: info.nonceStr,
+					package: info.package,
+					signType: 'MD5',
+					paySign: info.paySign,
+					success(res) {
+						console.log(res);
+						if (res.errMsg == 'requestPayment:ok') {
+							_this.orderList();
+						}
+					},
+					fail(res) {
+						// console.log(res)
+					},
+					complete(res) {
+						// console.log(res)
+					}
 				})
 			},
-			cancleOrder() {
+			// 拨打电话
+			phone(num) {
+				uni.makePhoneCall({
+					phoneNumber: num
+				});
+			},
+			/**
+			 * @param {Object} id（0,4 未支付详情传orderId）
+			 * @param {Object} orderId（1,2,3 都是已支付传subOrderId）
+			 * @param {Object} state 订单状态
+			 */
+			lookTap(id, orderId, state) {
+				let _orderId = null;
+				if (state == 0 || state == 4) {
+					_orderId = id
+				} else {
+					_orderId = orderId
+				}
+				uni.navigateTo({
+					url: `./orderDetail?orderId=${_orderId}&state=${state}`
+				})
+			},
+			//申请退款确认框
+			refundTap(id) {
+				var _this = this;
 				uni.showModal({
-					content: '取消订单？',
-					cancelText: '暂不取消',
-					confirmText: '确定取消',
+					content: '申请退款？',
+					cancelText: '取消',
+					confirmText: '确定',
 					success: function(res) {
 						if (res.confirm) {
-							console.log('用户点击确定');
+							// 用户点击确定
+							_this.refund(id)
 						} else if (res.cancel) {
 							console.log('用户点击取消');
 						}
 					}
 				});
 			},
+			//退费
+			refund(id) {
+				this.$Api.refund({
+					subOrderId: id
+				}).then(res => {
+					this.orderList();
+				}, err => {})
+			},
+			//取消订单确认框
+			cancleOrderTap(id) {
+				var _this = this;
+				uni.showModal({
+					content: '取消订单？',
+					cancelText: '暂不取消',
+					confirmText: '确定取消',
+					success: function(res) {
+						if (res.confirm) {
+							// 用户点击确定
+							_this.cancleOrder(id)
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+				});
+			},
+			/**
+			 * 取消订单
+			 */
+			cancleOrder(id) {
+				this.$Api.orderCancel({
+					orderId: id
+				}).then(res => {
+					this.orderList();
+				}, err => {})
+			}
 		},
 	}
 </script>
@@ -165,6 +381,7 @@
 			box-shadow: 0 4rpx 16rpx 0 rgba(0, 0, 0, 0.05);
 			border-radius: 12rpx;
 			padding: 32rpx 32rpx 0;
+			margin-bottom: 32rpx;
 
 			.shopInfo {
 				font-size: 32rpx;

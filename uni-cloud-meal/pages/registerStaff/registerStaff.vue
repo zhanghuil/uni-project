@@ -70,6 +70,7 @@
 				phone: '',
 				code: '',
 				codeTime: 0,
+				crowdId: '',
 				txtType: 'success',
 				toastTxt: '',
 				multiArray: [
@@ -82,12 +83,13 @@
 		onLoad(option) {
 			console.log(option)
 			this.agree = option.agree
+			this.crowdId = option.crowdId
 			this.getDept()
 		},
 		computed: {
 			isLogin() {
 				if (this.agree == 0) {
-					//全部验证
+					//表单全部校验不能为空--没有获取到手机号
 					return !!this.userName && !!this.phone && !!this.code
 				} else {
 					//只验证姓名部门
@@ -98,7 +100,7 @@
 		methods: {
 			getDept() {
 				this.$Api.getDept({
-					companyId: this.$store.state.companyID || '1'
+					companyId: this.$store.state.companyID
 				}).then(res => {
 					let _data = res.data
 					var areaList = [..._data] // 放在一个数组里面
@@ -208,7 +210,8 @@
 						departmentId: this.departmentId,
 						smsCode: this.code,
 						sessionBagKey: _sessionBagKey,
-						companyId: this.$store.state.companyID
+						companyId: this.$store.state.companyID,
+						crowdId: this.crowdId
 					}
 					this.$Api.phoneStaff(params).then(res => {
 						uni.setStorageSync('token', res.data.accessToken)

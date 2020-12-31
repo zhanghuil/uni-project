@@ -148,129 +148,143 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
-{
-  data: function data() {
-    return {
-      from: null,
-      id: '',
-      checkboxData: [],
-      checkedArr: [], //复选框选中的值
-      radio: 1,
-      sexList: [{
-        value: 1,
-        name: '男',
-        img: '../../static/image/sex0.png',
-        checked: true },
-      {
-        value: 2,
-        name: '女',
-        img: '../../static/image/sex1.png',
-        checked: false }],
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
-      age: null,
-      height: '',
-      weight: '',
-      diseaseArr: [] };
 
-  },
-  onLoad: function onLoad(options) {
-    this.diseaseDictionary();
-    this.from = options.from;
-    this.id = options.id;
-  },
-  computed: {
-    isLogin: function isLogin() {
-      return !!this.age && !!this.height && !!this.weight;
-    } },
 
-  methods: {
-    returnTap: function returnTap() {
-      uni.navigateBack({
-        delta: 1 });
 
-    },
-    //跳过-到门店主页
-    skipTap: function skipTap() {
-      uni.redirectTo({
-        url: "../home/home?id=".concat(this.id) });
 
-    },
-    diseaseDictionary: function diseaseDictionary() {var _this = this;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { from: null, id: '', checkboxData: [], checkedArr: [], //复选框选中的值
+      radio: 1, sexList: [{ value: 1, name: '男', img: '../../static/image/sex0.png', checked: true }, { value: 2, name: '女', img: '../../static/image/sex1.png', checked: false }], age: null, height: '', weight: '', diseaseArr: [] };}, onLoad: function onLoad(options) {this.diseaseDictionary();this.from = options.from;this.id = options.id;}, computed: { isLogin: function isLogin() {return !!this.age && !!this.height && !!this.weight;} }, methods: { checkInput: function checkInput(e) {var _this = this;var type = e.currentTarget.dataset.type;var num = e.detail.value;num = (0, _util.checkNum)(num, 3, 1);this.$nextTick(function () {if (type == 'height') _this.height = num;else _this.weight = num;});}, returnTap: function returnTap() {uni.navigateBack({ delta: 1 });}, //跳过-到门店主页
+    skipTap: function skipTap() {uni.redirectTo({ url: "../home/home?id=".concat(this.id) });}, diseaseDictionary: function diseaseDictionary() {var _this2 = this;
       this.$Api.diseaseDictionary().then(function (res) {
-        _this.checkboxData = res.data;
-        _this.lookInfo();
+        _this2.checkboxData = res.data;
+        _this2.lookInfo();
       }, function (err) {});
     },
-    lookInfo: function lookInfo() {var _this2 = this;
+    lookInfo: function lookInfo() {var _this3 = this;
       this.$Api.lookInfo().then(function (res) {
         var data = res.data;
-        _this2.radio = data.sex || 1;
-        _this2.age = data.age;
-        _this2.height = data.height;
-        _this2.weight = data.weight;
+        _this3.radio = data.sex || 1;
+        _this3.age = data.age;
+        _this3.height = data.height;
+        _this3.weight = data.weight;
 
-        var newArr = _this2.checkboxData.filter(function (item) {return (
+        var newArr = _this3.checkboxData.filter(function (item) {return (
             data.physicalCondition.indexOf(item.code) > -1);});
 
 
-        _this2.checkedArr = newArr;
-        _this2.diseaseArr = newArr.map(function (item) {return item.code;});
+        _this3.checkedArr = newArr;
+        _this3.diseaseArr = newArr.map(function (item) {return item.code;});
       }, function (err) {});
     },
     // 疾病类型多选
@@ -292,7 +306,7 @@ var _default =
       console.log("\u9009\u62E9\u7684\u6027\u522B\uFF1A".concat(e.detail.value));
       this.radio = e.detail.value;
     },
-    confirmTap: function confirmTap() {var _this3 = this;
+    confirmTap: function confirmTap() {var _this4 = this;
       var params = {
         sex: this.radio,
         age: this.age,
@@ -302,7 +316,7 @@ var _default =
 
       this.$Api.infoGather(params).then(function (res) {
         uni.navigateTo({
-          url: "./lookInfo?id=".concat(_this3.id) });
+          url: "./lookInfo?id=".concat(_this4.id) });
 
       }, function (err) {});
     } } };exports.default = _default;

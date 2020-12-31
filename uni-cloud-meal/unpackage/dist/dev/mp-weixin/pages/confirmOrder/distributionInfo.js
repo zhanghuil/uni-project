@@ -130,84 +130,92 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _regenerator = _interopRequireDefault(__webpack_require__(/*! ./node_modules/@babel/runtime/regenerator */ 23));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}var _default =
+
+
 {
   data: function data() {
     return {
-      modalName: null,
+      detailAddress: '', //详细地址
+      userName: '', //联系人
+      phone: '', // 联系手机号
+      modalName: null, //地址选择弹框
       currIndex: 0,
+
       districtName: '', //院区
+      districtId: '',
       buildingName: '', //楼栋
+      buildingId: '',
       floorName: '', //楼层
-      addressStr: '',
+      floorId: '',
+      addressStr: '', //拼接地址
       currFloor: -1,
       addressList: [{
         "buildingList": [{
@@ -272,29 +280,61 @@ var _default =
 
 
       addresslist2: [],
-      addresslist3: [] };
+      addresslist3: [],
+      storeId: '' };
 
   },
+  onLoad: function onLoad(options) {
+    this.storeId = options.storeId;
+    this.personalCenter();
+    this.shippingAddress();
+  },
   methods: {
+    shippingAddress: function shippingAddress() {var _this = this;
+      this.$Api.shippingAddress({
+        storeId: this.storeId }).
+      then(function (res) {
+        _this.addressList = res.data;
+      }, function (err) {});
+    },
+    personalCenter: function personalCenter() {var _this2 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var historyRes, _data;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
+                  _this2.$Api.lastAddress());case 2:historyRes = _context.sent;
+                if (!historyRes.data.district) {//没有历史配送地址
+                  _this2.$Api.personalCenter().then(function (res) {
+                    var data = res.data;
+                    _this2.phone = data.phone;
+                    _this2.userName = data.name;
+                  }, function (err) {});
+                } else {
+                  _data = historyRes.data;
+                  _this2.addressStr = "".concat(_data.district, "-").concat(_data.firstAddressName, "-").concat(_data.secondAddressName);
+                  _this2.detailAddress = _data.addRemark;
+                  _this2.phone = _data.phone;
+                  _this2.userName = _data.contacts;
+                }case 4:case "end":return _context.stop();}}}, _callee);}))();
+    },
     oneLevel: function oneLevel(e) {
       var id = e.currentTarget.id;
       var currIndex = e.currentTarget.dataset.index;
-      var result = this.addressList.find(function (item) {return item.districtId == id;});
-      this.addresslist2 = result.buildingList;
-      this.districtName = result.districtName;
+      var result = this.addressList.find(function (item) {return item.areaId == id;});
+      this.addresslist2 = result.firstAddressList;
+      this.districtName = result.areaName;
+      this.districtId = id;
       this.currIndex = currIndex;
     },
     twoLevel: function twoLevel(e) {
       var id = e.currentTarget.id;
       var currIndex = e.currentTarget.dataset.index;
-      var result = this.addresslist2.find(function (item) {return item.buildingId == id;});
-      this.addresslist3 = result.floorList;
-      this.buildingName = result.buildingName;
+      var result = this.addresslist2.find(function (item) {return item.id == id;});
+      this.addresslist3 = result.secondAddressList;
+      this.buildingName = result.name;
+      this.buildingId = id;
       this.currIndex = currIndex;
     },
     threeLevel: function threeLevel(index, id, name) {
       this.currFloor = index;
       this.floorName = name;
+      this.floorId = id;
       this.addressStr = "".concat(this.districtName, "-").concat(this.buildingName, "-").concat(this.floorName);
       this.hideModal();
     },
@@ -315,6 +355,57 @@ var _default =
     },
     hideModal: function hideModal(e) {
       this.modalName = null;
+    },
+    //保存配送地址
+    submitTap: function submitTap() {var _this3 = this;
+      if (!this.addressStr) {
+        (0, _util.showToast)('请完善配送地址');
+        return;
+      } else if (!this.userName) {
+        (0, _util.showToast)('请完善联系人');
+        return;
+      } else if (!this.phone) {
+        (0, _util.showToast)('请完善联系手机号');
+        return;
+      }
+
+      var params = {
+        district: this.districtName,
+        districtId: this.districtId,
+        firstAddressName: this.buildingName,
+        firstAddressId: this.buildingId,
+        secondAddressName: this.floorName,
+        secondAddressId: this.floorId,
+        addRemark: this.detailAddress,
+        contacts: this.userName,
+        phone: this.phone };
+
+      console.log(JSON.stringify(params));
+      this.$Api.saveOrderAddress(params).then(function (res) {
+        var distributionInfo = {
+          addressStr: _this3.addressStr,
+          districtId: _this3.districtId,
+          districtName: _this3.districtName,
+          firstAddressId: _this3.buildingId,
+          firstAddressName: _this3.buildingName,
+          secondAddressId: _this3.floorId,
+          secondAddressName: _this3.floorName,
+          addRemark: _this3.detailAddress,
+          orderAddressStr: _this3.districtName + _this3.buildingName + _this3.floorName + _this3.detailAddress,
+          phone: _this3.phone,
+          name: _this3.userName };
+
+        _this3.$store.commit('setDistributionInfo', JSON.stringify(distributionInfo));
+
+        (0, _util.showToast)('保存成功');
+        setTimeout(function () {return (
+            wx.navigateBack({
+              delta: 1 }));},
+
+        1500);
+      }, function (err) {
+        (0, _util.showToast)(err.errMsg);
+      });
     } } };exports.default = _default;
 
 /***/ }),

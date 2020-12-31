@@ -23,6 +23,7 @@
 				radio: 0,
 				chooseList: [], //0-患者  1-职工
 				isNeedVerify: null, //是否需要验证
+				crowdId: '', //身份id
 			};
 		},
 		created() {
@@ -39,54 +40,53 @@
 					this.chooseList = res.data.crowdTypeService
 					this.radio = res.data.crowdTypeService[0].code
 					this.isNeedVerify = res.data.crowdTypeService[0].isNeedVerify
+					this.crowdId = res.data.crowdTypeService[0].crowdId
 				}, err => {})
 			},
 			identityChange(e) {
 				let val = e.detail.value
 				console.log(`选择的：${val}`)
 				this.radio = val
-				this.isNeedVerify = this.chooseList.find(i => i.code == val).isNeedVerify
+				this.isNeedVerify = this.chooseList.find(i => i.code == val).isNeedVerify;
+				this.crowdId = this.chooseList.find(i => i.code == val).crowdId;
 			},
 			/**
 			 * 0-患者  1-职工  确定按钮获取用户手机号
 			 */
 			decryptPhoneNumber(e) {
 				var _this = this;
-				let url;
+				let url, type;
 				if (this.radio == 1) { //选择职工
 					if (this.isNeedVerify) { //需要验证
 						url = 'registerStaff'
 					} else {
 						url = 'registerPatient'
+						type = 's'
 					}
-				} else {
+				} else {  //患者
 					url = 'registerPatient'
+					type = 'p'
 				}
 				if (e.detail.errMsg == 'getPhoneNumber:fail:user cancel') { //微信账号没有绑定手机号 点击取消
 					uni.navigateTo({
-						url: `../${url}/${url}?agree=0`
+						url: `../${url}/${url}?agree=0&crowdId=${_this.crowdId}&type=${type}`
 					})
 					return;
 				}
 				console.log(e.detail.errMsg)
 				if (e.detail.errMsg == 'getPhoneNumber:fail user deny') {
-					//用户拒绝 需要获取验证码
+					//用户拒绝 需要获取验证码  0-没有手机号  1-有手机号
 					uni.navigateTo({
-						url: `../${url}/${url}?agree=0`
+						url: `../${url}/${url}?agree=0&crowdId=${_this.crowdId}&type=${type}`
 					})
 				} else {
-					// 如果用户同意授权
+					// 如果用户同意授权 有手机号
 					_this.$store.commit('setPhoneInfo', e)
 					if (_this.radio == 0) { //患者直接注册
 						_this.wechatphoneP(e)
 					} else if (_this.radio == 1) { //职工微信获取手机号认证
 						_this.wechatphone(e)
-					} else { //职工需要验证
-						uni.navigateTo({
-							url: `../${url}/${url}?agree=1`
-						})
 					}
-
 				}
 
 			},
@@ -99,7 +99,8 @@
 					iv: e.detail.iv,
 					cloudID: e.detail.cloudID,
 					sessionBagKey: _sessionBagKey,
-					companyId: this.$store.state.companyID
+					companyId: this.$store.state.companyID,
+					crowdId: this.crowdId
 				}
 				this.$Api.wechatphone(params).then(res => {
 					uni.setStorageSync('token', res.data.accessToken)
@@ -107,9 +108,9 @@
 						uni.switchTab({
 							url: '../index/index',
 						});
-					} else {
+					} else { //职工需要验证
 						uni.navigateTo({
-							url: '../registerStaff/registerStaff?agree=1'
+							url: '../registerStaff/registerStaff?agree=1&crowdId=${_this.crowdId}'
 						})
 					}
 				}, err => {})
@@ -123,7 +124,8 @@
 					iv: e.detail.iv,
 					cloudID: e.detail.cloudID,
 					sessionBagKey: _sessionBagKey,
-					companyId: this.$store.state.companyID
+					companyId: this.$store.state.companyID,
+					crowdId: this.crowdId
 				}
 				this.$Api.wechatphoneP(params).then(res => {
 					uni.setStorageSync('token', res.data.accessToken)

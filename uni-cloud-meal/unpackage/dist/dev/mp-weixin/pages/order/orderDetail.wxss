@@ -125,6 +125,60 @@ page {
           flex: 1;
   padding-left: 56rpx;
 }
+.orderCard .dateCard {
+  padding: 0 0 32rpx 4rpx;
+}
+.orderCard .dateCard .cu-item {
+  height: auto;
+  line-height: normal;
+  font-size: 26rpx;
+  color: #4EC09B;
+  border: 2rpx solid #4EC09B;
+  -webkit-border-radius: 8rpx;
+          border-radius: 8rpx;
+  padding: 11rpx 20rpx;
+  margin: 0 20rpx 0 0;
+}
+.orderCard .dateCard .cu-item .week {
+  padding-left: 8rpx;
+}
+.orderCard .dateCard .cu-item.cur {
+  border-bottom: none;
+  background: #4EC09B;
+  color: #FFFFFF;
+}
+.orderCard .repastName {
+  font-size: 32rpx;
+  color: #4A4A4A;
+  padding-bottom: 24rpx;
+}
+.orderCard .menuList {
+  font-size: 26rpx;
+  color: #4A4A4A;
+  padding-bottom: 16rpx;
+}
+.orderCard .menuList .name {
+  width: 420rpx;
+}
+.orderCard .menuList .R {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  padding-left: 56rpx;
+}
+.orderCard .currDayPrice {
+  padding-left: 16rpx;
+  font-size: 40rpx;
+  color: #FF4D23;
+}
+.orderCard .totalPrice {
+  margin-top: 30rpx;
+  border-top: 2rpx solid #F4F4F4;
+  font-size: 48rpx;
+  color: #FF4D23;
+  text-align: right;
+  padding: 26rpx 0 0;
+}
 .orderCard .totalP {
   margin-top: 14rpx;
   padding: 30rpx 0 0;
@@ -150,5 +204,47 @@ page {
 }
 .orderCard .w68 {
   width: 136rpx;
+}
+.orderBtnBox {
+  border-top: 2rpx solid #F4F4F4;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+          justify-content: flex-end;
+  padding: 24rpx 0;
+}
+.orderBtnBox .orderBtn {
+  border: 2rpx solid #4EC09B;
+  height: 60rpx;
+  padding: 0 24rpx;
+  -webkit-border-radius: 40rpx;
+          border-radius: 40rpx;
+  font-size: 14px;
+  color: #4EC09B;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  line-height: 1;
+  margin-left: 24rpx;
+}
+.orderBtnBox .orderBtn.bg-cyan {
+  color: #FFFFFF;
+}
+.orderBtnBox2 {
+  padding: 0 0 24rpx;
+}
+.orderBtnBox2 .cu-btn {
+  background: #C0C0C0;
+  color: #FFFFFF;
+  font-size: 26rpx;
+  height: 52rpx;
+  padding: 0 25rpx;
+  -webkit-border-radius: 4rpx;
+          border-radius: 4rpx;
 }
 

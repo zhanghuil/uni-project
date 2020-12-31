@@ -8043,7 +8043,10 @@ var store = new _vuex.default.Store({
     companyName: '', //医院title
     phoneInfo: {}, //手机号加密信息
     orderNotes: '', //订单备注
-    loading: false //自定义加载动画
+    loading: false, //自定义加载动画
+    isRemark: {}, //门店是否启用订单备注、手写地址
+    distributionInfo: '', //配送信息
+    orderMenuList: '' //提交订单菜谱列表
   },
   mutations: {
     setCompanyID: function setCompanyID(state, value) {
@@ -8057,10 +8060,18 @@ var store = new _vuex.default.Store({
     },
     setOrderNote: function setOrderNote(state, value) {
       state.orderNotes = value;
-      console.log('订单备注：' + value);
     },
     showLoading: function showLoading(state, show) {
       state.loading = show;
+    },
+    setIsRemark: function setIsRemark(state, value) {
+      state.isRemark = value;
+    },
+    setDistributionInfo: function setDistributionInfo(state, value) {
+      state.distributionInfo = value;
+    },
+    setOrderMenuList: function setOrderMenuList(state, value) {
+      state.orderMenuList = value;
     } },
 
   actions: {} });var _default =
@@ -9189,7 +9200,7 @@ var index = {
 
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var _request = _interopRequireDefault(__webpack_require__(/*! ./request.js */ 14));
-var _index = _interopRequireDefault(__webpack_require__(/*! ../store/index.js */ 11));var _isWechat$getCompany$;function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}
+var _index = _interopRequireDefault(__webpack_require__(/*! ../store/index.js */ 11));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //引入request.js
 var api = _request.default;
 // export default {
 // 	// 登录
@@ -9203,8 +9214,8 @@ var api = _request.default;
 // 	// 	uni.setStorageSync('openid', res.openid)
 // 	// }
 // }
-var _default = (_isWechat$getCompany$ = {
-
+var _default =
+{
   isWechat: function isWechat(data) {
     return api.baseRequest('/api/Account/logion/wechat', 'POST', data);
   },
@@ -9235,6 +9246,9 @@ var _default = (_isWechat$getCompany$ = {
 
 
   // 首页
+  currentCompany: function currentCompany(data) {//获取当前单位信息
+    return api.baseRequest('/api/Company/current', 'GET', data);
+  },
   getBanner: function getBanner(data) {//首页医院banner
     return api.baseRequest('/api/Banner', 'GET', data);
   },
@@ -9262,6 +9276,10 @@ var _default = (_isWechat$getCompany$ = {
   productDetail: function productDetail(data) {//根据id获取商品详情
     return api.baseRequest('/api/Menu/GetProductDetailById', 'GET', data);
   },
+  isRemark: function isRemark(data) {//门店是否启用订单备注、手写地址
+    return api.baseRequest('/api/Store/IsRemark', 'GET', data);
+  },
+
 
   //订单
   shippingAddress: function shippingAddress(data) {//获取配送地址
@@ -9269,37 +9287,72 @@ var _default = (_isWechat$getCompany$ = {
   },
   lastAddress: function lastAddress(data) {//获取历史配送地址
     return api.baseRequest('/api/Address/LastAddress', 'GET', data);
-  } }, _defineProperty(_isWechat$getCompany$, "shippingAddress",
-function shippingAddress(data) {//保存配送地址
-  return api.baseRequest('/api/Address/SaveOrderAddress', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "getPayType",
-function getPayType(data) {//获取支付方式
-  return api.baseRequest('/api/Order/GetPayType', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "personalCenter",
+  },
+  saveOrderAddress: function saveOrderAddress(data) {//保存配送地址
+    return api.baseRequest('/api/Address/SaveOrderAddress', 'POST', data);
+  },
+  getPayType: function getPayType(data) {//获取支付方式
+    return api.baseRequest('/api/Order/GetPayType', 'GET', data);
+  },
+  orderSubmit: function orderSubmit(data) {//订单提交
+    return api.baseRequest('/api/Order/OrderSubmit', 'POST', data);
+  },
+  orderCancel: function orderCancel(data) {//取消订单
+    return api.baseRequest('/api/Order/OrderCancel', 'GET', data);
+  },
+  getMonthAmount: function getMonthAmount(data) {//获取月消费合计
+    return api.baseRequest('/api/Order/GetMonthAmount', 'GET', data);
+  },
+  orderList: function orderList(data) {//订单中心列表
+    return api.baseRequest('/api/Order/OrderList', 'GET', data);
+  },
+  orderPayDetail: function orderPayDetail(data) {//订单中心未支付详情
+    return api.baseRequest('/api/Order/OrderPayDetail', 'GET', data);
+  },
+  orderDetail: function orderDetail(data) {//订单中心已支付详情
+    return api.baseRequest('/api/Order/OrderDetail', 'GET', data);
+  },
+  // 支付
+  orderPay: function orderPay(data) {//支付
+    return api.baseRequest('/api/Order/pay', 'POST', data);
+  },
+  refund: function refund(data) {//退费
+    return api.baseRequest('/api/Order/refund', 'POST', data);
+  },
+  updOrderPayment: function updOrderPayment(data) {//修改支付方式
+    return api.baseRequest('/api/Order/UpdOrderPayment', 'GET', data);
+  },
 
 
 
-
-
-
-function personalCenter(data) {//获取个人中心信息
-  return api.baseRequest('/api/Account', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "diseaseDictionary",
-function diseaseDictionary(data) {//获取疾病字典
-  return api.baseRequest('/api/Common/dictionary/PhysicalCondition', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "infoGather",
-function infoGather(data) {//信息采集
-  return api.baseRequest('/api/Account', 'PUT', data);
-}), _defineProperty(_isWechat$getCompany$, "recommend",
-function recommend(data) {//营养素推荐
-  return api.baseRequest('/api/Account/nurt/recommend', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "lookInfo",
-function lookInfo(data) {//查看信息采集信息
-  return api.baseRequest('/api/Account/info', 'GET', data);
-}), _defineProperty(_isWechat$getCompany$, "unbind",
-function unbind(data) {//解绑
-  return api.baseRequest('/api/Account/unbind', 'DELETE', data);
-}), _isWechat$getCompany$);exports.default = _default;
+  // 个人中心
+  personalCenter: function personalCenter(data) {//获取个人中心信息
+    return api.baseRequest('/api/Account', 'GET', data);
+  },
+  diseaseDictionary: function diseaseDictionary(data) {//获取疾病字典
+    return api.baseRequest('/api/Common/dictionary/PhysicalCondition', 'GET', data);
+  },
+  infoGather: function infoGather(data) {//信息采集
+    return api.baseRequest('/api/Account', 'PUT', data);
+  },
+  recommend: function recommend(data) {//营养素推荐
+    return api.baseRequest('/api/Account/nurt/recommend', 'GET', data);
+  },
+  lookInfo: function lookInfo(data) {//查看信息采集信息
+    return api.baseRequest('/api/Account/info', 'GET', data);
+  },
+  unbind: function unbind(data) {//解绑
+    return api.baseRequest('/api/Account/unbind', 'DELETE', data);
+  },
+  recharge: function recharge(data) {//职工卡充值
+    return api.baseRequest('/api/Card/recharge', 'POST', data);
+  },
+  cardInfo: function cardInfo(data) {//获取卡信息
+    return api.baseRequest('/api/Card/current', 'GET', data);
+  },
+  rechargeRecord: function rechargeRecord(data) {//获取充值记录
+    return api.baseRequest('/api/Card/recharge', 'GET', data);
+  } };exports.default = _default;
 
 /***/ }),
 /* 14 */
@@ -9439,7 +9492,7 @@ var url_config = "";
 
 if (true) {
   // 开发环境
-  url_config = 'http://192.172.2.78:3915';
+  url_config = 'http://zhyy.wincome.group'; //'http://192.172.2.78:3915'
 } else {}var _default =
 
 url_config;exports.default = _default;
@@ -10480,9 +10533,9 @@ if (hadRuntime) {
   !*** E:/HBuilderX/uni-cloud-meal/common/util.js ***!
   \**************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-/**
+/* WEBPACK VAR INJECTION */(function(uni) {/**
  * 根据key查找数据中对应的值
  */
 var SearchData = function SearchData(key, data) {
@@ -10603,28 +10656,92 @@ var groupBy = function groupBy(list, fn) {
     groups[group] = groups[group] || [];
     groups[group].push(o);
   });
-  // return Object.keys(groups).map(function (group) {
-  //     return groups[group];
-  // });
   return groups;
 };
 
-// const groupBy=( array , id )=> {
-//     let groups = {};
-//     array.forEach( function( o ) {
-//         let group = JSON.stringify( o[id] );
-//         groups[group] = groups[group] || [];
-//         groups[group].push( o );
-//     });
-//     return Object.values(groups);
-// }
+/**
+    * 提示弹框
+    */
+var showToast = function showToast(title, icon) {
+  if (!icon) {
+    icon = 'none';
+  }
+  if (!title) {
+    title = '请求出错';
+  }
+  uni.showToast({
+    title: title,
+    icon: icon,
+    duration: 2000 });
+
+};
+
+/**
+    * 对输入框的整数位数和小数位数做限制
+    * intNum表示整数位个数，必填 0表示整数位数不做限制
+    * decNum表示小数位个数，选填 默认为0，表示没有小数
+    */
+var checkNum = function checkNum(obj) {var intNum = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;var decNum = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var value = obj;
+  var changeValue, t1, t2;
+  switch (decNum) {
+    case 0:
+      value = value.replace(/[^\d]/g, ''); //去除数字以外的字符;
+      value = value.replace(/^0\d+/g, '0'); //防止整数位出现'00'的情况
+      if (intNum != 0) {
+        value = value.substr(0, intNum);
+      }
+      break;
+    default:
+      value = value.replace(/[^\d.]/g, ''); //去除数字和小数点以外的字符;
+      value = value.replace(/^[^\d]/g, ''); //保证第一个字符是数字
+      value = value.replace(/\.{2}/g, '.'); //去除第二个小数点
+      value = value.replace(/^0\d+/g, '0');
+      changeValue = value.split('.');
+      if (changeValue.length > 1) {//表示用户输入的既有整数又有小数
+        if (intNum == 0) {
+          t1 = changeValue[0];
+        } else {
+          t1 = changeValue[0].substr(0, intNum);
+        }
+        t2 = changeValue[1].substr(0, decNum);
+        value = t1 + '.' + t2;
+      } else {
+        if (intNum != 0) {
+          value = value.substr(0, intNum);
+        }
+      }
+      break;}
+
+  if (obj != value) {
+    obj = value;
+  }
+  return value;
+};
+
+/**判断时间是否过期
+    * @param {Object} time
+    */
+var judgeTime = function judgeTime(time) {
+  var strtime = time.replace("/-/g", "/"); //时间转换
+  //时间
+  var date1 = new Date(strtime);
+  //现在时间
+  var date2 = new Date();
+  //判断时间是否过期
+  return date1 < date2 ? true : false;
+};
 
 module.exports = {
   SearchData: SearchData,
   SearchDataIndex: SearchDataIndex,
   formatDate: formatDate,
   getWeek: getWeek,
-  groupBy: groupBy };
+  groupBy: groupBy,
+  showToast: showToast,
+  checkNum: checkNum,
+  judgeTime: judgeTime };
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ })
 ]]);

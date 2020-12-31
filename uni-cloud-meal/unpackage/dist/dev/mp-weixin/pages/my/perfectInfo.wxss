@@ -115,10 +115,6 @@ page {
   color: #2A2A2A;
   padding: 0 0 48rpx 0;
 }
-.infoGroup .item .px15 {
-  padding-left: 30rpx;
-  padding-right: 30rpx;
-}
 .infoGroup .item .inputNum {
   font-size: 48rpx;
   color: #4EC09B;

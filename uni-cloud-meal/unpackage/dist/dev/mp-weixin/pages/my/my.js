@@ -190,6 +190,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
 var _util = _interopRequireDefault(__webpack_require__(/*! ../../common/util.js */ 34));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -249,11 +252,24 @@ var _util = _interopRequireDefault(__webpack_require__(/*! ../../common/util.js 
 //
 //
 //
+//
+//
+//
 var _default = { data: function data() {return { phone: '', type: 0, //身份类别 0-患者  1-职工
-      name: '', department: '', company: '', cardNumber: '' };}, computed: { getPhone: function getPhone() {var mphone = this.phone.substring(0, 3) + '****' + this.phone.substring(7);return mphone;} }, onLoad: function onLoad() {this.personalCenter();var dateStr = _util.default.formatDate(new Date('2020-12-17T09:23:54.577Z'), 'yyyy-MM-dd');console.log(dateStr);var week = _util.default.getWeek('2020-12-17');console.log(week);}, methods: { personalCenter: function personalCenter() {var _this2 = this;this.$Api.personalCenter().then(function (res) {var data = res.data;_this2.type = data.accountType;_this2.phone = data.phone;_this2.name = data.name;_this2.department = data.districtName + ' ' + data.departmentName;_this2.company = data.currentCompanyName;_this2.cardNumber = data.cardNumber;}, function (err) {}); // this.$Api.personalCenter().then(res => {
+      name: '', department: '', company: '', staffCardNo: '' //职工卡
+    };}, computed: { getPhone: function getPhone() {var mphone = this.phone.substring(0, 3) + '****' + this.phone.substring(7);return mphone;} }, onLoad: function onLoad() {this.personalCenter();var dateStr = _util.default.formatDate(new Date('2020-12-17T09:23:54.577Z'), 'yyyy-MM-dd');console.log(dateStr);var week = _util.default.getWeek('2020-12-17');console.log(week);}, methods: { personalCenter: function personalCenter() {var _this2 = this;this.$Api.personalCenter().then(function (res) {var data = res.data;_this2.type = data.accountType;_this2.phone = data.phone;_this2.name = data.name;if (data.districtName) {_this2.department = data.districtName + ' ' + data.departmentName;}_this2.company = data.currentCompanyName;_this2.staffCardNo = data.staffCardNo;}, function (err) {}); // this.$Api.personalCenter().then(res => {
       // 	debugger
       // }, err => {})
-    }, rechargeTap: function rechargeTap() {if (!this.rechargeTap) {uni.showToast({ title: '请联系管理员绑定职工卡', icon: "none" });return;}uni.navigateTo({ url: './recharge' });}, infoTap: function infoTap() {uni.navigateTo({ url: './perfectInfo?from=info' });}, quitTap: function quitTap() {var _this = this;uni.showModal({ content: '退出登录？', cancelText: '取消',
+      // uni.showModal({
+      // 	content: '内容',
+      // 	showCancel: false,
+      // 	buttonText: '好的',
+      // 	success: (res) => {
+      // 		if (res.confirm) {
+      // 		}
+      // 	}
+      // })
+    }, rechargeTap: function rechargeTap() {if (!this.staffCardNo) {uni.showToast({ title: '请联系管理员绑定职工卡', icon: "none" });return;}uni.navigateTo({ url: './recharge' });}, infoTap: function infoTap() {uni.navigateTo({ url: './perfectInfo?from=info' });}, quitTap: function quitTap() {var _this = this;uni.showModal({ content: '退出登录？', cancelText: '取消',
         confirmText: '退出',
         success: function success(res) {
           if (res.confirm) {

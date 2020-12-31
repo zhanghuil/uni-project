@@ -270,7 +270,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     // this.$showLoading(true)
-    //todo
+    //todo新接口
     var tit = this.$store.state.setCompanyTit || '医院营养云订餐';
     uni.setNavigationBarTitle({
       title: tit });
@@ -283,6 +283,15 @@ __webpack_require__.r(__webpack_exports__);
     this.isWechat(companyID); //是否登录
   },
   methods: {
+    currentCompany: function currentCompany() {var _this2 = this;
+      this.$Api.currentCompany().then(function (res) {
+        var companyTit = res.data.title || '';
+        _this2.$store.commit('setCompanyTit', companyTit);
+        uni.setNavigationBarTitle({
+          title: companyTit + '营养订餐' });
+
+      }, function (err) {});
+    },
     isWechat: function isWechat(companyID) {
       var _this = this;
       uni.login({
@@ -301,44 +310,45 @@ __webpack_require__.r(__webpack_exports__);
             _this.storeLocation();
             _this.store();
             _this.getBanner();
+            _this.currentCompany(); //设置医院title
           }, function (err) {});
         } });
 
     },
     //banner
-    getBanner: function getBanner() {var _this2 = this;
+    getBanner: function getBanner() {var _this3 = this;
       this.$Api.getBanner().then(function (res) {
-        _this2.imgs = res.data;
+        _this3.imgs = res.data;
       }, function (err) {});
     },
     // 门店位置：全部+区域字典，默认展示全部区域的门店
-    storeLocation: function storeLocation() {var _this3 = this;
+    storeLocation: function storeLocation() {var _this4 = this;
       this.$Api.storeLocation().then(function (res) {
         var allArr = [{
           id: '',
           name: "全部" }];
 
-        _this3.areaList = [].concat(allArr, _toConsumableArray(res.data));
+        _this4.areaList = [].concat(allArr, _toConsumableArray(res.data));
       }, function (err) {});
     },
     // 如果没有访问过的门店数据，则默认展示全部门店的分类，如果有访问过的门店数据，则默认展示经常光顾的分类
-    store: function store() {var _this4 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var res;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
-                  _this4.$Api.storeOften());case 2:res = _context.sent;
+    store: function store() {var _this5 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {var res;return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:_context.next = 2;return (
+                  _this5.$Api.storeOften());case 2:res = _context.sent;
                 if (res.data.length > 0) {
-                  _this4.storeList = res.data;
-                  _this4.TabCur = 1;
+                  _this5.storeList = res.data;
+                  _this5.TabCur = 1;
                 } else {
-                  _this4.storeAll();
+                  _this5.storeAll();
                 }case 4:case "end":return _context.stop();}}}, _callee);}))();
     },
-    storeAll: function storeAll() {var _this5 = this;
+    storeAll: function storeAll() {var _this6 = this;
       this.$Api.storeAll().then(function (res) {
-        _this5.storeList = res.data;
+        _this6.storeList = res.data;
       }, function (err) {});
     },
-    storeOften: function storeOften() {var _this6 = this;
+    storeOften: function storeOften() {var _this7 = this;
       this.$Api.storeOften().then(function (res) {
-        _this6.storeList = res.data;
+        _this7.storeList = res.data;
       }, function (err) {});
     },
     // 选择不同区域
@@ -347,11 +357,11 @@ __webpack_require__.r(__webpack_exports__);
       this.storeDistrict();
       this.areaBoxShow = !this.areaBoxShow;
     },
-    storeDistrict: function storeDistrict() {var _this7 = this;
+    storeDistrict: function storeDistrict() {var _this8 = this;
       this.$Api.storeDistrict({
         districtId: this.areaCur }).
       then(function (res) {
-        _this7.storeList = res.data;
+        _this8.storeList = res.data;
       }, function (err) {});
     },
     onClickSwiper: function onClickSwiper(e) {

@@ -105,11 +105,11 @@
 /******/
 /******/
 /******/ 		// mini-css-extract-plugin CSS loading
-/******/ 		var cssChunks = {"components/m-loading":1,"components/cartcontrol/cartcontrol":1,"components/paymentList":1,"components/uni-countdown/uni-countdown":1};
+/******/ 		var cssChunks = {"components/m-loading":1,"components/cartcontrol/cartcontrol":1,"components/paymentList":1,"components/uni-load-more/uni-load-more":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"colorui/components/cu-custom":"colorui/components/cu-custom","components/m-loading":"components/m-loading","components/cartcontrol/cartcontrol":"components/cartcontrol/cartcontrol","components/paymentList":"components/paymentList","components/uni-countdown/uni-countdown":"components/uni-countdown/uni-countdown"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"colorui/components/cu-custom":"colorui/components/cu-custom","components/m-loading":"components/m-loading","components/cartcontrol/cartcontrol":"components/cartcontrol/cartcontrol","components/paymentList":"components/paymentList","components/uni-load-more/uni-load-more":"components/uni-load-more/uni-load-more"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {

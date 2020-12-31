@@ -130,42 +130,99 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
-{
-  data: function data() {
-    return {};
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 
-  },
-  methods: {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { amount: null, cardInfoObj: {} };}, onLoad: function onLoad() {this.cardInfo();}, methods: { cardInfo: function cardInfo() {var _this2 = this;this.$Api.cardInfo().then(function (res) {_this2.cardInfoObj = res.data;}, function (err) {console.log(err.statusCode);});}, checkInput: function checkInput(e) {var _this3 = this;var price = e.detail.value;price = (0, _util.checkNum)(price, 4, 2);this.$nextTick(function () {_this3.amount = price;});}, rechargeTap: function rechargeTap() {var _this4 = this;this.$Api.recharge({ rechargeMoney: this.amount }).then(function (res) {
+
+        _this4.wechatPay(res.data);
+
+      }, function (err) {});
+    },
+    //微信支付
+    wechatPay: function wechatPay(info) {
+      var _this = this;
+      wx.requestPayment({
+        timeStamp: info.timeStamp,
+        nonceStr: info.nonceStr,
+        package: info.package,
+        signType: 'MD5',
+        paySign: info.paySign,
+        success: function success(res) {
+          console.log(res);
+          if (res.errMsg == 'requestPayment:ok') {
+            _this.cardInfo();
+            _this.amount = null;
+          }
+        },
+        fail: function fail(res) {
+          // console.log(res)
+        },
+        complete: function complete(res) {
+          // console.log(res)
+        } });
+
+    },
     lookTap: function lookTap() {
       uni.navigateTo({
         url: './rechargeRecord' });

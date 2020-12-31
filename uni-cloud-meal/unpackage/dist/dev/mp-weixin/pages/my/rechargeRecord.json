@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "在线充值记录",
-  "usingComponents": {}
+  "usingComponents": {
+    "uni-load-more": "/components/uni-load-more/uni-load-more"
+  }
 }

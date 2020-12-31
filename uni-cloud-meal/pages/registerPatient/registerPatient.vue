@@ -25,13 +25,18 @@
 				code: '',
 				codeTime: 0,
 				txtType: 'success',
-				toastTxt: ''
+				toastTxt: '',
+				crowdId: '', //身份id
+				type: '', //身份类型（职工、患者）
 			};
 		},
-		created() {
-			uni.setNavigationBarTitle({
-				title: '上海新华医院营养订餐'
-			})
+		onLoad(option) {
+			console.log(option)
+			this.crowdId = option.crowdId
+			this.type = option.type
+			// uni.setNavigationBarTitle({
+			// 	title: ''
+			// })
 		},
 		computed: {
 			isLogin() {
@@ -76,23 +81,51 @@
 					this.showToast('请将验证码输入完整', 'error')
 					return;
 				}
-				// 注册成功并进入首页
 				let _sessionBagKey = uni.getStorageSync('sessionBagKey');
-				let params = {
-					phone: this.phone,
-					smsCode: this.code,
-					sessionBagKey: _sessionBagKey,
-					companyId: this.$store.state.companyID
+				if (this.type == 'p') {
+					// 患者注册成功并进入首页
+					let params = {
+						phone: this.phone,
+						smsCode: this.code,
+						sessionBagKey: _sessionBagKey,
+						companyId: this.$store.state.companyID,
+						crowdId: this.crowdId
+					}
+					this.$Api.phonePatient(params).then(res => {
+						uni.setStorageSync('token', res.data.accessToken)
+						this.showToast('验证成功', 'success')
+						setTimeout(() => {
+							uni.switchTab({
+								url: '../index/index'
+							})
+						}, 1500)
+					}, err => {
+						this.showToast(err.data.message, 'error')
+					})
+				} else { //职工
+					let params = {
+						phone: this.phone,
+						name: '',
+						districtId: '',
+						departmentId: '',
+						smsCode: this.code,
+						sessionBagKey: _sessionBagKey,
+						companyId: this.$store.state.companyID,
+						crowdId: this.crowdId
+					}
+					this.$Api.phoneStaff(params).then(res => {
+						uni.setStorageSync('token', res.data.accessToken)
+						// 注册成功并进入首页
+						this.showToast('验证成功', 'success')
+						setTimeout(() => {
+							uni.switchTab({
+								url: '../index/index'
+							})
+						}, 1500)
+					}, err => {
+						this.showToast(err.data.message, 'error')
+					})
 				}
-				this.$Api.phonePatient(params).then(res => {
-					uni.setStorageSync('token', res.data.accessToken)
-					this.showToast('验证成功', 'success')
-					setTimeout(() => {
-						uni.switchTab({
-							url: '../index/index'
-						})
-					}, 1500)
-				}, err => {})
 			},
 			showToast(txt, type) {
 				this.toastTxt = txt

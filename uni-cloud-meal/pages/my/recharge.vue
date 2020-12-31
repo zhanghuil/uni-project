@@ -3,22 +3,25 @@
 		<view class="cardItem">
 			<view class="cardTxt text-center">
 				<view class="txt">职工卡余额</view>
-				<!-- 系统异常 -->
-				<view class="f20">- -</view>
-				<view class="padding-top">
-					<text class="tips">查询系统异常，暂无法查到最新余额</text>
-				</view>
 				<!-- 正常显示 -->
-				<!-- <view class="f20">￥<text class="f30">200.00</text></view> -->
+				<view class="f20" v-if="cardInfoObj.balance">￥<text class="f30">{{cardInfoObj.balance}}</text></view>
+				<!-- 系统异常 -->
+				<block v-else>
+					<view class="f20">- -</view>
+					<view class="padding-top">
+						<text class="tips">查询系统异常，暂无法查到最新余额</text>
+					</view>
+				</block>
 			</view>
 			<image src="../../static/image/bg1.png" class="bg-img"></image>
 		</view>
 		<view class="inputBox">
 			<view class="unit">￥</view>
-			<input class="ipt" type="number" placeholder="输入充值金额，最低1元，最高1000元" placeholder-class="placeholder" />
+			<input class="ipt" type="digit" placeholder="输入充值金额，最低0.01元，最高1000元" placeholder-class="placeholder" v-model="amount"
+			 @input="checkInput" />
 		</view>
 		<view class="rechargeBtn text-center">
-			<button class="cu-btn bg-gray bg-cyan round">充值</button>
+			<button class="cu-btn round" :class="amount>0?'bg-cyan':'bg-gray'" @tap="rechargeTap" :disabled="!amount">充值</button>
 		</view>
 		<view class="footBox" @click="lookTap">
 			<view>在线充值记录</view>
@@ -27,13 +30,67 @@
 </template>
 
 <script>
+	import {
+		checkNum
+	} from '../../common/util.js'
 	export default {
 		data() {
 			return {
-
+				amount: null,
+				cardInfoObj: {},
 			};
 		},
+		onLoad() {
+			this.cardInfo()
+		},
 		methods: {
+			cardInfo() {
+				this.$Api.cardInfo().then(res => {
+					this.cardInfoObj = res.data;
+				}, err => {
+					console.log(err.statusCode)
+				})
+			},
+			checkInput(e) {
+				let price = e.detail.value;
+				price = checkNum(price, 4, 2);
+				this.$nextTick(() => {
+					this.amount = price;
+				});
+			},
+			rechargeTap() {
+				this.$Api.recharge({
+					rechargeMoney: this.amount
+				}).then(res => {
+					// #ifdef MP-WEIXIN
+					this.wechatPay(res.data)
+					// #endif
+				}, err => {})
+			},
+			//微信支付
+			wechatPay(info) {
+				var _this = this;
+				wx.requestPayment({
+					timeStamp: info.timeStamp,
+					nonceStr: info.nonceStr,
+					package: info.package,
+					signType: 'MD5',
+					paySign: info.paySign,
+					success(res) {
+						console.log(res);
+						if (res.errMsg == 'requestPayment:ok') {
+							_this.cardInfo()
+							_this.amount = null
+						}
+					},
+					fail(res) {
+						// console.log(res)
+					},
+					complete(res) {
+						// console.log(res)
+					}
+				})
+			},
 			lookTap() {
 				uni.navigateTo({
 					url: './rechargeRecord'

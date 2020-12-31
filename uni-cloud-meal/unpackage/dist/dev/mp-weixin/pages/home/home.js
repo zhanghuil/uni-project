@@ -119,7 +119,7 @@ var render = function() {
     var $orig = _vm.__get_orig(item)
 
     var l1 =
-      _vm.shopCartRepCur == index
+      _vm.shopcartCur == index
         ? _vm.__map(item.repeatList, function(rep, repIndex) {
             var $orig = _vm.__get_orig(rep)
 
@@ -481,12 +481,12 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       moreNutrients: false, //更多营养成分
       selectSetFoods: [], //选中的菜肴
       cartSelectSetFoods: [], //购物车中数据
-      fold: false, // 购物车底部弹框
-      shopCartRepCur: 0 };
-
+      fold: false // 购物车底部弹框
+    };
 
   },
   onLoad: function onLoad(options) {
+    uni.removeStorageSync('selectfood_storage_key');
     this.storeInfoObj(options.id);
     this.storeId = options.id;
     // this.$showLoading(true)
@@ -515,7 +515,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       var orderDayModeGroup = (0, _util.groupBy)(this.selectSetFoods, function (food) {
         return food.orderDay;
       });
-
+      console.log(orderDayModeGroup);
       for (var orderDay in orderDayModeGroup) {
         var module = {
           orderDate: orderDay,
@@ -524,7 +524,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
         var repastIdGroup = (0, _util.groupBy)(orderDayModeGroup[orderDay], function (food) {
           return food.repastName;
         });
-        console.log(repastIdGroup);
+
         for (var index in repastIdGroup) {
           var repeat = {
             repeatName: index,
@@ -532,6 +532,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
 
           module.repeatList.push(repeat);
         }
+        console.log(module);
         singleDataArr.push(module);
         return singleDataArr;
       }
@@ -587,59 +588,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
     } },
 
   methods: {
-    fnCartLoad: function fnCartLoad() {
-      var singleDataArr = [];
-      if (this.selectSetFoods.length == 0) {
-        return [];
-      }
-      debugger;
-      var orderDayModeGroup = (0, _util.groupBy)(this.selectSetFoods, function (food) {
-        return food.orderDay;
-      });
-
-      // debugger
-      // 				let orderDayModeGroup =new Map();
-      // 				this.selectSetFoods.forEach(n=>{
-      // 					if(!orderDayModeGroup.has(n.orderDay)){
-      // 						orderDayModeGroup.set(n.orderDay,[n]);
-      // 					}else{
-      // 						let arr = orderDayModeGroup.get(n.orderDay);
-      // 						arr.push(n);
-      // 						orderDayModeGroup.set(n.orderDay,arr);
-      // 					}
-
-      // 				})
-      // 				orderDayModeGroup.forEach(function(value,key){
-      // 　　　　　　　　　　　　console.log(value,key);
-      // 　　　　　　　　　　});
-
-      // console.log(this.selectSetFoods)
-      // console.log(orderDayModeGroup)
-      // debugger
-      for (var orderDay in orderDayModeGroup) {
-        var module = {
-          orderDate: orderDay,
-          repeatList: [] };
-
-        var repastIdGroup = (0, _util.groupBy)(orderDayModeGroup[orderDay], function (food) {
-          return food.repastName;
-        });
-        console.log(repastIdGroup);
-        for (var index in repastIdGroup) {
-          var repeat = {
-            repeatName: index,
-            food: repastIdGroup[index] };
-
-          module.repeatList.push(repeat);
-        }
-        singleDataArr.push(module);
-        console.log('购物车数据');
-        console.log(singleDataArr);
-      }
-      this.cartSelectSetFoods = singleDataArr;
-
-    },
-    //获取门店信息
+    //获取门店头部信息
     storeInfoObj: function storeInfoObj(id) {var _this2 = this;return _asyncToGenerator( /*#__PURE__*/_regenerator.default.mark(function _callee() {return _regenerator.default.wrap(function _callee$(_context) {while (1) {switch (_context.prev = _context.next) {case 0:
                 _this2.$Api.storeInfo(id).then(function (res) {
                   var data = res.data;
@@ -669,25 +618,43 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
 
       this.$Api.storeMenu(params).then(function (res) {
         var tempMenu = res.data;
-        _this3.menuList = tempMenu.typeList;
-        _this3.mealRepastCur = tempMenu.typeList[0].typeId;
-        tempMenu.typeList.forEach(function (v) {
+        if (!tempMenu.dateValue) return;
+        _this3.menuList = tempMenu.serviceTypeList;
+        _this3.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
+        tempMenu.serviceTypeList.forEach(function (v) {
           v.categoryList.forEach(function (m) {
             m.productList.forEach(function (n) {
               n.orderDay = tempMenu.dateValue;
-              n.cid = n.productId;
-              n.categoryValue = m.categoryId;
-              n.serviceType = v.typeId;
+              n.categoryId = m.categoryId;
+              n.serviceTypeId = v.serviceTypeId;
               n.count = 0;
+              n.repastName = v.serviceTypeName;
 
-              n.repastName = v.type;
+
+              //从缓存取数据 更新
+              var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+              if (!selectStorageArray) return true; // continue 
+
+              var selectFood = selectStorageArray.find(function (s) {return s.orderDay == n.orderDay &&
+                s.serviceTypeId == n.serviceTypeId &&
+                s.productId == n.productId;});
+              if (!selectFood) return true; // continue 
+
+              n.count = selectFood.count;
+              n.surplus = selectFood.surplus;
+
             });
           });
         });
-        _this3.menuList = tempMenu.typeList;
+        _this3.menuList = tempMenu.serviceTypeList;
         console.log(_this3.menuList);
-        _this3.selectHeight();
-      }, function (err) {});
+
+        _this3.$nextTick(function () {
+          _this3.selectHeight();
+        });
+      }, function (err) {
+        _this3.menuList = [];
+      });
     },
     //获取菜肴详情
     productDetail: function productDetail(food) {var _this4 = this;
@@ -706,16 +673,36 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       // console.log(this.selectSetFoods)
       this.updateMenuList(food);
       var filterGoods = this.selectSetFoods.filter(function (n) {return (
-          n.serviceType == food.serviceType &&
+          n.serviceTypeId == food.serviceTypeId &&
           n.productId == food.productId);});
       // debugger
       if (filterGoods && filterGoods.length > 0) {
-        // filterGoods todo 循环
-        filterGoods[0].count = food.count;
-        filterGoods[0].surplus = food.surplus;
+        filterGoods.forEach(function (n) {
+          n.count = food.count;
+          n.surplus = food.surplus;
+        });
+        // // filterGoods todo 循环
+        // filterGoods[0].count = food.count
+        // filterGoods[0].surplus = food.surplus
       } else {
         this.selectSetFoods.push(food);
       }
+
+      //从缓存取数据 更新
+      var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+      if (!selectStorageArray) selectStorageArray = [];
+      var selectFood = selectStorageArray.find(function (n) {return n.orderDay == food.orderDay &&
+        n.serviceTypeId == food.serviceTypeId &&
+        n.productId == food.productId;});
+      if (selectFood) {
+        selectFood.count = food.count;
+        selectFood.surplus = food.surplus;
+      } else {
+        selectStorageArray.push(food);
+      }
+
+      uni.setStorageSync('selectfood_storage_key', selectStorageArray);
+
       // this.fnCartLoad();
       // debugger
       console.log('addFood数量为：' + food.count);
@@ -725,25 +712,43 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       // debugger
       this.updateMenuList(food);
       var filterGoods = this.selectSetFoods.filter(function (n) {return (
-          n.serviceType == food.serviceType &&
+          n.serviceTypeId == food.serviceTypeId &&
           n.productId == food.productId);});
+
       if (filterGoods.length > 0) {
-        filterGoods[0].count = food.count;
-        filterGoods[0].surplus = food.surplus;
+        filterGoods.forEach(function (n) {
+          n.count = food.count;
+          n.surplus = food.surplus;
+        });
         if (food.count == 0) {
-          // debugger
           var itemIndex = this.selectSetFoods.findIndex(function (n) {return (
-              n.serviceType == food.serviceType &&
+              n.serviceTypeId == food.serviceTypeId &&
               n.productId == food.productId);});
           if (itemIndex != -1) {
             this.selectSetFoods.splice(itemIndex, 1);
           }
         }
       }
+
+      //从缓存取数据 更新
+      var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+      if (!selectStorageArray) selectStorageArray = [];
+      var selectFood = selectStorageArray.find(function (n) {return n.orderDay == food.orderDay &&
+        n.serviceTypeId == food.serviceTypeId &&
+        n.productId == food.productId;});
+      if (selectFood) {
+        selectFood.count = food.count;
+        selectFood.surplus = food.surplus;
+      } else {
+        selectStorageArray.push(food);
+      }
+
+      uni.setStorageSync('selectfood_storage_key', selectStorageArray);
+
     },
     //更新菜谱数据
     updateMenuList: function updateMenuList(food) {
-      var rIndex = this.menuList.findIndex(function (n) {return n.typeId == food.serviceType;});
+      var rIndex = this.menuList.findIndex(function (n) {return n.orderDay == food.orderDay && n.serviceTypeId == food.serviceTypeId;});
       if (rIndex != -1) {//找到了餐
         this.menuList[rIndex].categoryList.forEach(function (n) {
           var foodIndex = n.productList.findIndex(function (n) {return n.productId == food.productId;});
@@ -757,7 +762,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
 
       }
     },
-    //清空购物车
+    //清空购物车todo
     empty: function empty() {
       var _this = this;
       uni.showModal({
@@ -766,6 +771,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
         confirmText: '清空',
         success: function success(res) {
           if (res.confirm) {
+            uni.removeStorageSync('selectfood_storage_key');
             _this.selectFoods.forEach(function (food) {
               food.count = 0;
             });
@@ -832,7 +838,8 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
           h += item.height;
           that.heightArr.push(h);
         });
-        console.log(that.heightArr);
+        // console.log('菜谱高度：')
+        // console.log(that.heightArr);
       });
     },
     //监听scroll-view的滚动事件
@@ -867,11 +874,16 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
     lookFood: function lookFood() {
       this.food_detail_mask = true;
       this.foodClass = 'foodEnter';
-      // uni.navigateTo({
-      // 	url: './food'
-      // })
     },
+    /**
+        * 跳转订单页
+        * 清空购物车，清空缓存 todo
+        */
     submitOrder: function submitOrder() {
+      var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+      console.log(selectStorageArray);
+      this.$store.commit('setOrderMenuList', selectStorageArray);
+      uni.removeStorageSync('selectfood_storage_key');
       uni.navigateTo({
         url: "../confirmOrder/confirmOrder?storeId=".concat(this.storeId) });
 

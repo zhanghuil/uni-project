@@ -204,6 +204,9 @@ page {
   -webkit-flex: 1;
           flex: 1;
 }
+.verticalBox .VerticalMain .mainMeal:last-child {
+  padding-bottom: 36rpx;
+}
 .verticalBox .VerticalMain .title {
   font-size: 30rpx;
   color: #4A4A4A;
@@ -462,6 +465,7 @@ page {
 }
 .foodDescDiv .foodDesWrap .hd .L .price {
   font-size: 44rpx;
+  padding-left: 6rpx;
 }
 .foodDescDiv .foodDesWrap .hd .L .tag {
   margin-left: 32rpx;

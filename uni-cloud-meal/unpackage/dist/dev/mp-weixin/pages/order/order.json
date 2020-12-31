@@ -1,7 +1,6 @@
 {
   "navigationBarTitleText": "订单",
   "usingComponents": {
-    "uni-countdown": "/components/uni-countdown/uni-countdown",
     "payment-list": "/components/paymentList"
   }
 }

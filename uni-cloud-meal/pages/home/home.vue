@@ -31,7 +31,7 @@
 			</view>
 		</view>
 		<!-- 切换日期 -->
-		<scroll-view scroll-x class="nav dateCard" scroll-with-animation :scroll-left="scrollLeft">
+		<scroll-view scroll-x class="nav dateCard" scroll-with-animation :scroll-left="scrollLeft" v-show="newOrderDate">
 			<view class="cu-item" :class="index==TabCur?'cur':''" v-for="(item,index) in newOrderDate" :key="index" @tap="tabSelect"
 			 :data-date="item.date" :data-id="index">
 				{{item.dateStr}}<text class="week">{{item.week}}</text>
@@ -39,25 +39,25 @@
 		</scroll-view>
 		<!-- 餐次 -->
 		<scroll-view scroll-x class="nav mealTimes" scroll-with-animation :scroll-left="scrollMLeft">
-			<view class="cu-item" :class="item.typeId==mealRepastCur?'cur':''" v-for="(item,index) in currentMenuList" :key="index"
-			 @tap="mealTimeSelect" :data-id="item.typeId">
-				{{item.type}}
+			<view class="cu-item" :class="item.serviceTypeId==mealRepastCur?'cur':''" v-for="(item,index) in currentMenuList"
+			 :key="index" @tap="mealTimeSelect" :data-id="item.serviceTypeId">
+				{{item.serviceTypeName}}
 			</view>
 		</scroll-view>
 		<!-- 菜谱列表start-->
-		<view class="verticalBox" v-for="(itemRepast,indexRepast) in currentMenuList" :key="indexRepast" v-if="mealRepastCur == itemRepast.typeId">
+		<view class="verticalBox" v-for="(itemRepast,indexRepast) in currentMenuList" :key="indexRepast" v-if="mealRepastCur == itemRepast.serviceTypeId&&currentMenuList.length > 0">
 			<!-- 左侧列表 -->
 			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="verticalNavTop" style="height:calc(100vh - 658upx)">
 				<view class="cu-item" :class="index==currentLeft?'cur':''" v-for="(item,index) in itemRepast.categoryList" :key="index"
 				 @tap="leftTap" :data-index='index'>
-					{{item.categoryValue}}
+					{{item.categoryName}}
 				</view>
 			</scroll-view>
 			<!-- 右侧列表 -->
 			<scroll-view class="VerticalMain" scroll-y scroll-with-animation :scroll-into-view="'main-'+mainCur" @scroll="verticalMain"
 			 style="height:calc(100vh - 658upx)" :scroll-top="scrollTop">
 				<view class="padding-lr mainMeal" v-for="(item,index) in itemRepast.categoryList" :key="index" :id="'main-'+index">
-					<view class="title">{{item.categoryValue}}</view>
+					<view class="title">{{item.categoryName}}</view>
 					<view class="menuList">
 						<view class="item" v-for="(food,idx) in item.productList" :key="idx" @tap="productDetail(food)">
 							<view class="panel_left">
@@ -65,7 +65,7 @@
 								<!-- <text class="tag">建议少食</text> -->
 							</view>
 							<view class="panel_right">
-								<view class="mealName white_space_line_2">{{food.name}}</view>
+								<view class="mealName white_space_line_2">{{food.productName}}</view>
 								<view class="desc">
 									<view v-if="food.surplus==0" class="flex align-center">
 										<image class="tipImg" src="../../static/image/meal/tip.png"></image>已售罄
@@ -87,7 +87,7 @@
 		</view>
 		<!-- 菜谱列表 end -->
 		<!-- 今日歇业 -->
-		<view class="blankContent" v-if="menuDate.length == 0">
+		<view class="blankContent" v-if="currentMenuList.length == 0">
 			<image class="img" src="../../static/image/meal/blank.png"></image>
 			<view>今日歇业<br />
 				暂不对外营业</view>
@@ -129,7 +129,7 @@
 						</view>
 						<view class="desc">{{proDetailInfo.productIntr}}</view>
 
-						<view>
+						<view v-if="proDetailInfo.energy">
 							<view class="f18 c-2a pb20 pt32 text-bold">营养成分</view>
 							<view class="cu-list menu nutritionList">
 								<view class="cu-item">
@@ -194,7 +194,7 @@
 		</view>
 		<!-- 购物车列表面板 start -->
 		<view class="shopcartPanel cu-modal bottom-modal" :class="shopcartPanelShow?'show':''" @tap="hideList">
-			<view class="cu-dialog">
+			<view class="cu-dialog" @tap.stop="">
 				<view class="cu-bar">
 					<view class="f18 c-2a">已选商品</view>
 					<view class="emptyBox flex" @tap="empty">
@@ -209,13 +209,13 @@
 							{{item.orderDate.replace(/\"/g,'') | filtersDate}}<text class="week">{{item.orderDate.replace(/\"/g,'') | filtersWeek}}</text>
 						</view>
 					</scroll-view>
-					<view v-for="(item,index) in selectFoods" :key="index" v-if="shopCartRepCur == index">
+					<view v-for="(item,index) in selectFoods" :key="index" v-if="shopcartCur == index">
 						<block v-for="(rep,repIndex) in item.repeatList" :key="repIndex">
 							<view class="repastName">- {{rep.repeatName.replace(/\"/g,'')}} -</view>
-							<view class="flex align-center shopCartItem" v-for="(food,idex) in rep.food">
+							<view class="flex align-center shopCartItem" v-for="(food,idex) in rep.food" @tap="productDetail(food)">
 								<image class="img" src="../../static/image/meal/default.png"></image>
 								<view class="mealCon ovh flex1">
-									<view class="text-cut">{{food.name}}</view>
+									<view class="text-cut">{{food.productName}}</view>
 									<view class="flex align-center justify-between">
 										<view class="price">¥{{food.price}}</view>
 										<cartcontrol @add="addFood" @decrease="decreaseFood" :foodInfo="food"></cartcontrol>
@@ -231,7 +231,7 @@
 		</view>
 		<!-- 购物车列表面板 end -->
 		<!-- 购物车底部 -->
-		<view class="shopcart justify-between" @click="toggleList">
+		<view class="shopcart justify-between" @click="toggleList" v-if="currentMenuList.length > 0">
 			<view class="flex align-center">
 				<view class="carCon">
 					<image src="../../static/image/meal/car.png" mode="" class="carImg"></image>
@@ -302,11 +302,11 @@
 				selectSetFoods: [], //选中的菜肴
 				cartSelectSetFoods: [], //购物车中数据
 				fold: false, // 购物车底部弹框
-				shopCartRepCur: 0,
 
 			};
 		},
 		onLoad(options) {
+			uni.removeStorageSync('selectfood_storage_key');
 			this.storeInfoObj(options.id);
 			this.storeId = options.id;
 			// this.$showLoading(true)
@@ -335,7 +335,7 @@
 				let orderDayModeGroup = groupBy(this.selectSetFoods, (food) => {
 					return food.orderDay
 				});
-
+				console.log(orderDayModeGroup)
 				for (let orderDay in orderDayModeGroup) {
 					let module = {
 						orderDate: orderDay,
@@ -344,7 +344,7 @@
 					let repastIdGroup = groupBy(orderDayModeGroup[orderDay], (food) => {
 						return food.repastName
 					})
-					console.log(repastIdGroup)
+
 					for (let index in repastIdGroup) {
 						let repeat = {
 							repeatName: index,
@@ -352,6 +352,7 @@
 						}
 						module.repeatList.push(repeat)
 					}
+					console.log(module)
 					singleDataArr.push(module)
 					return singleDataArr
 				}
@@ -407,59 +408,7 @@
 			},
 		},
 		methods: {
-			fnCartLoad() {
-				let singleDataArr = [];
-				if (this.selectSetFoods.length == 0) {
-					return []
-				}
-				debugger
-				let orderDayModeGroup = groupBy(this.selectSetFoods, (food) => {
-					return food.orderDay
-				});
-
-				// debugger
-				// 				let orderDayModeGroup =new Map();
-				// 				this.selectSetFoods.forEach(n=>{
-				// 					if(!orderDayModeGroup.has(n.orderDay)){
-				// 						orderDayModeGroup.set(n.orderDay,[n]);
-				// 					}else{
-				// 						let arr = orderDayModeGroup.get(n.orderDay);
-				// 						arr.push(n);
-				// 						orderDayModeGroup.set(n.orderDay,arr);
-				// 					}
-
-				// 				})
-				// 				orderDayModeGroup.forEach(function(value,key){
-				// 　　　　　　　　　　　　console.log(value,key);
-				// 　　　　　　　　　　});
-
-				// console.log(this.selectSetFoods)
-				// console.log(orderDayModeGroup)
-				// debugger
-				for (let orderDay in orderDayModeGroup) {
-					let module = {
-						orderDate: orderDay,
-						repeatList: []
-					};
-					let repastIdGroup = groupBy(orderDayModeGroup[orderDay], (food) => {
-						return food.repastName
-					})
-					console.log(repastIdGroup)
-					for (let index in repastIdGroup) {
-						let repeat = {
-							repeatName: index,
-							food: repastIdGroup[index]
-						}
-						module.repeatList.push(repeat)
-					}
-					singleDataArr.push(module)
-					console.log('购物车数据')
-					console.log(singleDataArr)
-				}
-				this.cartSelectSetFoods = singleDataArr
-
-			},
-			//获取门店信息
+			//获取门店头部信息
 			async storeInfoObj(id) {
 				this.$Api.storeInfo(id).then(res => {
 					let data = res.data;
@@ -489,25 +438,43 @@
 				}
 				this.$Api.storeMenu(params).then(res => {
 					let tempMenu = res.data;
-					this.menuList = tempMenu.typeList;
-					this.mealRepastCur = tempMenu.typeList[0].typeId;
-					tempMenu.typeList.forEach(v => {
+					if (!tempMenu.dateValue) return
+					this.menuList = tempMenu.serviceTypeList;
+					this.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
+					tempMenu.serviceTypeList.forEach(v => {
 						v.categoryList.forEach(m => {
 							m.productList.forEach(n => {
 								n.orderDay = tempMenu.dateValue
-								n.cid = n.productId
-								n.categoryValue = m.categoryId
-								n.serviceType = v.typeId
+								n.categoryId = m.categoryId
+								n.serviceTypeId = v.serviceTypeId
 								n.count = 0
+								n.repastName = v.serviceTypeName
 
-								n.repastName = v.type
+
+								//从缓存取数据 更新
+								let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+								if (!selectStorageArray) return true; // continue 
+
+								let selectFood = selectStorageArray.find(s => s.orderDay == n.orderDay &&
+									s.serviceTypeId == n.serviceTypeId &&
+									s.productId == n.productId);
+								if (!selectFood) return true; // continue 
+
+								n.count = selectFood.count
+								n.surplus = selectFood.surplus
+
 							})
 						})
 					})
-					this.menuList = tempMenu.typeList
+					this.menuList = tempMenu.serviceTypeList
 					console.log(this.menuList)
-					this.selectHeight();
-				}, err => {})
+
+					this.$nextTick(() => {
+						this.selectHeight();
+					});
+				}, err => {
+					this.menuList = []
+				})
 			},
 			//获取菜肴详情
 			productDetail(food) {
@@ -526,16 +493,36 @@
 				// console.log(this.selectSetFoods)
 				this.updateMenuList(food);
 				let filterGoods = this.selectSetFoods.filter(n =>
-					n.serviceType == food.serviceType &&
+					n.serviceTypeId == food.serviceTypeId &&
 					n.productId == food.productId);
 				// debugger
 				if (filterGoods && filterGoods.length > 0) {
-					// filterGoods todo 循环
-					filterGoods[0].count = food.count
-					filterGoods[0].surplus = food.surplus
+					filterGoods.forEach(n => {
+						n.count = food.count
+						n.surplus = food.surplus
+					});
+					// // filterGoods todo 循环
+					// filterGoods[0].count = food.count
+					// filterGoods[0].surplus = food.surplus
 				} else {
 					this.selectSetFoods.push(food)
 				}
+
+				//从缓存取数据 更新
+				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+				if (!selectStorageArray) selectStorageArray = [];
+				let selectFood = selectStorageArray.find(n => n.orderDay == food.orderDay &&
+					n.serviceTypeId == food.serviceTypeId &&
+					n.productId == food.productId);
+				if (selectFood) {
+					selectFood.count = food.count;
+					selectFood.surplus = food.surplus;
+				} else {
+					selectStorageArray.push(food);
+				}
+
+				uni.setStorageSync('selectfood_storage_key', selectStorageArray);
+
 				// this.fnCartLoad();
 				// debugger
 				console.log('addFood数量为：' + food.count)
@@ -545,25 +532,43 @@
 				// debugger
 				this.updateMenuList(food);
 				let filterGoods = this.selectSetFoods.filter(n =>
-					n.serviceType == food.serviceType &&
+					n.serviceTypeId == food.serviceTypeId &&
 					n.productId == food.productId);
+
 				if (filterGoods.length > 0) {
-					filterGoods[0].count = food.count
-					filterGoods[0].surplus = food.surplus
+					filterGoods.forEach(n => {
+						n.count = food.count
+						n.surplus = food.surplus
+					});
 					if (food.count == 0) {
-						// debugger
 						let itemIndex = this.selectSetFoods.findIndex(n =>
-							n.serviceType == food.serviceType &&
+							n.serviceTypeId == food.serviceTypeId &&
 							n.productId == food.productId);
 						if (itemIndex != -1) {
 							this.selectSetFoods.splice(itemIndex, 1)
 						}
 					}
 				}
+
+				//从缓存取数据 更新
+				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+				if (!selectStorageArray) selectStorageArray = [];
+				let selectFood = selectStorageArray.find(n => n.orderDay == food.orderDay &&
+					n.serviceTypeId == food.serviceTypeId &&
+					n.productId == food.productId);
+				if (selectFood) {
+					selectFood.count = food.count;
+					selectFood.surplus = food.surplus;
+				} else {
+					selectStorageArray.push(food);
+				}
+
+				uni.setStorageSync('selectfood_storage_key', selectStorageArray);
+
 			},
 			//更新菜谱数据
 			updateMenuList(food) {
-				let rIndex = this.menuList.findIndex(n => n.typeId == food.serviceType)
+				let rIndex = this.menuList.findIndex(n => n.orderDay == food.orderDay && n.serviceTypeId == food.serviceTypeId)
 				if (rIndex != -1) { //找到了餐
 					this.menuList[rIndex].categoryList.forEach(n => {
 						let foodIndex = n.productList.findIndex(n => n.productId == food.productId)
@@ -577,7 +582,7 @@
 
 				}
 			},
-			//清空购物车
+			//清空购物车todo
 			empty() {
 				var _this = this;
 				uni.showModal({
@@ -586,6 +591,7 @@
 					confirmText: '清空',
 					success: function(res) {
 						if (res.confirm) {
+							uni.removeStorageSync('selectfood_storage_key');
 							_this.selectFoods.forEach(food => {
 								food.count = 0
 							})
@@ -646,13 +652,14 @@
 				this.heightArr = [];
 				let h = 0;
 				const query = uni.createSelectorQuery();
-				query.selectAll('.mainMeal').boundingClientRect()
+				query.selectAll('.mainMeal').boundingClientRect();
 				query.exec(function(res) {
 					res[0].forEach((item) => {
 						h += item.height;
 						that.heightArr.push(h);
 					})
-					console.log(that.heightArr);
+					// console.log('菜谱高度：')
+					// console.log(that.heightArr);
 				})
 			},
 			//监听scroll-view的滚动事件
@@ -687,11 +694,16 @@
 			lookFood() {
 				this.food_detail_mask = true
 				this.foodClass = 'foodEnter'
-				// uni.navigateTo({
-				// 	url: './food'
-				// })
 			},
+			/**
+			 * 跳转订单页
+			 * 清空购物车，清空缓存 todo
+			 */
 			submitOrder() {
+				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+				console.log(selectStorageArray)
+				this.$store.commit('setOrderMenuList', selectStorageArray);
+				uni.removeStorageSync('selectfood_storage_key');
 				uni.navigateTo({
 					url: `../confirmOrder/confirmOrder?storeId=${this.storeId}`
 				})
@@ -902,7 +914,13 @@
 
 		.VerticalMain {
 			flex: 1;
+
 			// height: calc(100vh - 578rpx);
+			.mainMeal {
+				&:last-child {
+					padding-bottom: 36rpx;
+				}
+			}
 
 			.title {
 				font-size: 30rpx;
@@ -1178,6 +1196,7 @@
 
 					.price {
 						font-size: 44rpx;
+						padding-left: 6rpx;
 					}
 
 					.tag {

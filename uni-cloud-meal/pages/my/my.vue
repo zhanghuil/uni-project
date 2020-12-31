@@ -7,7 +7,10 @@
 			</view>
 			<view class="desc">
 				<view class="flex align-center justify-between">
-					<view class="name">{{name}}</view>
+					<view class="name" v-if="name">{{name}}</view>
+					<view class="name" v-else>
+						<open-data type="userNickName"></open-data>
+					</view>
 					<view class="edit" @click="quitTap">退出登录</view>
 				</view>
 				<view class="hos">{{company}}</view>
@@ -34,7 +37,7 @@
 		<view class="card-menu">
 			<view class="cu-item" v-if="type == 1">
 				<view>
-					<view class="txt"><text class="pr10">部门：</text>{{department}}</view>
+					<view class="txt"><text class="pr10">部门：</text>{{department?department:'--'}}</view>
 					<view class="txt"><text class="pr10">手机：</text>{{getPhone}}</view>
 				</view>
 				<image class="img" src="../../static/image/card.png"></image>
@@ -67,7 +70,7 @@
 				name: '',
 				department: '',
 				company: '',
-				cardNumber: ''
+				staffCardNo: '', //职工卡
 			}
 		},
 		computed: {
@@ -91,17 +94,30 @@
 					this.type = data.accountType
 					this.phone = data.phone
 					this.name = data.name
-					this.department = data.districtName + ' ' + data.departmentName
+					if (data.districtName) {
+						this.department = data.districtName + ' ' + data.departmentName
+					}
 					this.company = data.currentCompanyName
-					this.cardNumber = data.cardNumber
+					this.staffCardNo = data.staffCardNo
 				}, err => {})
 
 				// this.$Api.personalCenter().then(res => {
 				// 	debugger
 				// }, err => {})
+
+				// uni.showModal({
+				// 	content: '内容',
+				// 	showCancel: false,
+				// 	buttonText: '好的',
+				// 	success: (res) => {
+				// 		if (res.confirm) {
+
+				// 		}
+				// 	}
+				// })
 			},
 			rechargeTap() {
-				if (!this.rechargeTap) {
+				if (!this.staffCardNo) {
 					uni.showToast({
 						title: '请联系管理员绑定职工卡',
 						icon: "none"

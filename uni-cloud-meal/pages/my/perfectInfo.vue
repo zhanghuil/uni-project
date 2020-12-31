@@ -21,14 +21,16 @@
 			<view class="item">
 				<view class="tit">身高</view>
 				<view class="flex align-center px15">
-					<input class="inputNum" type="number" maxlength="3" placeholder="请输入" placeholder-class="placeholder" v-model="height" />
+					<input class="inputNum" type="digit" data-type="height" @input="checkInput" placeholder="请输入" placeholder-class="placeholder"
+					 v-model="height" />
 					<text class="unit">cm</text>
 				</view>
 			</view>
 			<view class="item">
 				<view class="tit">体重</view>
 				<view class="flex align-center px15">
-					<input class="inputNum" type="number" maxlength="4" placeholder="请输入" placeholder-class="placeholder" v-model="weight" />
+					<input class="inputNum" type="digit" data-type="weight" @input="checkInput" placeholder="请输入" placeholder-class="placeholder"
+					 v-model="weight" />
 					<text class="unit">kg</text>
 				</view>
 			</view>
@@ -54,6 +56,9 @@
 </template>
 
 <script>
+	import {
+		checkNum
+	} from '../../common/util.js'
 	export default {
 		data() {
 			return {
@@ -90,6 +95,15 @@
 			},
 		},
 		methods: {
+			checkInput(e) {
+				let type = e.currentTarget.dataset.type;
+				let num = e.detail.value;
+				num = checkNum(num, 3, 1);
+				this.$nextTick(() => {
+					if (type == 'height') this.height = num
+					else this.weight = num
+				});
+			},
 			returnTap() {
 				uni.navigateBack({
 					delta: 1
@@ -251,10 +265,10 @@
 				padding: 0 0 48rpx 0;
 			}
 
-			.px15 {
-				padding-left: 30rpx;
-				padding-right: 30rpx;
-			}
+			// .px15 {
+			// 	padding-left: 30rpx;
+			// 	padding-right: 30rpx;
+			// }
 
 			.inputNum {
 				font-size: 48rpx;
