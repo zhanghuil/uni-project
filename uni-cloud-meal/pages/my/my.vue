@@ -29,7 +29,7 @@
 					<view class="name">
 						<open-data type="userNickName"></open-data>
 					</view>
-					<view class="edit">退出登录</view>
+					<view class="edit" @click="quitTap">退出登录</view>
 				</view>
 				<view class="hos">手机：{{getPhone}}</view>
 			</view>
@@ -142,9 +142,13 @@
 					success: function(res) {
 						if (res.confirm) {
 							console.log('用户点击确定');
-							_this.$Api._this().then(res => {
-								//todo
+							_this.$Api.unbind().then(res => {
 								console.log('解绑')
+								uni.removeStorageSync('sessionBagKey')
+								uni.removeStorageSync('token')
+								uni.reLaunch({
+									url: '../index/index'
+								})
 							}, err => {})
 						} else if (res.cancel) {
 							console.log('用户点击取消');

@@ -193,7 +193,13 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
 //
-var _default = { data: function data() {return { amount: null, cardInfoObj: {} };}, onLoad: function onLoad() {this.cardInfo();}, methods: { cardInfo: function cardInfo() {var _this2 = this;this.$Api.cardInfo().then(function (res) {_this2.cardInfoObj = res.data;}, function (err) {console.log(err.statusCode);});}, checkInput: function checkInput(e) {var _this3 = this;var price = e.detail.value;price = (0, _util.checkNum)(price, 4, 2);this.$nextTick(function () {_this3.amount = price;});}, rechargeTap: function rechargeTap() {var _this4 = this;this.$Api.recharge({ rechargeMoney: this.amount }).then(function (res) {
+var _default = { data: function data() {return { amount: null, cardInfoObj: {} };}, onLoad: function onLoad() {this.cardInfo();}, methods: { cardInfo: function cardInfo() {var _this2 = this;this.$Api.cardInfo().then(function (res) {_this2.cardInfoObj = res.data;}, function (err) {console.log(err.statusCode);});}, checkInput: function checkInput(e) {var _this3 = this;var price = e.detail.value;price = (0, _util.checkNum)(price, 4, 2);this.$nextTick(function () {_this3.amount = price;});}, rechargeTap: function rechargeTap() {var _this4 = this;if (this.amount <= 0) return;if (this.amount > 1000 || this.amount <= 0) {
+        (0, _util.showToast)('充值金额最低0.01元，最高1000元，请输入正确金额');
+        return;
+      }
+      this.$Api.recharge({
+        rechargeMoney: this.amount }).
+      then(function (res) {
 
         _this4.wechatPay(res.data);
 

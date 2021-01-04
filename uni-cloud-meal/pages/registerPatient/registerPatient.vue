@@ -34,9 +34,11 @@
 			console.log(option)
 			this.crowdId = option.crowdId
 			this.type = option.type
-			// uni.setNavigationBarTitle({
-			// 	title: ''
-			// })
+
+			let tit = this.$store.state.companyName + '营养订餐' || '医院营养云订餐'
+			uni.setNavigationBarTitle({
+				title: tit
+			})
 		},
 		computed: {
 			isLogin() {

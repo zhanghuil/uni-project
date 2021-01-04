@@ -159,6 +159,7 @@
 				// debugger
 				var submitData = [];
 				let menuList = this.$store.state.orderMenuList;
+				menuList = menuList.filter(item => item.count > 0 )
 				var total = 0;
 				menuList.forEach(function(a) {
 					total += a.count * a.price;

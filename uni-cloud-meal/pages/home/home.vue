@@ -1,12 +1,10 @@
 <template>
 	<view>
-		<image src="../../static/image/meal/timg.jpg" mode="center" class="response"></image>
+		<image src="../../static/image/meal/timg3.jpg" mode="center" class="response"></image>
 		<cu-custom bgColor="bg-hyaline" :isBack="true">
 			<block slot="backText"></block>
 			<block slot="content">在线订餐</block>
 		</cu-custom>
-
-		<!-- <view class="response"></view> -->
 		<view class="topWrapper">
 			<view class="homeTop">
 				<view class="flex align-center">
@@ -45,7 +43,7 @@
 			</view>
 		</scroll-view>
 		<!-- 菜谱列表start-->
-		<view class="verticalBox" v-for="(itemRepast,indexRepast) in currentMenuList" :key="indexRepast" v-if="mealRepastCur == itemRepast.serviceTypeId&&currentMenuList.length > 0">
+		<view class="verticalBox" v-for="(itemRepast,indexRepast) in currentMenuList" :key="indexRepast" v-if="mealRepastCur == itemRepast.serviceTypeId">
 			<!-- 左侧列表 -->
 			<scroll-view class="VerticalNav nav" scroll-y scroll-with-animation :scroll-top="verticalNavTop" style="height:calc(100vh - 658upx)">
 				<view class="cu-item" :class="index==currentLeft?'cur':''" v-for="(item,index) in itemRepast.categoryList" :key="index"
@@ -274,7 +272,6 @@
 				mealRepastCur: 0, //当前餐次
 				scrollMLeft: 0,
 
-				menuDate: [1.2],
 				currentLeft: 0, //左侧选中的下标
 				mainCur: 0,
 				verticalNavTop: 0,
@@ -300,13 +297,12 @@
 				detailFood: {}, //当前菜肴传到详情页
 				moreNutrients: false, //更多营养成分
 				selectSetFoods: [], //选中的菜肴
-				cartSelectSetFoods: [], //购物车中数据
 				fold: false, // 购物车底部弹框
 
 			};
 		},
 		onLoad(options) {
-			uni.removeStorageSync('selectfood_storage_key');
+			this.clearMenu();
 			this.storeInfoObj(options.id);
 			this.storeId = options.id;
 			// this.$showLoading(true)
@@ -332,18 +328,44 @@
 				if (this.selectSetFoods.length == 0) {
 					return []
 				}
+				// debugger
+				// console.log({
+				// 	'计算属性selectSetFoods': this.selectSetFoods
+				// })
 				let orderDayModeGroup = groupBy(this.selectSetFoods, (food) => {
 					return food.orderDay
 				});
-				console.log(orderDayModeGroup)
-				for (let orderDay in orderDayModeGroup) {
+
+				// orderDayModeGroup[Symbol.iterator] = function*(){
+				//     var keys = Object.keys(orderDayModeGroup);
+				//     for(var k of keys){
+				//         yield [k,orderDayModeGroup[k]]
+				//     }
+				// };
+
+				// for(var  [orderDay,v] of orderDayModeGroup){
+				//     console.log({'testorderDay':orderDay})
+				// }
+
+				console.log({
+					'orderDayModeGroup': orderDayModeGroup
+				})
+
+				// for(var  [orderDay,v] of orderDayModeGroup){
+				// debugger
+				for (var orderDay in orderDayModeGroup) {
 					let module = {
 						orderDate: orderDay,
 						repeatList: []
 					};
+					console.log({
+						'orderDay': orderDay
+					})
 					let repastIdGroup = groupBy(orderDayModeGroup[orderDay], (food) => {
 						return food.repastName
 					})
+
+					// console.log({'repastIdGroup':repastIdGroup})
 
 					for (let index in repastIdGroup) {
 						let repeat = {
@@ -352,10 +374,11 @@
 						}
 						module.repeatList.push(repeat)
 					}
-					console.log(module)
+					// console.log(module)
 					singleDataArr.push(module)
-					return singleDataArr
+					// console.log({'singleDataArr':singleDataArr})
 				}
+				return singleDataArr
 			},
 			shopcartPanelShow() {
 				if (!this.totalCount) {
@@ -424,10 +447,15 @@
 			//选择日期
 			tabSelect(e) {
 				let _date = e.currentTarget.dataset.date;
-				this.defaultDate = _date
-				this.storeMenu()
+				this.defaultDate = _date;
+				this.storeMenu();
 				this.TabCur = e.currentTarget.dataset.id;
-				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60
+				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
+
+				this.currentLeft = 0;
+				this.$nextTick(() => {
+					this.selectHeight();
+				});
 
 			},
 			//获取菜谱列表
@@ -449,8 +477,8 @@
 								n.serviceTypeId = v.serviceTypeId
 								n.count = 0
 								n.repastName = v.serviceTypeName
-
-
+								// n.serviceTypeLimit=2
+								// n.limit=1
 								//从缓存取数据 更新
 								let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
 								if (!selectStorageArray) return true; // continue 
@@ -467,7 +495,7 @@
 						})
 					})
 					this.menuList = tempMenu.serviceTypeList
-					console.log(this.menuList)
+					// console.log(this.menuList)
 
 					this.$nextTick(() => {
 						this.selectHeight();
@@ -493,20 +521,21 @@
 				// console.log(this.selectSetFoods)
 				this.updateMenuList(food);
 				let filterGoods = this.selectSetFoods.filter(n =>
+					n.orderDay == food.orderDay &&
 					n.serviceTypeId == food.serviceTypeId &&
 					n.productId == food.productId);
-				// debugger
+
 				if (filterGoods && filterGoods.length > 0) {
 					filterGoods.forEach(n => {
 						n.count = food.count
 						n.surplus = food.surplus
 					});
-					// // filterGoods todo 循环
-					// filterGoods[0].count = food.count
-					// filterGoods[0].surplus = food.surplus
 				} else {
 					this.selectSetFoods.push(food)
 				}
+				console.log({
+					'selectSetFoods': this.selectSetFoods
+				})
 
 				//从缓存取数据 更新
 				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
@@ -532,6 +561,7 @@
 				// debugger
 				this.updateMenuList(food);
 				let filterGoods = this.selectSetFoods.filter(n =>
+					n.orderDay == food.orderDay &&
 					n.serviceTypeId == food.serviceTypeId &&
 					n.productId == food.productId);
 
@@ -568,21 +598,41 @@
 			},
 			//更新菜谱数据
 			updateMenuList(food) {
-				let rIndex = this.menuList.findIndex(n => n.orderDay == food.orderDay && n.serviceTypeId == food.serviceTypeId)
-				if (rIndex != -1) { //找到了餐
-					this.menuList[rIndex].categoryList.forEach(n => {
-						let foodIndex = n.productList.findIndex(n => n.productId == food.productId)
-						if (foodIndex != -1) {
-							n.productList[foodIndex].count = food.count;
-							n.productList[foodIndex].surplus = food.surplus;
-							return
+
+				// console.log({
+				// 	'thismenuList': this.menuList
+				// })
+				//如果恰好在当前日期下
+				this.menuList.forEach(d => {
+					d.categoryList.forEach(n => {
+						let foodList = n.productList.filter(m => m.orderDay == food.orderDay && m.serviceTypeId == food.serviceTypeId &&
+							m.productId == food.productId)
+						if (foodList && foodList.length > 0) {
+							foodList.forEach(k => {
+								k.count = food.count;
+								k.surplus = food.surplus;
+							})
+
 						}
-
 					})
-
-				}
+				})
 			},
-			//清空购物车todo
+			//清空购物车及缓存
+			clearMenu() {
+				uni.removeStorageSync('selectfood_storage_key');
+				this.$store.commit('setOrderMenuList', '');
+				this.selectSetFoods = [];
+				this.menuList.forEach(d => {
+					d.categoryList.forEach(n => {
+						n.productList.forEach(food => {
+							food.surplus = food.surplus + food.count;
+							food.count = 0;
+						})
+					})
+				})
+
+			},
+			//清空购物车
 			empty() {
 				var _this = this;
 				uni.showModal({
@@ -591,10 +641,7 @@
 					confirmText: '清空',
 					success: function(res) {
 						if (res.confirm) {
-							uni.removeStorageSync('selectfood_storage_key');
-							_this.selectFoods.forEach(food => {
-								food.count = 0
-							})
+							_this.clearMenu();
 						} else if (res.cancel) {
 							console.log('用户点击取消');
 						}
@@ -638,6 +685,11 @@
 			mealTimeSelect(e) {
 				this.mealRepastCur = e.currentTarget.dataset.id;
 				this.scrollMLeft = (e.currentTarget.dataset.id - 1) * 60
+
+				// this.currentLeft = 0;
+				// this.$nextTick(() => {
+				// 	this.selectHeight();
+				// });
 			},
 			// 菜谱
 			leftTap(e) {
@@ -658,8 +710,7 @@
 						h += item.height;
 						that.heightArr.push(h);
 					})
-					// console.log('菜谱高度：')
-					// console.log(that.heightArr);
+					console.log({'菜谱高度':that.heightArr});
 				})
 			},
 			//监听scroll-view的滚动事件
@@ -697,13 +748,12 @@
 			},
 			/**
 			 * 跳转订单页
-			 * 清空购物车，清空缓存 todo
 			 */
 			submitOrder() {
 				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
 				console.log(selectStorageArray)
 				this.$store.commit('setOrderMenuList', selectStorageArray);
-				uni.removeStorageSync('selectfood_storage_key');
+				
 				uni.navigateTo({
 					url: `../confirmOrder/confirmOrder?storeId=${this.storeId}`
 				})
@@ -734,7 +784,7 @@
 	.response {
 		// background: #EFA720;
 		display: block;
-		filter: blur(2px);
+		filter: blur(3px);
 		// height: 160rpx;
 		height: 240rpx;
 		overflow: hidden;

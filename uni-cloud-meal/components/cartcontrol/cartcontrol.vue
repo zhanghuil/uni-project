@@ -13,6 +13,9 @@
 </template>
 
 <script>
+	import {
+		showToast
+	} from '../../common/util.js'
 	export default {
 		props: {
 			foodInfo: {
@@ -39,9 +42,22 @@
 			addCart(event) {
 				if (this.food.surplus <= 0) return
 
+				/*
+				B、点击+时，依据当前门店、当前商品、当前用户人群分类，判断：超出当日当类型限量，无法继续添加，并提示“每人最多只可购买3份”
+				C、未超出当日当类型限量，则继续判断：超出当日限量，无法继续添加，并提示“每人每日最多只可购买10份”
+				*/
 				if (!this.food.count) {
 					this.food.count = 1
 				} else {
+					if (this.food.serviceTypeLimit != 0 && this.food.count + 1 > this.food.serviceTypeLimit) {
+						showToast(`每人最多只可购买${this.food.serviceTypeLimit}份`)
+						return;
+					}
+					if (this.food.limit != 0 && this.food.count + 1 > this.food.limit) {
+						showToast(`每人每日最多只可购买${this.food.limit}份`)
+						return;
+					}
+
 					this.food.count++
 				}
 				this.food.surplus--

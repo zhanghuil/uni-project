@@ -164,7 +164,7 @@ var _default =
   methods: {
     getCompany: function getCompany() {var _this2 = this;
       this.$Api.getCompany().then(function (res) {
-        var companyTit = res.data.title || '';
+        var companyTit = res.data.title || '医院';
         _this2.$store.commit('setCompanyTit', companyTit);
         uni.setNavigationBarTitle({
           title: companyTit + '营养订餐' });
@@ -206,7 +206,7 @@ var _default =
         return;
       }
       console.log(e.detail.errMsg);
-      if (e.detail.errMsg == 'getPhoneNumber:fail user deny') {
+      if (e.detail.errMsg == 'getPhoneNumber:fail:user deny') {
         //用户拒绝 需要获取验证码  0-没有手机号  1-有手机号
         uni.navigateTo({
           url: "../".concat(url, "/").concat(url, "?agree=0&crowdId=").concat(_this.crowdId, "&type=").concat(type) });
@@ -242,7 +242,7 @@ var _default =
 
         } else {//职工需要验证
           uni.navigateTo({
-            url: '../registerStaff/registerStaff?agree=1&crowdId=${_this.crowdId}' });
+            url: "../registerStaff/registerStaff?agree=1&crowdId=".concat(_this.crowdId) });
 
         }
       }, function (err) {});

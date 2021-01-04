@@ -427,8 +427,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
 var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {try {var info = gen[key](arg);var value = info.value;} catch (error) {reject(error);return;}if (info.done) {resolve(value);} else {Promise.resolve(value).then(_next, _throw);}}function _asyncToGenerator(fn) {return function () {var self = this,args = arguments;return new Promise(function (resolve, reject) {var gen = fn.apply(self, args);function _next(value) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);}function _throw(err) {asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);}_next(undefined);});};}var mLoading = function mLoading() {__webpack_require__.e(/*! require.ensure | components/m-loading */ "components/m-loading").then((function () {return resolve(__webpack_require__(/*! ../../components/m-loading.vue */ 168));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var cartcontrol = function cartcontrol() {__webpack_require__.e(/*! require.ensure | components/cartcontrol/cartcontrol */ "components/cartcontrol/cartcontrol").then((function () {return resolve(__webpack_require__(/*! ../../components/cartcontrol/cartcontrol.vue */ 175));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 
 
@@ -454,7 +452,6 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       mealRepastCur: 0, //当前餐次
       scrollMLeft: 0,
 
-      menuDate: [1.2],
       currentLeft: 0, //左侧选中的下标
       mainCur: 0,
       verticalNavTop: 0,
@@ -480,13 +477,12 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       detailFood: {}, //当前菜肴传到详情页
       moreNutrients: false, //更多营养成分
       selectSetFoods: [], //选中的菜肴
-      cartSelectSetFoods: [], //购物车中数据
       fold: false // 购物车底部弹框
     };
 
   },
   onLoad: function onLoad(options) {
-    uni.removeStorageSync('selectfood_storage_key');
+    this.clearMenu();
     this.storeInfoObj(options.id);
     this.storeId = options.id;
     // this.$showLoading(true)
@@ -512,18 +508,44 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       if (this.selectSetFoods.length == 0) {
         return [];
       }
+      // debugger
+      // console.log({
+      // 	'计算属性selectSetFoods': this.selectSetFoods
+      // })
       var orderDayModeGroup = (0, _util.groupBy)(this.selectSetFoods, function (food) {
         return food.orderDay;
       });
-      console.log(orderDayModeGroup);
+
+      // orderDayModeGroup[Symbol.iterator] = function*(){
+      //     var keys = Object.keys(orderDayModeGroup);
+      //     for(var k of keys){
+      //         yield [k,orderDayModeGroup[k]]
+      //     }
+      // };
+
+      // for(var  [orderDay,v] of orderDayModeGroup){
+      //     console.log({'testorderDay':orderDay})
+      // }
+
+      console.log({
+        'orderDayModeGroup': orderDayModeGroup });
+
+
+      // for(var  [orderDay,v] of orderDayModeGroup){
+      // debugger
       for (var orderDay in orderDayModeGroup) {
         var module = {
           orderDate: orderDay,
           repeatList: [] };
 
+        console.log({
+          'orderDay': orderDay });
+
         var repastIdGroup = (0, _util.groupBy)(orderDayModeGroup[orderDay], function (food) {
           return food.repastName;
         });
+
+        // console.log({'repastIdGroup':repastIdGroup})
 
         for (var index in repastIdGroup) {
           var repeat = {
@@ -532,10 +554,11 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
 
           module.repeatList.push(repeat);
         }
-        console.log(module);
+        // console.log(module)
         singleDataArr.push(module);
-        return singleDataArr;
+        // console.log({'singleDataArr':singleDataArr})
       }
+      return singleDataArr;
     },
     shopcartPanelShow: function shopcartPanelShow() {
       if (!this.totalCount) {
@@ -602,16 +625,21 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
                 }, function (err) {});case 1:case "end":return _context.stop();}}}, _callee);}))();
     },
     //选择日期
-    tabSelect: function tabSelect(e) {
+    tabSelect: function tabSelect(e) {var _this3 = this;
       var _date = e.currentTarget.dataset.date;
       this.defaultDate = _date;
       this.storeMenu();
       this.TabCur = e.currentTarget.dataset.id;
       this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
 
+      this.currentLeft = 0;
+      this.$nextTick(function () {
+        _this3.selectHeight();
+      });
+
     },
     //获取菜谱列表
-    storeMenu: function storeMenu() {var _this3 = this;
+    storeMenu: function storeMenu() {var _this4 = this;
       var params = {
         storeId: this.storeId,
         date: this.defaultDate };
@@ -619,8 +647,8 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       this.$Api.storeMenu(params).then(function (res) {
         var tempMenu = res.data;
         if (!tempMenu.dateValue) return;
-        _this3.menuList = tempMenu.serviceTypeList;
-        _this3.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
+        _this4.menuList = tempMenu.serviceTypeList;
+        _this4.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
         tempMenu.serviceTypeList.forEach(function (v) {
           v.categoryList.forEach(function (m) {
             m.productList.forEach(function (n) {
@@ -629,8 +657,8 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
               n.serviceTypeId = v.serviceTypeId;
               n.count = 0;
               n.repastName = v.serviceTypeName;
-
-
+              // n.serviceTypeLimit=2
+              // n.limit=1
               //从缓存取数据 更新
               var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
               if (!selectStorageArray) return true; // continue 
@@ -646,24 +674,24 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
             });
           });
         });
-        _this3.menuList = tempMenu.serviceTypeList;
-        console.log(_this3.menuList);
+        _this4.menuList = tempMenu.serviceTypeList;
+        // console.log(this.menuList)
 
-        _this3.$nextTick(function () {
-          _this3.selectHeight();
+        _this4.$nextTick(function () {
+          _this4.selectHeight();
         });
       }, function (err) {
-        _this3.menuList = [];
+        _this4.menuList = [];
       });
     },
     //获取菜肴详情
-    productDetail: function productDetail(food) {var _this4 = this;
+    productDetail: function productDetail(food) {var _this5 = this;
       this.modalName = 'DrawerModalR';
       var params = {
         prodoctId: food.productId };
 
       this.$Api.productDetail(params).then(function (res) {
-        _this4.proDetailInfo = res.data;
+        _this5.proDetailInfo = res.data;
       }, function (err) {});
       this.detailFood = food;
     },
@@ -673,20 +701,21 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       // console.log(this.selectSetFoods)
       this.updateMenuList(food);
       var filterGoods = this.selectSetFoods.filter(function (n) {return (
+          n.orderDay == food.orderDay &&
           n.serviceTypeId == food.serviceTypeId &&
           n.productId == food.productId);});
-      // debugger
+
       if (filterGoods && filterGoods.length > 0) {
         filterGoods.forEach(function (n) {
           n.count = food.count;
           n.surplus = food.surplus;
         });
-        // // filterGoods todo 循环
-        // filterGoods[0].count = food.count
-        // filterGoods[0].surplus = food.surplus
       } else {
         this.selectSetFoods.push(food);
       }
+      console.log({
+        'selectSetFoods': this.selectSetFoods });
+
 
       //从缓存取数据 更新
       var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
@@ -712,6 +741,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       // debugger
       this.updateMenuList(food);
       var filterGoods = this.selectSetFoods.filter(function (n) {return (
+          n.orderDay == food.orderDay &&
           n.serviceTypeId == food.serviceTypeId &&
           n.productId == food.productId);});
 
@@ -748,21 +778,41 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
     },
     //更新菜谱数据
     updateMenuList: function updateMenuList(food) {
-      var rIndex = this.menuList.findIndex(function (n) {return n.orderDay == food.orderDay && n.serviceTypeId == food.serviceTypeId;});
-      if (rIndex != -1) {//找到了餐
-        this.menuList[rIndex].categoryList.forEach(function (n) {
-          var foodIndex = n.productList.findIndex(function (n) {return n.productId == food.productId;});
-          if (foodIndex != -1) {
-            n.productList[foodIndex].count = food.count;
-            n.productList[foodIndex].surplus = food.surplus;
-            return;
+
+      // console.log({
+      // 	'thismenuList': this.menuList
+      // })
+      //如果恰好在当前日期下
+      this.menuList.forEach(function (d) {
+        d.categoryList.forEach(function (n) {
+          var foodList = n.productList.filter(function (m) {return m.orderDay == food.orderDay && m.serviceTypeId == food.serviceTypeId &&
+            m.productId == food.productId;});
+          if (foodList && foodList.length > 0) {
+            foodList.forEach(function (k) {
+              k.count = food.count;
+              k.surplus = food.surplus;
+            });
+
           }
-
         });
-
-      }
+      });
     },
-    //清空购物车todo
+    //清空购物车及缓存
+    clearMenu: function clearMenu() {
+      uni.removeStorageSync('selectfood_storage_key');
+      this.$store.commit('setOrderMenuList', '');
+      this.selectSetFoods = [];
+      this.menuList.forEach(function (d) {
+        d.categoryList.forEach(function (n) {
+          n.productList.forEach(function (food) {
+            food.surplus = food.surplus + food.count;
+            food.count = 0;
+          });
+        });
+      });
+
+    },
+    //清空购物车
     empty: function empty() {
       var _this = this;
       uni.showModal({
@@ -771,10 +821,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
         confirmText: '清空',
         success: function success(res) {
           if (res.confirm) {
-            uni.removeStorageSync('selectfood_storage_key');
-            _this.selectFoods.forEach(function (food) {
-              food.count = 0;
-            });
+            _this.clearMenu();
           } else if (res.cancel) {
             console.log('用户点击取消');
           }
@@ -818,6 +865,11 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
     mealTimeSelect: function mealTimeSelect(e) {
       this.mealRepastCur = e.currentTarget.dataset.id;
       this.scrollMLeft = (e.currentTarget.dataset.id - 1) * 60;
+
+      // this.currentLeft = 0;
+      // this.$nextTick(() => {
+      // 	this.selectHeight();
+      // });
     },
     // 菜谱
     leftTap: function leftTap(e) {
@@ -838,8 +890,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
           h += item.height;
           that.heightArr.push(h);
         });
-        // console.log('菜谱高度：')
-        // console.log(that.heightArr);
+        console.log({ '菜谱高度': that.heightArr });
       });
     },
     //监听scroll-view的滚动事件
@@ -877,13 +928,12 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
     },
     /**
         * 跳转订单页
-        * 清空购物车，清空缓存 todo
         */
     submitOrder: function submitOrder() {
       var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
       console.log(selectStorageArray);
       this.$store.commit('setOrderMenuList', selectStorageArray);
-      uni.removeStorageSync('selectfood_storage_key');
+
       uni.navigateTo({
         url: "../confirmOrder/confirmOrder?storeId=".concat(this.storeId) });
 

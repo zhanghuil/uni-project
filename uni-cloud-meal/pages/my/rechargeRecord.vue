@@ -39,7 +39,7 @@
 		},
 		onReachBottom() { //上拉触底函数
 			if (!this.isLoadMore) { //此处判断，上锁，防止重复请求
-				this.isLoadMore = true
+				// this.isLoadMore = true
 				this.pageNo += 1
 				this.getRechargeRecordAll()
 			}

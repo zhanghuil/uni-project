@@ -58,6 +58,9 @@
 			};
 		},
 		onLoad(options) {
+			//清空购物车缓存
+			uni.removeStorageSync('selectfood_storage_key');
+			
 			console.log(options)
 			this.payType = options.payType;
 			let _orderId = options.orderId;

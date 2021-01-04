@@ -130,7 +130,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 182));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 
 
 
@@ -190,6 +190,9 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   onLoad: function onLoad(options) {
+    //清空购物车缓存
+    uni.removeStorageSync('selectfood_storage_key');
+
     console.log(options);
     this.payType = options.payType;
     var _orderId = options.orderId;

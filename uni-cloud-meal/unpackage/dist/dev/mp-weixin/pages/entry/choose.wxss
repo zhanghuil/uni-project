@@ -34,6 +34,7 @@
   text-align: center;
 }
 .chooseBox .item {
+  display: block;
   position: relative;
 }
 .chooseBox .item .img {
@@ -45,8 +46,8 @@
   font-size: 40rpx;
   color: #4EC09B;
   position: absolute;
-  bottom: 6rpx;
-  right: 10rpx;
+  bottom: 100rpx;
+  right: 30rpx;
 }
 .chooseBox .item .name {
   font-size: 30rpx;

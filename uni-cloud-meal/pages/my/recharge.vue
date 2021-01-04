@@ -31,7 +31,8 @@
 
 <script>
 	import {
-		checkNum
+		checkNum,
+		showToast
 	} from '../../common/util.js'
 	export default {
 		data() {
@@ -59,6 +60,11 @@
 				});
 			},
 			rechargeTap() {
+				if (this.amount <= 0) return;
+				if (this.amount > 1000 || this.amount <= 0) {
+					showToast('充值金额最低0.01元，最高1000元，请输入正确金额');
+					return;
+				}
 				this.$Api.recharge({
 					rechargeMoney: this.amount
 				}).then(res => {
@@ -169,7 +175,9 @@
 
 			.ipt {
 				flex: 1;
+				height: 52rpx;
 				font-size: 52rpx;
+				line-height: 52rpx;
 				color: #2A2A2A;
 			}
 		}

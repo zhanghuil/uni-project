@@ -10,48 +10,63 @@
 				<text class="price">268.50</text>
 			</view>
 		</view> -->
-		<view class="orderList">
-			<view class="item" v-for="(item,index) in orderListAll" :key="index">
-				<view class="shopInfo flex align-center" @tap="lookTap(item.orderId,item.subOrderId,item.state)">
-					<view class="shopImgBox">
-						<image :src="item.storeLogo?item.storeLogo:'../../static/image/default_store.png'" lazy-load="true" class="shopImg"></image>
-					</view>
-					<view class="flex1 ovh">
-						<view class="flex justify-between">
-							<view class="text-cut">{{item.storeName}}</view>
-							<view class="phoneCon flex align-center" @tap.stop="phone(ittem.storePhone)" v-if="(item.state==1||item.state==2||item.state==3)&&!item.refundMark">
-								<image class="pimg" mode="scaleToFill" src="../../static/image/meal/phone.png"></image>
-							</view>
-						</view>
-						<view class="time">{{item.orderTime | filterDate}}</view>
-					</view>
+		<view v-for="(itemTop,indexTop) in orderMonthAmountList" :key="indexTop" v-if="itemTop.OrderList.length>0">
+			<view class="orderTop">
+				<view class="L flex align-center">
+					<image src="../../static/image/icon3.png"></image>
+					{{itemTop.mounth}}
 				</view>
-				<view class="flex align-center justify-between hd">
-					<view class="flex align-center" v-if="item.state != 0 && item.dateValue">
-						<view class="tag">{{item.dateValue | mealDate}} {{item.dateValue | filtersWeek}}</view>
-						<view class="tag">{{item.serviceTypeName}}</view>
-					</view>
-					<view></view>
-					<view class="">￥{{item.amount}}</view>
-				</view>
-				<!-- 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消 -->
-				<!-- 待支付 -->
-				<view class="orderBtnBox" v-if="item.state == 0">
-					<view class="orderBtn" @tap="cancleOrderTap(item.orderId)">取消订单</view>
-					<view class="orderBtn bg-cyan" @tap="showModal" data-target="bottomModal" :data-sid="item.storeId" :data-pid="item.payType"
-					 :data-oid="item.orderId">待支付
-						{{item.end_time1}}</view>
-					<!-- <uni-countdown :show-day="false" :show-hour="false" :minute="10" :second="00" /> -->
-				</view>
-				<!-- 已支付 -->
-				<view class="orderBtnBox" v-else-if="item.state == 2&&item.refundMark">
-					<view class="orderBtn bg-cyan" @tap="refundTap(item.subOrderId)">申请退款</view>
-				</view>
-				<!-- 已取消、已退款 -->
-				<view class="orderBtnBox2 flex justify-end" v-else-if="item.state == 3 || item.state == 4">
-					<button class="cu-btn">{{item.state == 3 ? '已退款' : '已取消'}}</button>
+				<view class="R">
+					<text>消费合计：</text>
+					<text class="price">{{itemTop.amount}}</text>
 				</view>
 			</view>
+			<view class="orderList">
+				<view class="item" v-for="(item,index) in itemTop.OrderList" :key="index">
+					<view class="shopInfo flex align-center" @tap="lookTap(item.orderId,item.subOrderId,item.state)">
+						<view class="shopImgBox">
+							<image :src="item.storeLogo?item.storeLogo:'../../static/image/default_store.png'" lazy-load="true" class="shopImg"></image>
+						</view>
+						<view class="flex1 ovh">
+							<view class="flex justify-between">
+								<view class="text-cut">{{item.storeName}}</view>
+								<view class="phoneCon flex align-center" @tap.stop="phone(ittem.storePhone)" v-if="(item.state==1||item.state==2||item.state==3)&&!item.refundMark">
+									<image class="pimg" mode="scaleToFill" src="../../static/image/meal/phone.png"></image>
+								</view>
+							</view>
+							<view class="time">{{item.orderTime | filterDate}}</view>
+						</view>
+					</view>
+					<view class="flex align-center justify-between hd">
+						<view class="flex align-center" v-if="item.state != 0 && item.dateValue">
+							<view class="tag">{{item.dateValue | mealDate}} {{item.dateValue | filtersWeek}}</view>
+							<view class="tag">{{item.serviceTypeName}}</view>
+						</view>
+						<view></view>
+						<view class="">￥{{item.amount}}</view>
+					</view>
+					<!-- 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消 -->
+					<!-- 待支付 -->
+					<view class="orderBtnBox" v-if="item.state == 0">
+						<view class="orderBtn" @tap="cancleOrderTap(item.orderId)">取消订单</view>
+						<view class="orderBtn bg-cyan" @tap="showModal" data-target="bottomModal" :data-sid="item.storeId" :data-pid="item.payType"
+						 :data-oid="item.orderId">待支付
+							{{item.end_time1}}</view>
+						<!-- <uni-countdown :show-day="false" :show-hour="false" :minute="10" :second="00" /> -->
+					</view>
+					<!-- 已支付 -->
+					<view class="orderBtnBox" v-else-if="item.state == 2&&item.refundMark">
+						<view class="orderBtn bg-cyan" @tap="refundTap(item.subOrderId)">申请退款</view>
+					</view>
+					<!-- 已取消、已退款 -->
+					<view class="orderBtnBox2 flex justify-end" v-else-if="item.state == 3 || item.state == 4">
+						<button class="cu-btn">{{item.state == 3 ? '已退款' : '已取消'}}</button>
+					</view>
+				</view>
+			</view>
+		</view>
+		<view v-show="isLoadMore">
+			<uni-load-more :status="loadStatus"></uni-load-more>
 		</view>
 		<!-- 支付方式 -->
 		<paymentList :payList="payList" :selectId="radio" :modalName="modalName" @reselectId="reselectId" @hideModal="hideModal"></paymentList>
@@ -63,7 +78,8 @@
 	import {
 		formatDate,
 		getWeek,
-		judgeTime
+		judgeTime,
+		groupBy
 	} from '../../common/util.js'
 	import paymentList from "../../components/paymentList.vue";
 	export default {
@@ -77,9 +93,10 @@
 				modalName: null,
 				radio: '',
 				payList: [],
-				orderListAll: [],
+				orderMonthAmountList: [], //最近两个月统计
 				orderId: '', //订单id
 				lastOrderCode: '', //分页使用最后的订单id
+				isLoadMore: false, //是否加载中
 			};
 		},
 		onUnload() { //卸载页面清除定时器
@@ -104,37 +121,86 @@
 			// this.getMonthAmount();
 		},
 		onShow() {
-			this.orderList();
-			this.getMonthAmount();
+			this.firstLoad();
+		},
+		computed: {
+			// showList:{
+			// 	this.orderMonthAmount.forEach(n=>{
+
+			// 	});
+			// }
 		},
 		methods: {
+			firstLoad(){
+				this.orderMonthAmountList=[];
+				this.isLoadMore=false;
+				this.lastOrderCode='';
+				// this.orderList();
+				this.getMonthAmount();
+			},
 			// 获取月消费合计
 			getMonthAmount() {
 				this.$Api.getMonthAmount().then(res => {
 					//todo
+					if (!res.data || res.data.length <= 0) return;
+
+					res.data.forEach(n => {
+						let orderMonthAmount = n;
+						orderMonthAmount.OrderList = [];
+						this.orderMonthAmountList.push(orderMonthAmount);
+					})
+
+					this.orderList(true);
 				}, err => {})
+			},
+			//上拉触底函数
+			onReachBottom() {
+
+				if (!this.isLoadMore) { //此处判断，上锁，防止重复请求
+					 // this.isLoadMore = true
+					// this.pageNo += 1
+					this.orderList();
+				}
 			},
 			/**
 			 * 订单列表 
 			 * state为0,4未支付详情传orderId；其余1,2,3已支付传 subOrderId
 			 * 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消
 			 */
-			orderList() {
+			orderList(isFirstLoad) {
 				let that = this
 				this.$Api.orderList({
-					orderCode: ''
+					orderCode: this.lastOrderCode || ''
 				}).then(res => {
-					this.orderListAll = res.data;
-					if (res.data.length > 0) {
-						//todo
-						this.lastOrderCode = res.data.slice(-1)[0].subOrderCode;
-						
-						that.getTimeList()
-						var timer = setInterval(function() {
-							that.getTimeList()
-						}, 1000)
-						this.timer = timer
+					if (!res.data || res.data.length <= 0){
+						if(isFirstLoad){
+							that.orderMonthAmountList=[];
+						}
+						that.isLoadMore=true;
+						return;
 					}
+					 
+					let orderListGroup = groupBy(res.data, (n) => {
+						return n.month
+					});
+
+					for (let n in orderListGroup) {
+						let orderMonthAmount = that.orderMonthAmountList.find(m => m.mounth == n.replace(/\"/g, ''));
+						if (!orderMonthAmount) return true;
+
+						orderMonthAmount.OrderList = [...orderMonthAmount.OrderList, ...orderListGroup[n]];
+						// debugger
+					}
+
+					that.lastOrderCode = res.data.slice(-1)[0].subOrderCode;
+
+					that.getTimeList()
+					// console.log(that.orderMonthAmountList);
+					var timer = setInterval(function() {
+						that.getTimeList()
+					}, 1000)
+					that.timer = timer
+
 
 				}, err => {})
 			},
@@ -143,18 +209,26 @@
 			 */
 			getTimeList() {
 				let that = this
-				that.orderListAll.forEach((item) => {
-					let state = item.state;
-					if (state == 0) { //未支付
-						var nowdate = new Date().getTime() //获取当前时间毫秒数
-						var time = formatDate(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/")
-						var enddate = new Date(time).getTime() //处理好格式之后获取结束时间的毫秒数
-						var totaltime = enddate - nowdate //获取时间差
-						that.totaltime(totaltime, item.id) //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
-						item.end_time1 = that.timeData //处理好的单个时间安排到item上（重要）
-					}
-				});
-				this.orderListAll = that.orderListAll;
+				that.orderMonthAmountList.forEach(n => {
+					n.OrderList.forEach((item) => {
+						let state = item.state;
+						if (state == 0) { //未支付
+							// debugger
+							var dtNow = new Date();
+							var nowdate = dtNow.getTime() //获取当前时间毫秒数
+							var time = formatDate(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/")
+							
+							// console.log({'dtNow':dtNow,'time':time});
+							var enddate = new Date(time).getTime() //处理好格式之后获取结束时间的毫秒数
+
+							var totaltime = enddate - nowdate //获取时间差
+							// if(totaltime>600000) totaltime=600000;
+							that.totaltime(totaltime, item.orderId) //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
+							item.end_time1 = that.timeData //处理好的单个时间安排到item上（重要）
+						}
+					})
+				})
+
 			},
 			totaltime(a, id) { //计算单个剩余时间
 				let totaltime = a
@@ -168,6 +242,8 @@
 					return num
 				}
 				if (totaltime > 0) {
+					// if(totaltime>600000) totaltime=600000;
+					// console.log({'totaltime':totaltime})
 					d = Math.floor(totaltime / 1000 / 60 / 60 / 24) * 24
 					h = Math.floor(totaltime / 1000 / 60 / 60 % 24)
 					m = Math.floor(totaltime / 1000 / 60 % 60)
@@ -214,7 +290,7 @@
 				}).then(res => {
 					console.log('修改支付方式')
 					if (id == 0 || id == 1) { //支付成功
-						this.orderList();
+						this.firstLoad();
 					} else if (id == 2 || id == 4) { //调支付接口
 						this.againPay()
 					}
@@ -228,7 +304,7 @@
 					// #ifdef MP-WEIXIN
 					if (res.data.paymentType == 4) {
 						//职工卡支付成功
-						this.orderList();
+						this.firstLoad();
 					} else if (res.data.paymentType == 2) {
 						//微信支付
 						this.wechatPay(res.data)
@@ -248,7 +324,7 @@
 					success(res) {
 						console.log(res);
 						if (res.errMsg == 'requestPayment:ok') {
-							_this.orderList();
+							_this.firstLoad();
 						}
 					},
 					fail(res) {
@@ -303,7 +379,7 @@
 				this.$Api.refund({
 					subOrderId: id
 				}).then(res => {
-					this.orderList();
+					this.firstLoad();
 				}, err => {})
 			},
 			//取消订单确认框
@@ -330,7 +406,8 @@
 				this.$Api.orderCancel({
 					orderId: id
 				}).then(res => {
-					this.orderList();
+					this.firstLoad();
+					// this.orderList(true);
 				}, err => {})
 			}
 		},

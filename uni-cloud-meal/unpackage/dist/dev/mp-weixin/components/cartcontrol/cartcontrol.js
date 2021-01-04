@@ -114,33 +114,36 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default2 =
-{
-  props: {
-    foodInfo: {
-      type: Object,
-      default: function _default() {
-        return {};
-      } } },
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 
-  watch: {
-    foodInfo: {
-      handler: function handler(newVal, oldVal) {
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default2 = { props: { foodInfo: { type: Object, default: function _default() {return {};} } }, watch: { foodInfo: { handler: function handler(newVal, oldVal) {
         this.food = newVal;
       },
       deep: true } },
@@ -155,9 +158,22 @@ var _default2 =
     addCart: function addCart(event) {
       if (this.food.surplus <= 0) return;
 
+      /*
+                                          B、点击+时，依据当前门店、当前商品、当前用户人群分类，判断：超出当日当类型限量，无法继续添加，并提示“每人最多只可购买3份”
+                                          C、未超出当日当类型限量，则继续判断：超出当日限量，无法继续添加，并提示“每人每日最多只可购买10份”
+                                          */
       if (!this.food.count) {
         this.food.count = 1;
       } else {
+        if (this.food.serviceTypeLimit != 0 && this.food.count + 1 > this.food.serviceTypeLimit) {
+          (0, _util.showToast)("\u6BCF\u4EBA\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.serviceTypeLimit, "\u4EFD"));
+          return;
+        }
+        if (this.food.limit != 0 && this.food.count + 1 > this.food.limit) {
+          (0, _util.showToast)("\u6BCF\u4EBA\u6BCF\u65E5\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.limit, "\u4EFD"));
+          return;
+        }
+
         this.food.count++;
       }
       this.food.surplus--;

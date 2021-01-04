@@ -94,7 +94,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   uniLoadMore: function() {
-    return __webpack_require__.e(/*! import() | components/uni-load-more/uni-load-more */ "components/uni-load-more/uni-load-more").then(__webpack_require__.bind(null, /*! @/components/uni-load-more/uni-load-more.vue */ 189))
+    return __webpack_require__.e(/*! import() | components/uni-load-more/uni-load-more */ "components/uni-load-more/uni-load-more").then(__webpack_require__.bind(null, /*! @/components/uni-load-more/uni-load-more.vue */ 182))
   }
 }
 var render = function() {
@@ -206,8 +206,8 @@ var _default = { data: function data() {return { totalPage: 0, //总页码
       isLoadMore: false //是否加载中
     };}, onLoad: function onLoad() {this.getRechargeRecordAll();}, onReachBottom: function onReachBottom() {//上拉触底函数
     if (!this.isLoadMore) {//此处判断，上锁，防止重复请求
-      this.isLoadMore = true;this.pageNo += 1;this.getRechargeRecordAll();}}, filters: { filterDate: function filterDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return _date;},
-    filterDateTime: function filterDateTime(time) {
+      // this.isLoadMore = true
+      this.pageNo += 1;this.getRechargeRecordAll();}}, filters: { filterDate: function filterDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return _date;}, filterDateTime: function filterDateTime(time) {
       var _date = (0, _util.formatDate)(new Date(time), 'hh:mm');
       return _date;
     } },

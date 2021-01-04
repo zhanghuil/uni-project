@@ -166,9 +166,11 @@ var _default =
     console.log(option);
     this.crowdId = option.crowdId;
     this.type = option.type;
-    // uni.setNavigationBarTitle({
-    // 	title: ''
-    // })
+
+    var tit = this.$store.state.companyName + '营养订餐' || false;
+    uni.setNavigationBarTitle({
+      title: tit });
+
   },
   computed: {
     isLogin: function isLogin() {

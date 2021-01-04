@@ -274,9 +274,13 @@ var _default = { data: function data() {return { phone: '', type: 0, //身份类
         success: function success(res) {
           if (res.confirm) {
             console.log('用户点击确定');
-            _this.$Api._this().then(function (res) {
-              //todo
+            _this.$Api.unbind().then(function (res) {
               console.log('解绑');
+              uni.removeStorageSync('sessionBagKey');
+              uni.removeStorageSync('token');
+              uni.reLaunch({
+                url: '../index/index' });
+
             }, function (err) {});
           } else if (res.cancel) {
             console.log('用户点击取消');

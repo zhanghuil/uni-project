@@ -92,29 +92,44 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "recyclableRender", function() { return recyclableRender; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
-var components
+var components = {
+  uniLoadMore: function() {
+    return __webpack_require__.e(/*! import() | components/uni-load-more/uni-load-more */ "components/uni-load-more/uni-load-more").then(__webpack_require__.bind(null, /*! @/components/uni-load-more/uni-load-more.vue */ 182))
+  }
+}
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var l0 = _vm.__map(_vm.orderListAll, function(item, index) {
-    var $orig = _vm.__get_orig(item)
+  var l1 = _vm.__map(_vm.orderMonthAmountList, function(itemTop, indexTop) {
+    var $orig = _vm.__get_orig(itemTop)
 
-    var f0 = _vm._f("filterDate")(item.orderTime)
+    var l0 =
+      itemTop.OrderList.length > 0
+        ? _vm.__map(itemTop.OrderList, function(item, index) {
+            var $orig = _vm.__get_orig(item)
 
-    var f1 =
-      item.state != 0 && item.dateValue
-        ? _vm._f("mealDate")(item.dateValue)
-        : null
-    var f2 =
-      item.state != 0 && item.dateValue
-        ? _vm._f("filtersWeek")(item.dateValue)
+            var f0 = _vm._f("filterDate")(item.orderTime)
+
+            var f1 =
+              item.state != 0 && item.dateValue
+                ? _vm._f("mealDate")(item.dateValue)
+                : null
+            var f2 =
+              item.state != 0 && item.dateValue
+                ? _vm._f("filtersWeek")(item.dateValue)
+                : null
+            return {
+              $orig: $orig,
+              f0: f0,
+              f1: f1,
+              f2: f2
+            }
+          })
         : null
     return {
       $orig: $orig,
-      f0: f0,
-      f1: f1,
-      f2: f2
+      l0: l0
     }
   })
 
@@ -122,7 +137,7 @@ var render = function() {
     {},
     {
       $root: {
-        l0: l0
+        l1: l1
       }
     }
   )
@@ -221,82 +236,148 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 182));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default = { components: { paymentList: paymentList }, data: function data() {return { timeData: '', //存放每条数据的处理好的倒计时
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+
+
+
+
+
+
+{
+  components: {
+    paymentList: paymentList },
+
+  data: function data() {
+    return {
+      timeData: '', //存放每条数据的处理好的倒计时
       timer: '', //用来清除定时器
-      modalName: null, radio: '', payList: [], orderListAll: [], orderId: '', //订单id
-      lastOrderCode: '' //分页使用最后的订单id
-    };}, onUnload: function onUnload() {//卸载页面清除定时器
-    clearInterval(this.timer);}, filters: { filterDate: function filterDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd hh:mm');return _date;}, mealDate: function mealDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'MM/dd');return _date;}, filtersWeek: function filtersWeek(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return (0, _util.getWeek)(_date);} }, onLoad: function onLoad() {// this.orderList();
+      modalName: null,
+      radio: '',
+      payList: [],
+      orderMonthAmountList: [], //最近两个月统计
+      orderId: '', //订单id
+      lastOrderCode: '', //分页使用最后的订单id
+      isLoadMore: false //是否加载中
+    };
+  },
+  onUnload: function onUnload() {//卸载页面清除定时器
+    clearInterval(this.timer);
+  },
+  filters: {
+    filterDate: function filterDate(time) {
+      var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd hh:mm');
+      return _date;
+    },
+    mealDate: function mealDate(time) {
+      var _date = (0, _util.formatDate)(new Date(time), 'MM/dd');
+      return _date;
+    },
+    filtersWeek: function filtersWeek(time) {
+      var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');
+      return (0, _util.getWeek)(_date);
+    } },
+
+  onLoad: function onLoad() {
+    // this.orderList();
     // this.getMonthAmount();
-  }, onShow: function onShow() {this.orderList();this.getMonthAmount();}, methods: { // 获取月消费合计
-    getMonthAmount: function getMonthAmount() {this.$Api.getMonthAmount().then(function (res) {//todo
-      }, function (err) {});}, /**
-                                * 订单列表 
-                                * state为0,4未支付详情传orderId；其余1,2,3已支付传 subOrderId
-                                * 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消
-                                */orderList: function orderList() {var _this2 = this;var that = this;this.$Api.orderList({ orderCode: '' }).then(function (res) {_this2.orderListAll = res.data;if (res.data.length > 0) {//todo
-          _this2.lastOrderCode = res.data.slice(-1)[0].subOrderCode;that.getTimeList();var timer = setInterval(function () {that.getTimeList();}, 1000);_this2.timer = timer;}
+  },
+  onShow: function onShow() {
+    this.firstLoad();
+  },
+  computed: {
+    // showList:{
+    // 	this.orderMonthAmount.forEach(n=>{
+
+    // 	});
+    // }
+  },
+  methods: {
+    firstLoad: function firstLoad() {
+      this.orderMonthAmountList = [];
+      this.isLoadMore = false;
+      this.lastOrderCode = '';
+      // this.orderList();
+      this.getMonthAmount();
+    },
+    // 获取月消费合计
+    getMonthAmount: function getMonthAmount() {var _this2 = this;
+      this.$Api.getMonthAmount().then(function (res) {
+        //todo
+        if (!res.data || res.data.length <= 0) return;
+
+        res.data.forEach(function (n) {
+          var orderMonthAmount = n;
+          orderMonthAmount.OrderList = [];
+          _this2.orderMonthAmountList.push(orderMonthAmount);
+        });
+
+        _this2.orderList(true);
+      }, function (err) {});
+    },
+    //上拉触底函数
+    onReachBottom: function onReachBottom() {
+
+      if (!this.isLoadMore) {//此处判断，上锁，防止重复请求
+        // this.isLoadMore = true
+        // this.pageNo += 1
+        this.orderList();
+      }
+    },
+    /**
+        * 订单列表 
+        * state为0,4未支付详情传orderId；其余1,2,3已支付传 subOrderId
+        * 0-待支付  1-已下单  2-已支付  3-已退款  4-已取消
+        */
+    orderList: function orderList(isFirstLoad) {
+      var that = this;
+      this.$Api.orderList({
+        orderCode: this.lastOrderCode || '' }).
+      then(function (res) {
+        if (!res.data || res.data.length <= 0) {
+          if (isFirstLoad) {
+            that.orderMonthAmountList = [];
+          }
+          that.isLoadMore = true;
+          return;
+        }
+
+        var orderListGroup = (0, _util.groupBy)(res.data, function (n) {
+          return n.month;
+        });var _loop = function _loop(
+
+        n) {
+          var orderMonthAmount = that.orderMonthAmountList.find(function (m) {return m.mounth == n.replace(/\"/g, '');});
+          if (!orderMonthAmount) return { v: true };
+
+          orderMonthAmount.OrderList = [].concat(_toConsumableArray(orderMonthAmount.OrderList), _toConsumableArray(orderListGroup[n]));
+          // debugger
+        };for (var n in orderListGroup) {var _ret = _loop(n);if (typeof _ret === "object") return _ret.v;}
+
+        that.lastOrderCode = res.data.slice(-1)[0].subOrderCode;
+
+        that.getTimeList();
+        // console.log(that.orderMonthAmountList);
+        var timer = setInterval(function () {
+          that.getTimeList();
+        }, 1000);
+        that.timer = timer;
+
+
       }, function (err) {});
     },
     /**
@@ -304,18 +385,26 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         */
     getTimeList: function getTimeList() {
       var that = this;
-      that.orderListAll.forEach(function (item) {
-        var state = item.state;
-        if (state == 0) {//未支付
-          var nowdate = new Date().getTime(); //获取当前时间毫秒数
-          var time = (0, _util.formatDate)(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/");
-          var enddate = new Date(time).getTime(); //处理好格式之后获取结束时间的毫秒数
-          var totaltime = enddate - nowdate; //获取时间差
-          that.totaltime(totaltime, item.id); //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
-          item.end_time1 = that.timeData; //处理好的单个时间安排到item上（重要）
-        }
+      that.orderMonthAmountList.forEach(function (n) {
+        n.OrderList.forEach(function (item) {
+          var state = item.state;
+          if (state == 0) {//未支付
+            // debugger
+            var dtNow = new Date();
+            var nowdate = dtNow.getTime(); //获取当前时间毫秒数
+            var time = (0, _util.formatDate)(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/");
+
+            // console.log({'dtNow':dtNow,'time':time});
+            var enddate = new Date(time).getTime(); //处理好格式之后获取结束时间的毫秒数
+
+            var totaltime = enddate - nowdate; //获取时间差
+            // if(totaltime>600000) totaltime=600000;
+            that.totaltime(totaltime, item.orderId); //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
+            item.end_time1 = that.timeData; //处理好的单个时间安排到item上（重要）
+          }
+        });
       });
-      this.orderListAll = that.orderListAll;
+
     },
     totaltime: function totaltime(a, id) {//计算单个剩余时间
       var totaltime = a;
@@ -329,6 +418,8 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         return num;
       }
       if (totaltime > 0) {
+        // if(totaltime>600000) totaltime=600000;
+        // console.log({'totaltime':totaltime})
         d = Math.floor(totaltime / 1000 / 60 / 60 / 24) * 24;
         h = Math.floor(totaltime / 1000 / 60 / 60 % 24);
         m = Math.floor(totaltime / 1000 / 60 % 60);
@@ -375,7 +466,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       then(function (res) {
         console.log('修改支付方式');
         if (id == 0 || id == 1) {//支付成功
-          _this4.orderList();
+          _this4.firstLoad();
         } else if (id == 2 || id == 4) {//调支付接口
           _this4.againPay();
         }
@@ -389,7 +480,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
 
         if (res.data.paymentType == 4) {
           //职工卡支付成功
-          _this5.orderList();
+          _this5.firstLoad();
         } else if (res.data.paymentType == 2) {
           //微信支付
           _this5.wechatPay(res.data);
@@ -409,7 +500,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         success: function success(res) {
           console.log(res);
           if (res.errMsg == 'requestPayment:ok') {
-            _this.orderList();
+            _this.firstLoad();
           }
         },
         fail: function fail(res) {
@@ -464,7 +555,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       this.$Api.refund({
         subOrderId: id }).
       then(function (res) {
-        _this6.orderList();
+        _this6.firstLoad();
       }, function (err) {});
     },
     //取消订单确认框
@@ -491,7 +582,8 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       this.$Api.orderCancel({
         orderId: id }).
       then(function (res) {
-        _this7.orderList();
+        _this7.firstLoad();
+        // this.orderList(true);
       }, function (err) {});
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))

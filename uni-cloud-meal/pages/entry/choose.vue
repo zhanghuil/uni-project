@@ -32,7 +32,7 @@
 		methods: {
 			getCompany() {
 				this.$Api.getCompany().then(res => {
-					let companyTit = res.data.title || ''
+					let companyTit = res.data.title || '医院'
 					this.$store.commit('setCompanyTit', companyTit)
 					uni.setNavigationBarTitle({
 						title: companyTit + '营养订餐'
@@ -63,7 +63,7 @@
 						url = 'registerPatient'
 						type = 's'
 					}
-				} else {  //患者
+				} else { //患者
 					url = 'registerPatient'
 					type = 'p'
 				}
@@ -74,7 +74,7 @@
 					return;
 				}
 				console.log(e.detail.errMsg)
-				if (e.detail.errMsg == 'getPhoneNumber:fail user deny') {
+				if (e.detail.errMsg == 'getPhoneNumber:fail:user deny') {
 					//用户拒绝 需要获取验证码  0-没有手机号  1-有手机号
 					uni.navigateTo({
 						url: `../${url}/${url}?agree=0&crowdId=${_this.crowdId}&type=${type}`
@@ -110,7 +110,7 @@
 						});
 					} else { //职工需要验证
 						uni.navigateTo({
-							url: '../registerStaff/registerStaff?agree=1&crowdId=${_this.crowdId}'
+							url: `../registerStaff/registerStaff?agree=1&crowdId=${_this.crowdId}`
 						})
 					}
 				}, err => {})
@@ -150,6 +150,7 @@
 		text-align: center;
 
 		.item {
+			display: block;
 			position: relative;
 
 			.img {
@@ -162,8 +163,11 @@
 				font-size: 40rpx;
 				color: #4EC09B;
 				position: absolute;
-				bottom: 6rpx;
-				right: 10rpx;
+				// bottom: 6rpx;
+				// right: 10rpx;
+
+				bottom: 100rpx;
+				right: 30rpx;
 			}
 
 			.name {

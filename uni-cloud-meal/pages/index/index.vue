@@ -127,19 +127,20 @@
 		},
 		created() {
 			// this.$showLoading(true)
-			//todo新接口
-			let tit = this.$store.state.setCompanyTit || '医院营养云订餐'
+			let tit = this.$store.state.companyName || '医院营养云订餐'
 			uni.setNavigationBarTitle({
 				title: tit
 			})
 		},
 		onLoad(options) {
-			// options.HosId = '2D27DCE7CA88417992C164B0D46AA89C'
+			// 医院单位入参参数:HosId
+			// eg:HosId = '2D27DCE7CA88417992C164B0D46AA89C'
 			let companyID = options.HosId // 单位id  companyID
 			if (companyID) this.$store.commit('setCompanyID', companyID)
 			this.isWechat(companyID) //是否登录
 		},
 		methods: {
+			// 获取当前单位信息
 			currentCompany() {
 				this.$Api.currentCompany().then(res => {
 					let companyTit = res.data.title || ''
