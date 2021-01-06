@@ -85,9 +85,13 @@
 			}
 		},
 		onLoad(options) {
+			console.log(options)
+			if (options.id)
+				uni.setStorageSync('setStoreId', options.id)
+
 			this.diseaseDictionary();
 			this.from = options.from
-			this.id = options.id
+			this.id = options.id || uni.getStorageSync('setStoreId')
 		},
 		computed: {
 			isLogin() {
@@ -104,9 +108,13 @@
 					else this.weight = num
 				});
 			},
+			//返回-todo
 			returnTap() {
-				uni.navigateBack({
-					delta: 1
+				// uni.navigateBack({
+				// 	delta: 1
+				// })
+				uni.reLaunch({
+					url: './my'
 				})
 			},
 			//跳过-到门店主页
@@ -166,7 +174,7 @@
 				}
 				this.$Api.infoGather(params).then(res => {
 					uni.navigateTo({
-						url: `./lookInfo?id=${this.id}`
+						url: `./lookInfo?id=${this.id}&from=${this.from}`
 					})
 				}, err => {})
 			}

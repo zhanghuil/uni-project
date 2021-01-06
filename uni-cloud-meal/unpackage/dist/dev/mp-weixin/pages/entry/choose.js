@@ -130,7 +130,26 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
 //
@@ -148,26 +167,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-var _default =
-{
-  data: function data() {
-    return {
-      radio: 0,
-      chooseList: [], //0-患者  1-职工
+var _default = { data: function data() {return { radio: 0, chooseList: [], //0-患者  1-职工
       isNeedVerify: null, //是否需要验证
       crowdId: '' //身份id
-    };
-  },
-  created: function created() {
-    this.getCompany();
-  },
-  methods: {
-    getCompany: function getCompany() {var _this2 = this;
-      this.$Api.getCompany().then(function (res) {
-        var companyTit = res.data.title || '医院';
-        _this2.$store.commit('setCompanyTit', companyTit);
-        uni.setNavigationBarTitle({
-          title: companyTit + '营养订餐' });
+    };}, created: function created() {this.getCompany();}, methods: { getCompany: function getCompany() {var _this2 = this;this.$Api.getCompany().then(function (res) {var companyTit = res.data.title || '医院';_this2.$store.commit('setCompanyTit', companyTit);uni.setNavigationBarTitle({ title: companyTit + '营养订餐' });
 
         _this2.chooseList = res.data.crowdTypeService;
         _this2.radio = res.data.crowdTypeService[0].code;
@@ -206,7 +209,7 @@ var _default =
         return;
       }
       console.log(e.detail.errMsg);
-      if (e.detail.errMsg == 'getPhoneNumber:fail:user deny') {
+      if (e.detail.errMsg == 'getPhoneNumber:fail:user deny' || e.detail.errMsg == 'getPhoneNumber:fail user deny') {
         //用户拒绝 需要获取验证码  0-没有手机号  1-有手机号
         uni.navigateTo({
           url: "../".concat(url, "/").concat(url, "?agree=0&crowdId=").concat(_this.crowdId, "&type=").concat(type) });
@@ -245,7 +248,9 @@ var _default =
             url: "../registerStaff/registerStaff?agree=1&crowdId=".concat(_this.crowdId) });
 
         }
-      }, function (err) {});
+      }, function (err) {
+        (0, _util.showToast)(err.data.message);
+      });
     },
     // 患者注册  A：不需要验证，手机号注册成功后进入首页
     wechatphoneP: function wechatphoneP(e) {
@@ -264,7 +269,9 @@ var _default =
         uni.switchTab({
           url: '../index/index' });
 
-      }, function (err) {});
+      }, function (err) {
+        (0, _util.showToast)(err.data.message);
+      });
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

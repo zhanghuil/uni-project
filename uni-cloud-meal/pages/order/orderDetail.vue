@@ -1,5 +1,5 @@
 <template>
-	<view class="pb20">
+	<view class="pb20" v-if="orderInfo">
 		<view class="orderList">
 			<view class="item">
 				<view class="shopInfo flex align-center">
@@ -43,7 +43,7 @@
 				</view>
 			</view>
 		</view>
-		<view class="orderCard text-center" v-show="orderInfo.takeCode">
+		<view class="orderCard text-center" v-show="orderInfo.takeCode&&(orderInfo.state==1||orderInfo.state==2)">
 			<view class="cardNum">{{orderInfo.takeCode}}</view>
 			<view class="tipTxt">如可自行取餐，取餐时向工作人员出示该取餐号</view>
 		</view>
@@ -389,7 +389,7 @@
 				this.$Api.orderCancel({
 					orderId: id
 				}).then(res => {
-					if (this.state == 0 || this.state == 4) {
+					if (this.state == 0) {
 						this.orderPayDetail()
 					} else {
 						this.orderDetail()

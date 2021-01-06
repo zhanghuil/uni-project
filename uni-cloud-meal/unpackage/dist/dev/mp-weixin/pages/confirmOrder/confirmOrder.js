@@ -331,7 +331,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
 //
-var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default = { components: { paymentList: paymentList }, data: function data() {return { TabCur: 0, scrollLeft: 0, orderMenulist: [], //订单菜谱menuList
+var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default = { components: { paymentList: paymentList }, data: function data() {return { disabled: false, TabCur: 0, scrollLeft: 0, orderMenulist: [], //订单菜谱menuList
       totalPrice: 0, // 订单总价
       orderNote: '', //订单备注
       modalName: null, radio: '', //默认支付方式value
@@ -347,7 +347,8 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       isRemarkObj: {} //门店是否启用订单备注、详细地址
     };}, filters: { mealDate: function mealDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'MM/dd');return _date;}, filtersWeek: function filtersWeek(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return (0, _util.getWeek)(_date);} }, onShow: function onShow() {this.orderNote = this.$store.state.orderNotes;var _distributionInfo = this.$store.state.distributionInfo;console.log("\u914D\u9001\u4FE1\u606F\uFF1A".concat(_distributionInfo));if (!_distributionInfo) {this.lastAddress();} else {var info = JSON.parse(_distributionInfo);this.addressStr = info.orderAddressStr;this.districtId = info.districtId;this.districtName = info.districtName;this.firstAddressId = info.firstAddressId;this.firstAddressName = info.firstAddressName;this.secondAddressId = info.secondAddressId;this.secondAddressName = info.secondAddressName;this.addRemark = info.addRemark;this.userName = info.name;this.phone = info.phone;}}, onLoad: function onLoad(options) {this.storeId = options.storeId;this.getPayType();this.isRemark();var orderMenulist = this.getSubmitData();this.orderMenulist = orderMenulist;console.log('提交订单菜谱列表↓↓↓↓↓↓');console.log(orderMenulist);}, methods: { //提交订单后的菜谱数据
     getSubmitData: function getSubmitData() {// debugger
-      var submitData = [];var menuList = this.$store.state.orderMenuList;menuList = menuList.filter(function (item) {return item.count > 0;});var total = 0;menuList.forEach(function (a) {total += a.count * a.price;});this.totalPrice = total;var orderDayModeGroup = (0, _util.groupBy)(menuList, function (food) {return food.orderDay;});for (var orderDay in orderDayModeGroup) {var module = { orderDate: orderDay, currDayAmount: '', //当日小结
+      var submitData = [];var menuList = this.$store.state.orderMenuList;menuList = menuList.filter(function (item) {return item.count > 0;});var total = 0;menuList.forEach(function (a) {total += a.count * a.price;});this.totalPrice = total;var orderDayModeGroup = (0, _util.groupBy)(menuList, function (food) {return food.orderDay;});for (var orderDay in orderDayModeGroup) {var module = { orderDate: orderDay,
+          currDayAmount: '', //当日小结
           repeatList: [] //餐
         };
         // debugger
@@ -449,7 +450,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         (0, _util.showToast)('请选择支付方式');
         return;
       }
-
+      this.disabled = true;
       var _orderList = this.$store.state.orderMenuList.map(function (item, index) {var
 
         productId =
@@ -498,7 +499,10 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
 
           }
         }
-      }, function (err) {});
+      }, function (err) {
+        (0, _util.showToast)(err.data.message);
+        _this5.disabled = false;
+      });
     },
     /**订单支付
         * @param {Object} orderId

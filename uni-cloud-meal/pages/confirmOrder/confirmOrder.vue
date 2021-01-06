@@ -67,7 +67,7 @@
 					<text>需支付</text>
 					<text class="price">￥{{totalPrice}}</text>
 				</view>
-				<button class="cu-btn round bg-grey bg-cyan" @tap="submitOrder">提交订单</button>
+				<button class="cu-btn round bg-grey" :class="disabled?'':'bg-cyan'" :disabled="disabled" @tap="submitOrder">提交订单</button>
 			</view>
 			<!-- 支付方式 -->
 			<paymentList :payList="payList" :selectId="radio" :modalName="modalName" @reselectId="reselectId" @hideModal="hideModal"></paymentList>
@@ -90,6 +90,7 @@
 		},
 		data() {
 			return {
+				disabled: false,
 				TabCur: 0,
 				scrollLeft: 0,
 				orderMenulist: [], //订单菜谱menuList
@@ -159,7 +160,7 @@
 				// debugger
 				var submitData = [];
 				let menuList = this.$store.state.orderMenuList;
-				menuList = menuList.filter(item => item.count > 0 )
+				menuList = menuList.filter(item => item.count > 0)
 				var total = 0;
 				menuList.forEach(function(a) {
 					total += a.count * a.price;
@@ -273,7 +274,7 @@
 					showToast('请选择支付方式')
 					return
 				}
-
+				this.disabled = true
 				let _orderList = this.$store.state.orderMenuList.map((item, index) => {
 					let {
 						productId, //商品ID
@@ -322,7 +323,10 @@
 							})
 						}
 					}
-				}, err => {})
+				}, err => {
+					showToast(err.data.message)
+					this.disabled = false
+				})
 			},
 			/**订单支付
 			 * @param {Object} orderId
@@ -352,7 +356,7 @@
 			//微信支付
 			wechatPay(info, orderId) {
 				var _this = this;
-				wx.requestPayment({  //调起支付
+				wx.requestPayment({ //调起支付
 					timeStamp: info.timeStamp,
 					nonceStr: info.nonceStr,
 					package: info.package,

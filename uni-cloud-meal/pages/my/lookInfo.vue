@@ -72,10 +72,14 @@
 				}, err => {})
 			},
 			gotIt() {
-				if (!this.id || this.id == "undefined") { //返回个人中心
-					uni.navigateBack({
-						delta: 2
-					})
+				// if (!this.id || this.id == "undefined") { //返回个人中心
+				if (this.from == 'info') { //返回个人中心
+					// uni.navigateBack({
+					// 	delta: 2
+					// })
+					uni.reLaunch({
+						url: './my'
+					});
 				} else { //返回门店主页
 					uni.redirectTo({
 						url: `../home/home?id=${this.id}`
@@ -85,7 +89,7 @@
 			},
 			recalculate() {
 				uni.redirectTo({
-					url: './perfectInfo'
+					url: `./perfectInfo?from=${this.from}`
 				});
 			}
 		}

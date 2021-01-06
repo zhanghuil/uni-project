@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<!-- 轮播图 -->
-		<view class="banner" v-if="imgs.length>0">
+		<view class="banner" v-if="imgs&&imgs.length>0">
 			<swiper class="bannerswipers" :autoplay="autoplay" :current="currentSwiper" @change="swiperChange">
 				<block v-for="item in imgs" :key="item">
 					<swiper-item>
@@ -13,7 +13,7 @@
 			<view class='bannerNum'>{{(currentSwiper+1)}}/{{imgs.length}}</view>
 		</view>
 		<!-- 门店列表 -->
-		<view class="storeBox" v-if="storeList.length > 0">
+		<view class="storeBox" v-if="storeList&&storeList.length > 0">
 			<view class="storeTab flex text-left">
 				<view class="cu-item flex-sub" :class="0==TabCur?'cur':''" @tap="tabSelect" data-id="0">
 					全部门店
@@ -125,19 +125,21 @@
 				modalName: ''
 			}
 		},
-		created() {
+		onLoad(options) {
+			// 医院单位入参参数:HosId
+			// eg:HosId = '596570d4-6eb6-46e4-8504-0941cb273e9a'
+			// let companyID = options.HosId // 单位id  companyID
+			// 测试使用
+			let companyID = '596570d4-6eb6-46e4-8504-0941cb273e9a'
+			if (companyID) this.$store.commit('setCompanyID', companyID)
+			this.isWechat(companyID) //是否登录
+
+			// 设置头部
 			// this.$showLoading(true)
 			let tit = this.$store.state.companyName || '医院营养云订餐'
 			uni.setNavigationBarTitle({
 				title: tit
 			})
-		},
-		onLoad(options) {
-			// 医院单位入参参数:HosId
-			// eg:HosId = '2D27DCE7CA88417992C164B0D46AA89C'
-			let companyID = options.HosId // 单位id  companyID
-			if (companyID) this.$store.commit('setCompanyID', companyID)
-			this.isWechat(companyID) //是否登录
 		},
 		methods: {
 			// 获取当前单位信息

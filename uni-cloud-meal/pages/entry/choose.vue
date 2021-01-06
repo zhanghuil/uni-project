@@ -17,6 +17,9 @@
 </template>
 
 <script>
+	import {
+		showToast
+	} from '../../common/util.js'
 	export default {
 		data() {
 			return {
@@ -74,7 +77,7 @@
 					return;
 				}
 				console.log(e.detail.errMsg)
-				if (e.detail.errMsg == 'getPhoneNumber:fail:user deny') {
+				if (e.detail.errMsg == 'getPhoneNumber:fail:user deny' || e.detail.errMsg == 'getPhoneNumber:fail user deny') {
 					//用户拒绝 需要获取验证码  0-没有手机号  1-有手机号
 					uni.navigateTo({
 						url: `../${url}/${url}?agree=0&crowdId=${_this.crowdId}&type=${type}`
@@ -113,7 +116,9 @@
 							url: `../registerStaff/registerStaff?agree=1&crowdId=${_this.crowdId}`
 						})
 					}
-				}, err => {})
+				}, err => {
+					showToast(err.data.message)
+				})
 			},
 			// 患者注册  A：不需要验证，手机号注册成功后进入首页
 			wechatphoneP(e) {
@@ -132,7 +137,9 @@
 					uni.switchTab({
 						url: '../index/index',
 					});
-				}, err => {})
+				}, err => {
+					showToast(err.data.message)
+				})
 			},
 		}
 	}

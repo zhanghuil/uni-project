@@ -308,6 +308,12 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
                 } else {
                   _data = historyRes.data;
                   _this2.addressStr = "".concat(_data.district, "-").concat(_data.firstAddressName, "-").concat(_data.secondAddressName);
+                  _this2.districtName = _data.district;
+                  _this2.districtId = _data.districtId;
+                  _this2.buildingName = _data.firstAddressName;
+                  _this2.buildingId = _data.firstAddressId;
+                  _this2.floorName = _data.secondAddressName;
+                  _this2.floorId = _data.secondAddressId;
                   _this2.detailAddress = _data.addRemark;
                   _this2.phone = _data.phone;
                   _this2.userName = _data.contacts;
@@ -380,7 +386,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
         contacts: this.userName,
         phone: this.phone };
 
-      console.log(JSON.stringify(params));
+      // console.log(JSON.stringify(params))
       this.$Api.saveOrderAddress(params).then(function (res) {
         var distributionInfo = {
           addressStr: _this3.addressStr,

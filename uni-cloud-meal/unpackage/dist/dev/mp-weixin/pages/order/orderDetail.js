@@ -97,34 +97,32 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var f0 = _vm._f("filterDate")(_vm.orderInfo.orderTime)
-
+  var f0 = _vm.orderInfo ? _vm._f("filterDate")(_vm.orderInfo.orderTime) : null
   var f1 =
-    _vm.orderInfo.state != 0 && _vm.orderInfo.dateValue
+    _vm.orderInfo && _vm.orderInfo.state != 0 && _vm.orderInfo.dateValue
       ? _vm._f("mealDate")(_vm.orderInfo.dateValue)
       : null
   var f2 =
-    _vm.orderInfo.state != 0 && _vm.orderInfo.dateValue
+    _vm.orderInfo && _vm.orderInfo.state != 0 && _vm.orderInfo.dateValue
       ? _vm._f("filtersWeek")(_vm.orderInfo.dateValue)
       : null
-  var l0 = !(_vm.state == 1 || _vm.state == 2 || _vm.state == 3)
-    ? _vm.__map(_vm.orderInfo.productList, function(item, index) {
-        var $orig = _vm.__get_orig(item)
+  var l0 =
+    _vm.orderInfo && !(_vm.state == 1 || _vm.state == 2 || _vm.state == 3)
+      ? _vm.__map(_vm.orderInfo.productList, function(item, index) {
+          var $orig = _vm.__get_orig(item)
 
-        var f3 = _vm._f("mealDate")(item.dateValue)
+          var f3 = _vm._f("mealDate")(item.dateValue)
 
-        var f4 = _vm._f("filtersWeek")(item.dateValue)
+          var f4 = _vm._f("filtersWeek")(item.dateValue)
 
-        return {
-          $orig: $orig,
-          f3: f3,
-          f4: f4
-        }
-      })
-    : null
-
-  var f5 = _vm._f("filterDate")(_vm.orderInfo.orderTime)
-
+          return {
+            $orig: $orig,
+            f3: f3,
+            f4: f4
+          }
+        })
+      : null
+  var f5 = _vm.orderInfo ? _vm._f("filterDate")(_vm.orderInfo.orderTime) : null
   _vm.$mp.data = Object.assign(
     {},
     {
@@ -561,7 +559,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       this.$Api.orderCancel({
         orderId: id }).
       then(function (res) {
-        if (_this8.state == 0 || _this8.state == 4) {
+        if (_this8.state == 0) {
           _this8.orderPayDetail();
         } else {
           _this8.orderDetail();

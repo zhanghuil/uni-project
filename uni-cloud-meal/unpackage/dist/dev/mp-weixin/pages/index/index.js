@@ -268,19 +268,21 @@ __webpack_require__.r(__webpack_exports__);
       modalName: '' };
 
   },
-  created: function created() {
+  onLoad: function onLoad(options) {
+    // 医院单位入参参数:HosId
+    // eg:HosId = '596570d4-6eb6-46e4-8504-0941cb273e9a'
+    // let companyID = options.HosId // 单位id  companyID
+    // 测试使用
+    var companyID = '596570d4-6eb6-46e4-8504-0941cb273e9a';
+    if (companyID) this.$store.commit('setCompanyID', companyID);
+    this.isWechat(companyID); //是否登录
+
+    // 设置头部
     // this.$showLoading(true)
     var tit = this.$store.state.companyName || '医院营养云订餐';
     uni.setNavigationBarTitle({
       title: tit });
 
-  },
-  onLoad: function onLoad(options) {
-    // 医院单位入参参数:HosId
-    // eg:HosId = '2D27DCE7CA88417992C164B0D46AA89C'
-    var companyID = options.HosId; // 单位id  companyID
-    if (companyID) this.$store.commit('setCompanyID', companyID);
-    this.isWechat(companyID); //是否登录
   },
   methods: {
     // 获取当前单位信息

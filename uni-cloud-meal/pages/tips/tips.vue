@@ -2,7 +2,7 @@
 	<view>
 		<!-- 到付 -->
 		<view class="tipsBox text-center" v-if="payType == 0">
-			<image src="../../static/image/meal/offline.png" class="img"></image>
+			<image src="../../static/image/meal/offline.png" lazy-load="true" class="img"></image>
 			<view class="pb40 txt">
 				<view>请在拿到商品后</view>
 				<view>按工作人员指示进行线下付款</view>
@@ -12,21 +12,21 @@
 		</view>
 		<!-- 记账 -->
 		<view class="tipsBox text-center" v-else-if="payType == 1">
-			<image src="../../static/image/meal/booking.png" class="img"></image>
+			<image src="../../static/image/meal/booking.png" lazy-load="true" class="img"></image>
 			<view class="pb40">记账成功</view>
 			<view><button class="cu-btn round bg-cyan" @tap="goHome">回到首页</button></view>
 			<view><button class="cu-btn round btn1" @tap="lookOrder">查看订单</button></view>
 		</view>
 		<!-- 成功 -->
 		<view class="tipsBox text-center" v-else-if="(payType == 2 || payType == 4)&&!payFail">
-			<image src="../../static/image/meal/success.png" class="img"></image>
+			<image src="../../static/image/meal/success.png" lazy-load="true" class="img"></image>
 			<view class="pb40">支付成功</view>
 			<view><button class="cu-btn round bg-cyan" @tap="goHome">回到首页</button></view>
 			<view><button class="cu-btn round btn1" @tap="lookOrder">查看订单</button></view>
 		</view>
 		<!-- 失败 -->
 		<view class="tipsBox text-center" v-else-if="(payType == 2 || payType == 4)&&payFail">
-			<image src="../../static/image/meal/fail.png" class="img"></image>
+			<image src="../../static/image/meal/fail.png" lazy-load="true" class="img"></image>
 			<view class="pb40">支付失败</view>
 			<view><button class="cu-btn round bg-cyan btn3" @tap="againPay">重新支付</button></view>
 			<view><button class="cu-btn round bg-cyan btn3" @tap="changePay" data-target="bottomModal">更换支付方式</button></view>

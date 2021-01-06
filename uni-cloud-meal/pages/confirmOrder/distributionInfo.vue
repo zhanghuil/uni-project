@@ -176,6 +176,12 @@
 				} else {
 					let _data = historyRes.data;
 					this.addressStr = `${_data.district}-${_data.firstAddressName}-${_data.secondAddressName}`;
+					this.districtName = _data.district;
+					this.districtId = _data.districtId;
+					this.buildingName = _data.firstAddressName;
+					this.buildingId = _data.firstAddressId;
+					this.floorName = _data.secondAddressName;
+					this.floorId = _data.secondAddressId;
 					this.detailAddress = _data.addRemark;
 					this.phone = _data.phone;
 					this.userName = _data.contacts;
@@ -248,7 +254,7 @@
 					contacts: this.userName,
 					phone: this.phone
 				}
-				console.log(JSON.stringify(params))
+				// console.log(JSON.stringify(params))
 				this.$Api.saveOrderAddress(params).then(res => {
 					let distributionInfo = {
 						addressStr: this.addressStr,

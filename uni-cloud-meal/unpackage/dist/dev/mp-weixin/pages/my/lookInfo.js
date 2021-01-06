@@ -204,9 +204,13 @@ var _default =
       }, function (err) {});
     },
     gotIt: function gotIt() {
-      if (!this.id || this.id == "undefined") {//返回个人中心
-        uni.navigateBack({
-          delta: 2 });
+      // if (!this.id || this.id == "undefined") { //返回个人中心
+      if (this.from == 'info') {//返回个人中心
+        // uni.navigateBack({
+        // 	delta: 2
+        // })
+        uni.reLaunch({
+          url: './my' });
 
       } else {//返回门店主页
         uni.redirectTo({
@@ -217,7 +221,7 @@ var _default =
     },
     recalculate: function recalculate() {
       uni.redirectTo({
-        url: './perfectInfo' });
+        url: "./perfectInfo?from=".concat(this.from) });
 
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
