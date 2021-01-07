@@ -105,7 +105,7 @@ var render = function() {
     var $orig = _vm.__get_orig(itemTop)
 
     var l0 =
-      itemTop.OrderList.length > 0
+      itemTop.OrderList && itemTop.OrderList.length > 0
         ? _vm.__map(itemTop.OrderList, function(item, index) {
             var $orig = _vm.__get_orig(item)
 
@@ -523,14 +523,14 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _toCons
         * @param {Object} state 订单状态
         */
     lookTap: function lookTap(id, orderId, state) {
-      var _orderId = null;
-      if (state == 0 || state == 4) {
-        _orderId = id;
-      } else {
-        _orderId = orderId;
-      }
+      // let _orderId = null;
+      // if (state == 0 || state == 4) {
+      // 	_orderId = id
+      // } else {
+      // 	_orderId = orderId
+      // }
       uni.navigateTo({
-        url: "./orderDetail?orderId=".concat(_orderId, "&state=").concat(state) });
+        url: "./orderDetail?orderId=".concat(id, "&state=").concat(state, "&subOrderId=").concat(orderId) });
 
     },
     //申请退款确认框

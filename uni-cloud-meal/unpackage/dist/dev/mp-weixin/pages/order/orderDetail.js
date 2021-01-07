@@ -292,6 +292,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
@@ -415,14 +416,16 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
 //
-var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default = { components: { paymentList: paymentList }, data: function data() {return { orderId: '', state: '', orderInfo: {}, TabCur: 0, scrollLeft: 0, timeData: '', //存放处理好的倒计时
+//
+var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensure | components/paymentList */ "components/paymentList").then((function () {return resolve(__webpack_require__(/*! ../../components/paymentList.vue */ 189));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default = { components: { paymentList: paymentList }, data: function data() {return { orderId: '', subOrderId: '', state: '', orderInfo: {}, TabCur: 0, scrollLeft: 0, timeData: '', //存放处理好的倒计时
       timer: '', //用来清除定时器
       modalName: null, radio: '', payList: [] };}, onUnload: function onUnload() {//卸载页面清除定时器
-    clearInterval(this.timer);}, filters: { filterDate: function filterDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd hh:mm');return _date;}, mealDate: function mealDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'MM/dd');return _date;}, filtersWeek: function filtersWeek(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return (0, _util.getWeek)(_date);} }, onLoad: function onLoad(options) {this.orderId = options.orderId;var state = options.state;this.state = state;if (state == 0 || state == 4) {this.orderPayDetail();} else {this.orderDetail();}}, methods: { // 订单未支付详情 
-    orderPayDetail: function orderPayDetail() {var _this2 = this;var that = this;this.$Api.orderPayDetail({ orderId: this.orderId }).then(function (res) {_this2.orderInfo = res.data;if (res.data.state == 0) {_this2.getTimeList();var timer = setInterval(function () {that.getTimeList();}, 1000);_this2.timer = timer;}}, function (err) {});}, // 订单已支付详情 
-    orderDetail: function orderDetail() {var _this3 = this;var that = this;this.$Api.orderDetail({ orderId: this.orderId }).then(function (res) {_this3.orderInfo = res.data;if (res.data.state == 0) {_this3.getTimeList();var timer = setInterval(function () {that.getTimeList();}, 1000);_this3.timer = timer;}}, function (err) {});}, /**
-                                                                                                                                                                                                                                                                                                                                             * 未支付订单倒计时
-                                                                                                                                                                                                                                                                                                                                             */getTimeList: function getTimeList() {var nowdate = new Date().getTime(); //获取当前时间毫秒数
+    clearInterval(this.timer);}, filters: { filterDate: function filterDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd hh:mm');return _date;}, mealDate: function mealDate(time) {var _date = (0, _util.formatDate)(new Date(time), 'MM/dd');return _date;}, filtersWeek: function filtersWeek(time) {var _date = (0, _util.formatDate)(new Date(time), 'yyyy-MM-dd');return (0, _util.getWeek)(_date);} }, onLoad: function onLoad(options) {// console.log(options)
+    this.orderId = options.orderId;this.subOrderId = options.subOrderId;var state = options.state;this.state = state;if (state == 0 || state == 4) {this.orderPayDetail();} else {this.orderDetail();}}, methods: { // 订单未支付详情 （0,4 未支付详情传orderId）
+    orderPayDetail: function orderPayDetail() {var _this2 = this;var that = this;this.$Api.orderPayDetail({ orderId: this.orderId }).then(function (res) {_this2.orderInfo = res.data;_this2.state = res.data.state;if (res.data.state == 0) {_this2.getTimeList();var timer = setInterval(function () {that.getTimeList();}, 1000);_this2.timer = timer;} else {clearInterval(_this2.timer);}}, function (err) {});}, // 订单已支付详情 （1,2,3 都是已支付传subOrderId）
+    orderDetail: function orderDetail() {var _this3 = this;var that = this;this.$Api.orderDetail({ orderId: this.subOrderId }).then(function (res) {_this3.orderInfo = res.data;_this3.state = res.data.state;if (res.data.state == 0) {_this3.getTimeList();var timer = setInterval(function () {that.getTimeList();}, 1000);_this3.timer = timer;} else {clearInterval(_this3.timer);}}, function (err) {});}, /**
+                                                                                                                                                                                                                                                                                                                                                                                                                  * 未支付订单倒计时
+                                                                                                                                                                                                                                                                                                                                                                                                                  */getTimeList: function getTimeList() {var nowdate = new Date().getTime(); //获取当前时间毫秒数
       var time = (0, _util.formatDate)(new Date(this.orderInfo.payTime)).replace(new RegExp("-", "gm"), "/");var enddate = new Date(time).getTime(); //处理好格式之后获取结束时间的毫秒数
       var totaltime = enddate - nowdate; //获取时间差
       this.totaltime(totaltime); //这是下面封装的方法，将毫秒数处理成"xx时xx分xx秒"
@@ -432,7 +435,15 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       } else {//超时未支付的订单 取消订单
         this.cancleOrder(this.orderInfo.orderId);}}, //获取支付方式
     getPayType: function getPayType(sid) {var _this4 = this;this.$Api.getPayType({ storeId: sid }).then(function (res) {_this4.payList = res.data;}, function (err) {});}, //弹起支付选择框
-    showModal: function showModal(e) {this.modalName = e.currentTarget.dataset.target;var storeId = e.currentTarget.dataset.sid;var payId = e.currentTarget.dataset.pid;this.orderId = e.currentTarget.dataset.oid;this.radio = payId;this.getPayType(storeId);}, hideModal: function hideModal(e) {this.modalName = e;},
+    showModal: function showModal(e) {this.modalName = e.currentTarget.dataset.target;var storeId = e.currentTarget.dataset.sid;
+      var payId = e.currentTarget.dataset.pid;
+      this.orderId = e.currentTarget.dataset.oid;
+      this.radio = payId;
+      this.getPayType(storeId);
+    },
+    hideModal: function hideModal(e) {
+      this.modalName = e;
+    },
     //修改支付方式后点击确定按钮
     reselectId: function reselectId(id) {var _this5 = this;
       console.log("\u7236\u7EC4\u4EF6\u63A5\u6536\u7684\u652F\u4ED8\u65B9\u5F0Fid\uFF1A".concat(id));
@@ -443,11 +454,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         console.log('修改支付方式');
         // 0-到付  1-记账  2-微信支付 3-支付宝 4-职工卡
         if (id == 0 || id == 1) {//支付成功
-          if (_this5.state == 0 || _this5.state == 4) {
-            _this5.orderPayDetail();
-          } else {
-            _this5.orderDetail();
-          }
+          _this5.orderDetail();
         } else if (id == 2 || id == 4) {//调支付接口
           _this5.againPay();
         }
@@ -461,7 +468,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
 
         if (res.data.paymentType == 4) {
           //职工卡支付成功
-          _this6.orderList();
+          _this6.orderDetail();
         } else if (res.data.paymentType == 2) {
           //微信支付
           _this6.wechatPay(res.data);
@@ -481,11 +488,8 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
         success: function success(res) {
           console.log(res);
           if (res.errMsg == 'requestPayment:ok') {
-            if (_this.state == 0 || _this.state == 4) {
-              _this.orderPayDetail();
-            } else {
-              _this.orderDetail();
-            }
+            // 订单已支付
+            _this.orderDetail();
           }
         },
         fail: function fail(res) {
@@ -528,11 +532,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       this.$Api.refund({
         subOrderId: id }).
       then(function (res) {
-        if (_this7.state == 0 || _this7.state == 4) {
-          _this7.orderPayDetail();
-        } else {
-          _this7.orderDetail();
-        }
+        _this7.orderDetail();
       }, function (err) {});
     },
     //取消订单确认框
@@ -559,11 +559,7 @@ var paymentList = function paymentList() {__webpack_require__.e(/*! require.ensu
       this.$Api.orderCancel({
         orderId: id }).
       then(function (res) {
-        if (_this8.state == 0) {
-          _this8.orderPayDetail();
-        } else {
-          _this8.orderDetail();
-        }
+        _this8.orderPayDetail();
       }, function (err) {});
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))

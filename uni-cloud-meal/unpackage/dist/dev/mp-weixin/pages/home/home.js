@@ -625,21 +625,25 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
                 }, function (err) {});case 1:case "end":return _context.stop();}}}, _callee);}))();
     },
     //选择日期
-    tabSelect: function tabSelect(e) {var _this3 = this;
+    tabSelect: function tabSelect(e) {
       var _date = e.currentTarget.dataset.date;
       this.defaultDate = _date;
       this.storeMenu();
       this.TabCur = e.currentTarget.dataset.id;
       this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
 
+
+      // this.$nextTick(() => {
+      // 	this.selectHeight();
+      // });
       this.currentLeft = 0;
-      this.$nextTick(function () {
-        _this3.selectHeight();
-      });
+      this.mainCur = 0;
+      this.verticalNavTop = 0;
+      this.scrollTop = 0;
 
     },
     //获取菜谱列表
-    storeMenu: function storeMenu() {var _this4 = this;
+    storeMenu: function storeMenu() {var _this3 = this;
       var params = {
         storeId: this.storeId,
         date: this.defaultDate };
@@ -647,8 +651,8 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       this.$Api.storeMenu(params).then(function (res) {
         var tempMenu = res.data;
         if (!tempMenu.dateValue) return;
-        _this4.menuList = tempMenu.serviceTypeList;
-        _this4.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
+        _this3.menuList = tempMenu.serviceTypeList;
+        _this3.mealRepastCur = tempMenu.serviceTypeList[0].serviceTypeId;
         tempMenu.serviceTypeList.forEach(function (v) {
           v.categoryList.forEach(function (m) {
             m.productList.forEach(function (n) {
@@ -674,24 +678,27 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
             });
           });
         });
-        _this4.menuList = tempMenu.serviceTypeList;
+        _this3.menuList = tempMenu.serviceTypeList;
         // console.log(this.menuList)
 
-        _this4.$nextTick(function () {
-          _this4.selectHeight();
+        _this3.$nextTick(function () {
+          _this3.selectHeight();
         });
       }, function (err) {
-        _this4.menuList = [];
+        _this3.menuList = [];
       });
     },
     //获取菜肴详情
-    productDetail: function productDetail(food) {var _this5 = this;
+    productDetail: function productDetail(food) {var _this4 = this;
       this.modalName = 'DrawerModalR';
       var params = {
-        prodoctId: food.productId };
+        storeId: this.storeId,
+        prodoctId: food.productId,
+        serviceTypeId: food.serviceTypeId,
+        date: food.orderDay };
 
       this.$Api.productDetail(params).then(function (res) {
-        _this5.proDetailInfo = res.data;
+        _this4.proDetailInfo = res.data;
       }, function (err) {});
       this.detailFood = food;
     },
@@ -773,6 +780,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
         selectStorageArray.push(food);
       }
 
+      selectStorageArray = selectStorageArray.filter(function (item) {return item.count > 0;});
       uni.setStorageSync('selectfood_storage_key', selectStorageArray);
 
     },
@@ -862,14 +870,20 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       this.shopcartCur = e.currentTarget.dataset.id;
       this.scrollCartLeft = (e.currentTarget.dataset.id - 1) * 60;
     },
+    //点击餐次切换
     mealTimeSelect: function mealTimeSelect(e) {
       this.mealRepastCur = e.currentTarget.dataset.id;
       this.scrollMLeft = (e.currentTarget.dataset.id - 1) * 60;
 
-      // this.currentLeft = 0;
+
       // this.$nextTick(() => {
       // 	this.selectHeight();
       // });
+
+      this.currentLeft = 0;
+      this.mainCur = 0;
+      this.verticalNavTop = 0;
+      this.scrollTop = 0;
     },
     // 菜谱
     leftTap: function leftTap(e) {
@@ -890,7 +904,9 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
           h += item.height;
           that.heightArr.push(h);
         });
-        console.log({ '菜谱高度': that.heightArr });
+        console.log({
+          '菜谱高度': that.heightArr });
+
       });
     },
     //监听scroll-view的滚动事件

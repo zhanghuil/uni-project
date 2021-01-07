@@ -452,10 +452,14 @@
 				this.TabCur = e.currentTarget.dataset.id;
 				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
 
+
+				// this.$nextTick(() => {
+				// 	this.selectHeight();
+				// });
 				this.currentLeft = 0;
-				this.$nextTick(() => {
-					this.selectHeight();
-				});
+				this.mainCur = 0;
+				this.verticalNavTop = 0;
+				this.scrollTop = 0;
 
 			},
 			//获取菜谱列表
@@ -508,7 +512,10 @@
 			productDetail(food) {
 				this.modalName = 'DrawerModalR';
 				let params = {
-					prodoctId: food.productId
+					storeId: this.storeId,
+					prodoctId: food.productId,
+					serviceTypeId: food.serviceTypeId,
+					date: food.orderDay
 				}
 				this.$Api.productDetail(params).then(res => {
 					this.proDetailInfo = res.data
@@ -593,6 +600,7 @@
 					selectStorageArray.push(food);
 				}
 
+				selectStorageArray = selectStorageArray.filter(item => item.count > 0)
 				uni.setStorageSync('selectfood_storage_key', selectStorageArray);
 
 			},
@@ -682,14 +690,20 @@
 				this.shopcartCur = e.currentTarget.dataset.id;
 				this.scrollCartLeft = (e.currentTarget.dataset.id - 1) * 60
 			},
+			//点击餐次切换
 			mealTimeSelect(e) {
 				this.mealRepastCur = e.currentTarget.dataset.id;
 				this.scrollMLeft = (e.currentTarget.dataset.id - 1) * 60
 
-				// this.currentLeft = 0;
+
 				// this.$nextTick(() => {
 				// 	this.selectHeight();
 				// });
+
+				this.currentLeft = 0;
+				this.mainCur = 0;
+				this.verticalNavTop = 0;
+				this.scrollTop = 0;
 			},
 			// 菜谱
 			leftTap(e) {
@@ -710,7 +724,9 @@
 						h += item.height;
 						that.heightArr.push(h);
 					})
-					console.log({'菜谱高度':that.heightArr});
+					console.log({
+						'菜谱高度': that.heightArr
+					});
 				})
 			},
 			//监听scroll-view的滚动事件
@@ -753,7 +769,7 @@
 				let selectStorageArray = uni.getStorageSync('selectfood_storage_key');
 				console.log(selectStorageArray)
 				this.$store.commit('setOrderMenuList', selectStorageArray);
-				
+
 				uni.navigateTo({
 					url: `../confirmOrder/confirmOrder?storeId=${this.storeId}`
 				})

@@ -10,7 +10,7 @@
 				<text class="price">268.50</text>
 			</view>
 		</view> -->
-		<view v-for="(itemTop,indexTop) in orderMonthAmountList" :key="indexTop" v-if="itemTop.OrderList.length>0">
+		<view v-for="(itemTop,indexTop) in orderMonthAmountList" :key="indexTop" v-if="itemTop.OrderList&&itemTop.OrderList.length>0">
 			<view class="orderTop">
 				<view class="L flex align-center">
 					<image src="../../static/image/icon3.png"></image>
@@ -131,10 +131,10 @@
 			// }
 		},
 		methods: {
-			firstLoad(){
-				this.orderMonthAmountList=[];
-				this.isLoadMore=false;
-				this.lastOrderCode='';
+			firstLoad() {
+				this.orderMonthAmountList = [];
+				this.isLoadMore = false;
+				this.lastOrderCode = '';
 				// this.orderList();
 				this.getMonthAmount();
 			},
@@ -157,7 +157,7 @@
 			onReachBottom() {
 
 				if (!this.isLoadMore) { //此处判断，上锁，防止重复请求
-					 // this.isLoadMore = true
+					// this.isLoadMore = true
 					// this.pageNo += 1
 					this.orderList();
 				}
@@ -172,14 +172,14 @@
 				this.$Api.orderList({
 					orderCode: this.lastOrderCode || ''
 				}).then(res => {
-					if (!res.data || res.data.length <= 0){
-						if(isFirstLoad){
-							that.orderMonthAmountList=[];
+					if (!res.data || res.data.length <= 0) {
+						if (isFirstLoad) {
+							that.orderMonthAmountList = [];
 						}
-						that.isLoadMore=true;
+						that.isLoadMore = true;
 						return;
 					}
-					 
+
 					let orderListGroup = groupBy(res.data, (n) => {
 						return n.month
 					});
@@ -217,7 +217,7 @@
 							var dtNow = new Date();
 							var nowdate = dtNow.getTime() //获取当前时间毫秒数
 							var time = formatDate(new Date(item.payTime)).replace(new RegExp("-", "gm"), "/")
-							
+
 							// console.log({'dtNow':dtNow,'time':time});
 							var enddate = new Date(time).getTime() //处理好格式之后获取结束时间的毫秒数
 
@@ -347,14 +347,14 @@
 			 * @param {Object} state 订单状态
 			 */
 			lookTap(id, orderId, state) {
-				let _orderId = null;
-				if (state == 0 || state == 4) {
-					_orderId = id
-				} else {
-					_orderId = orderId
-				}
+				// let _orderId = null;
+				// if (state == 0 || state == 4) {
+				// 	_orderId = id
+				// } else {
+				// 	_orderId = orderId
+				// }
 				uni.navigateTo({
-					url: `./orderDetail?orderId=${_orderId}&state=${state}`
+					url: `./orderDetail?orderId=${id}&state=${state}&subOrderId=${orderId}`
 				})
 			},
 			//申请退款确认框

@@ -264,12 +264,16 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34); //
 //
 //
 var _default = { data: function data() {return { from: null, id: '', checkboxData: [], checkedArr: [], //复选框选中的值
-      radio: 1, sexList: [{ value: 1, name: '男', img: '../../static/image/sex0.png', checked: true }, { value: 2, name: '女', img: '../../static/image/sex1.png', checked: false }], age: null, height: '', weight: '', diseaseArr: [] };}, onLoad: function onLoad(options) {console.log(options);if (options.id) uni.setStorageSync('setStoreId', options.id);this.diseaseDictionary();this.from = options.from;this.id = options.id || uni.getStorageSync('setStoreId');}, computed: { isLogin: function isLogin() {return !!this.age && !!this.height && !!this.weight;} }, methods: { checkInput: function checkInput(e) {var _this = this;var type = e.currentTarget.dataset.type;var num = e.detail.value;num = (0, _util.checkNum)(num, 3, 1);this.$nextTick(function () {if (type == 'height') _this.height = num;else _this.weight = num;});}, //返回-todo
-    returnTap: function returnTap() {// uni.navigateBack({
-      // 	delta: 1
-      // })
-      uni.reLaunch({ url: './my' });}, //跳过-到门店主页
-    skipTap: function skipTap() {uni.redirectTo({
+      radio: 1, sexList: [{ value: 1, name: '男', img: '../../static/image/sex0.png', checked: true }, { value: 2, name: '女', img: '../../static/image/sex1.png', checked: false }], age: null, height: '', weight: '', diseaseArr: [] };}, onLoad: function onLoad(options) {console.log(options);if (options.id) uni.setStorageSync('setStoreId', options.id);this.diseaseDictionary();this.from = options.from;this.id = options.id || uni.getStorageSync('setStoreId');}, computed: { isLogin: function isLogin() {return !!this.age && !!this.height && !!this.weight;} }, methods: { checkInput: function checkInput(e) {var _this = this;var type = e.currentTarget.dataset.type;var num = e.detail.value;num = (0, _util.checkNum)(num, 3, 1);this.$nextTick(function () {if (type == 'height') _this.height = num;else _this.weight = num;});}, //返回
+    returnTap: function returnTap() {if (this.from == 'info') {//返回个人中心
+        uni.reLaunch({ url: './my' });} else {uni.navigateBack({ delta: 1 });
+
+      }
+
+    },
+    //跳过-到门店主页
+    skipTap: function skipTap() {
+      uni.redirectTo({
         url: "../home/home?id=".concat(this.id) });
 
     },

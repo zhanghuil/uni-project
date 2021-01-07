@@ -108,14 +108,18 @@
 					else this.weight = num
 				});
 			},
-			//返回-todo
+			//返回
 			returnTap() {
-				// uni.navigateBack({
-				// 	delta: 1
-				// })
-				uni.reLaunch({
-					url: './my'
-				})
+				if (this.from == 'info') { //返回个人中心
+					uni.reLaunch({
+						url: './my'
+					})
+				} else {
+					uni.navigateBack({
+						delta: 1
+					})
+				}
+
 			},
 			//跳过-到门店主页
 			skipTap() {

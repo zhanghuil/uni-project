@@ -271,9 +271,7 @@ __webpack_require__.r(__webpack_exports__);
   onLoad: function onLoad(options) {
     // 医院单位入参参数:HosId
     // eg:HosId = '596570d4-6eb6-46e4-8504-0941cb273e9a'
-    // let companyID = options.HosId // 单位id  companyID
-    // 测试使用
-    var companyID = '596570d4-6eb6-46e4-8504-0941cb273e9a';
+    var companyID = options.HosId; // 单位id  companyID
     if (companyID) this.$store.commit('setCompanyID', companyID);
     this.isWechat(companyID); //是否登录
 

@@ -4,7 +4,8 @@
 			<view class="item">
 				<view class="shopInfo flex align-center">
 					<view class="shopImgBox">
-						<image :src="orderInfo.storeLogo?orderInfo.storeLogo:'../../static/image/default_store.png'" lazy-load="true" class="shopImg"></image>
+						<image :src="orderInfo.storeLogo?orderInfo.storeLogo:'../../static/image/default_store.png'" lazy-load="true"
+						 class="shopImg"></image>
 					</view>
 					<view class="flex1 ovh">
 						<view class="flex justify-between">
@@ -134,6 +135,7 @@
 		data() {
 			return {
 				orderId: '',
+				subOrderId: '',
 				state: '',
 				orderInfo: {},
 				TabCur: 0,
@@ -164,7 +166,10 @@
 			},
 		},
 		onLoad(options) {
+			// console.log(options)
 			this.orderId = options.orderId;
+			this.subOrderId = options.subOrderId;
+
 			let state = options.state;
 			this.state = state;
 			if (state == 0 || state == 4) {
@@ -174,35 +179,41 @@
 			}
 		},
 		methods: {
-			// 订单未支付详情 
+			// 订单未支付详情 （0,4 未支付详情传orderId）
 			orderPayDetail() {
 				let that = this
 				this.$Api.orderPayDetail({
 					orderId: this.orderId
 				}).then(res => {
 					this.orderInfo = res.data;
+					this.state = res.data.state;
 					if (res.data.state == 0) {
 						this.getTimeList()
 						var timer = setInterval(function() {
 							that.getTimeList()
 						}, 1000)
 						this.timer = timer
+					} else {
+						clearInterval(this.timer)
 					}
 				}, err => {})
 			},
-			// 订单已支付详情 
+			// 订单已支付详情 （1,2,3 都是已支付传subOrderId）
 			orderDetail() {
 				let that = this
 				this.$Api.orderDetail({
-					orderId: this.orderId
+					orderId: this.subOrderId
 				}).then(res => {
 					this.orderInfo = res.data;
+					this.state = res.data.state;
 					if (res.data.state == 0) {
 						this.getTimeList()
 						var timer = setInterval(function() {
 							that.getTimeList()
 						}, 1000)
 						this.timer = timer
+					} else {
+						clearInterval(this.timer)
 					}
 				}, err => {})
 			},
@@ -273,11 +284,7 @@
 					console.log('修改支付方式')
 					// 0-到付  1-记账  2-微信支付 3-支付宝 4-职工卡
 					if (id == 0 || id == 1) { //支付成功
-						if (this.state == 0 || this.state == 4) {
-							this.orderPayDetail()
-						} else {
-							this.orderDetail()
-						}
+						this.orderDetail()
 					} else if (id == 2 || id == 4) { //调支付接口
 						this.againPay()
 					}
@@ -291,7 +298,7 @@
 					// #ifdef MP-WEIXIN
 					if (res.data.paymentType == 4) {
 						//职工卡支付成功
-						this.orderList();
+						this.orderDetail()
 					} else if (res.data.paymentType == 2) {
 						//微信支付
 						this.wechatPay(res.data)
@@ -311,11 +318,8 @@
 					success(res) {
 						console.log(res);
 						if (res.errMsg == 'requestPayment:ok') {
-							if (_this.state == 0 || _this.state == 4) {
-								_this.orderPayDetail()
-							} else {
-								_this.orderDetail()
-							}
+							// 订单已支付
+							_this.orderDetail()
 						}
 					},
 					fail(res) {
@@ -358,11 +362,7 @@
 				this.$Api.refund({
 					subOrderId: id
 				}).then(res => {
-					if (this.state == 0 || this.state == 4) {
-						this.orderPayDetail()
-					} else {
-						this.orderDetail()
-					}
+					this.orderDetail()
 				}, err => {})
 			},
 			//取消订单确认框
@@ -389,11 +389,7 @@
 				this.$Api.orderCancel({
 					orderId: id
 				}).then(res => {
-					if (this.state == 0) {
-						this.orderPayDetail()
-					} else {
-						this.orderDetail()
-					}
+					this.orderPayDetail()
 				}, err => {})
 			}
 		}
