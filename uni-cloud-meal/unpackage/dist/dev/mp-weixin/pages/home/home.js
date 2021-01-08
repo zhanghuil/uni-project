@@ -632,7 +632,6 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _intero
       this.TabCur = e.currentTarget.dataset.id;
       this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
 
-
       // this.$nextTick(() => {
       // 	this.selectHeight();
       // });

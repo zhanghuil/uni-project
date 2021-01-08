@@ -180,6 +180,7 @@ __webpack_require__.r(__webpack_exports__);
 
   data: function data() {
     return {
+      jumpTxt: '',
       payType: '', //支付方式
       payFail: false, //默认支付成功
       orderId: '', // 订单id
@@ -200,6 +201,17 @@ __webpack_require__.r(__webpack_exports__);
     this.payFail = _orderId ? true : false;
 
     this.getPayType(options.storeId);
+  },
+  onUnload: function onUnload() {
+    if (!this.jumpTxt) {
+      uni.reLaunch({
+        url: '../index/index' });
+
+    } else {
+      uni.reLaunch({
+        url: '../order/order' });
+
+    }
   },
   methods: {
     // 获取支付方式
@@ -246,9 +258,10 @@ __webpack_require__.r(__webpack_exports__);
       uni.switchTab({
         url: '../order/order' });
 
+      this.jumpTxt = 'order';
     },
     // 取消订单
-    cancelTap: function cancelTap() {
+    cancelTap: function cancelTap() {var _this4 = this;
       this.$Api.orderCancel({
         orderId: this.orderId }).
       then(function (res) {
@@ -261,6 +274,7 @@ __webpack_require__.r(__webpack_exports__);
               uni.switchTab({
                 url: '../order/order' });
 
+              _this4.jumpTxt = 'order';
             } else if (res.cancel) {
               console.log('用户点击取消');
             }
@@ -269,18 +283,18 @@ __webpack_require__.r(__webpack_exports__);
       }, function (err) {});
     },
     //重新支付
-    againPay: function againPay() {var _this4 = this;
+    againPay: function againPay() {var _this5 = this;
       this.$Api.orderPay({
         orderId: this.orderId }).
       then(function (res) {
 
         if (res.data.paymentType == 4) {
           //职工卡支付成功
-          _this4.payType = 4;
-          _this4.payFail = false;
+          _this5.payType = 4;
+          _this5.payFail = false;
         } else if (res.data.paymentType == 2) {
           //微信支付
-          _this4.wechatPay(res.data);
+          _this5.wechatPay(res.data);
         }
 
       }, function (err) {});

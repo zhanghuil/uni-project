@@ -346,7 +346,7 @@ var _util = __webpack_require__(/*! ../../common/util.js */ 34);function _toCons
     orderList: function orderList(isFirstLoad) {
       var that = this;
       this.$Api.orderList({
-        orderCode: this.lastOrderCode || '' }).
+        subOrderCode: this.lastOrderCode || '' }).
       then(function (res) {
         if (!res.data || res.data.length <= 0) {
           if (isFirstLoad) {

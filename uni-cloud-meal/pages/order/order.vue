@@ -170,7 +170,7 @@
 			orderList(isFirstLoad) {
 				let that = this
 				this.$Api.orderList({
-					orderCode: this.lastOrderCode || ''
+					subOrderCode: this.lastOrderCode || ''
 				}).then(res => {
 					if (!res.data || res.data.length <= 0) {
 						if (isFirstLoad) {

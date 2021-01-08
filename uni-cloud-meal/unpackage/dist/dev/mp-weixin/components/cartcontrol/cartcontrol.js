@@ -114,7 +114,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 
 
@@ -155,25 +155,35 @@ var _default2 = { props: { foodInfo: { type: Object, default: function _default(
 
   },
   methods: {
-    addCart: function addCart(event) {
+    addCart: function addCart(event) {var _this = this;
       if (this.food.surplus <= 0) return;
 
       /*
-                                          B、点击+时，依据当前门店、当前商品、当前用户人群分类，判断：超出当日当类型限量，无法继续添加，并提示“每人最多只可购买3份”
-                                          C、未超出当日当类型限量，则继续判断：超出当日限量，无法继续添加，并提示“每人每日最多只可购买10份”
-                                          */
+                                           *serviceTypeLimitNum  null不限购  0-没有可加购数量
+                                           *B、点击+时，依据当前门店、当前商品、当前用户人群分类，判断：超出当日当类型限量，无法继续添加，并提示“每人最多只可购买3份”
+                                           *C、未超出当日当类型限量，则继续判断：超出当日限量，无法继续添加，并提示“每人每日最多只可购买10份”
+                                           */
+      var selectStorageArray = uni.getStorageSync('selectfood_storage_key');
+      if (!selectStorageArray) selectStorageArray = [];
+      var sameFood = selectStorageArray.filter(function (n) {return n.orderDay == _this.food.orderDay && n.productId == _this.food.productId;});
+      var sum = 1;
+      sameFood.forEach(function (e) {
+        sum += e.count;
+      });
+      if (this.food.serviceTypeLimitNum && this.food.count + 1 > this.food.serviceTypeLimitNum || this.food.serviceTypeLimitNum ==
+      0) {
+        (0, _util.showToast)("\u6BCF\u4EBA\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.serviceTypeLimit, "\u4EFD"));
+        return;
+      }
+      if (this.food.limitNum && sum > this.food.limitNum || this.food.limitNum == 0) {
+        (0, _util.showToast)("\u6BCF\u4EBA\u6BCF\u65E5\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.limit, "\u4EFD"));
+        return;
+      }
+
+
       if (!this.food.count) {
         this.food.count = 1;
       } else {
-        if (this.food.serviceTypeLimit != 0 && this.food.count + 1 > this.food.serviceTypeLimit) {
-          (0, _util.showToast)("\u6BCF\u4EBA\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.serviceTypeLimit, "\u4EFD"));
-          return;
-        }
-        if (this.food.limit != 0 && this.food.count + 1 > this.food.limit) {
-          (0, _util.showToast)("\u6BCF\u4EBA\u6BCF\u65E5\u6700\u591A\u53EA\u53EF\u8D2D\u4E70".concat(this.food.limit, "\u4EFD"));
-          return;
-        }
-
         this.food.count++;
       }
       this.food.surplus--;
@@ -187,6 +197,7 @@ var _default2 = { props: { foodInfo: { type: Object, default: function _default(
       }
       this.$emit('decrease', this.food);
     } } };exports.default = _default2;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 

@@ -452,7 +452,6 @@
 				this.TabCur = e.currentTarget.dataset.id;
 				this.scrollLeft = (e.currentTarget.dataset.id - 1) * 60;
 
-
 				// this.$nextTick(() => {
 				// 	this.selectHeight();
 				// });
@@ -500,7 +499,7 @@
 					})
 					this.menuList = tempMenu.serviceTypeList
 					// console.log(this.menuList)
-
+					
 					this.$nextTick(() => {
 						this.selectHeight();
 					});

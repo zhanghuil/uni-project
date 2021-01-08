@@ -276,11 +276,12 @@ __webpack_require__.r(__webpack_exports__);
     this.isWechat(companyID); //是否登录
 
     // 设置头部
-    // this.$showLoading(true)
     var tit = this.$store.state.companyName || '医院营养云订餐';
     uni.setNavigationBarTitle({
       title: tit });
 
+
+    this.$showLoading(true);
   },
   methods: {
     // 获取当前单位信息
@@ -320,6 +321,7 @@ __webpack_require__.r(__webpack_exports__);
     getBanner: function getBanner() {var _this3 = this;
       this.$Api.getBanner().then(function (res) {
         _this3.imgs = res.data;
+        _this3.$showLoading(false);
       }, function (err) {});
     },
     // 门店位置：全部+区域字典，默认展示全部区域的门店

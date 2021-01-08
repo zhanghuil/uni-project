@@ -48,6 +48,7 @@
 		},
 		data() {
 			return {
+				jumpTxt: '',
 				payType: '', //支付方式
 				payFail: false, //默认支付成功
 				orderId: '', // 订单id
@@ -60,7 +61,7 @@
 		onLoad(options) {
 			//清空购物车缓存
 			uni.removeStorageSync('selectfood_storage_key');
-			
+
 			console.log(options)
 			this.payType = options.payType;
 			let _orderId = options.orderId;
@@ -68,6 +69,17 @@
 			this.payFail = _orderId ? true : false;
 
 			this.getPayType(options.storeId)
+		},
+		onUnload() {
+			if (!this.jumpTxt) {
+				uni.reLaunch({
+					url: '../index/index'
+				})
+			} else {
+				uni.reLaunch({
+					url: '../order/order'
+				})
+			}
 		},
 		methods: {
 			// 获取支付方式
@@ -114,6 +126,7 @@
 				uni.switchTab({
 					url: '../order/order'
 				})
+				this.jumpTxt = 'order'
 			},
 			// 取消订单
 			cancelTap() {
@@ -129,6 +142,7 @@
 								uni.switchTab({
 									url: '../order/order'
 								})
+								this.jumpTxt = 'order'
 							} else if (res.cancel) {
 								console.log('用户点击取消');
 							}

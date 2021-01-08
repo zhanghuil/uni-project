@@ -13,7 +13,7 @@
 			<view class='bannerNum'>{{(currentSwiper+1)}}/{{imgs.length}}</view>
 		</view>
 		<!-- 门店列表 -->
-		<view class="storeBox" v-if="storeList&&storeList.length > 0">
+		<view class="storeBox">
 			<view class="storeTab flex text-left">
 				<view class="cu-item flex-sub" :class="0==TabCur?'cur':''" @tap="tabSelect" data-id="0">
 					全部门店
@@ -133,11 +133,12 @@
 			this.isWechat(companyID) //是否登录
 
 			// 设置头部
-			// this.$showLoading(true)
 			let tit = this.$store.state.companyName || '医院营养云订餐'
 			uni.setNavigationBarTitle({
 				title: tit
 			})
+			
+			this.$showLoading(true)
 		},
 		methods: {
 			// 获取当前单位信息
@@ -177,6 +178,7 @@
 			getBanner() {
 				this.$Api.getBanner().then(res => {
 					this.imgs = res.data
+					this.$showLoading(false)
 				}, err => {})
 			},
 			// 门店位置：全部+区域字典，默认展示全部区域的门店
